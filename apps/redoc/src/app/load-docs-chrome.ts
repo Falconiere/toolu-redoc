@@ -1,26 +1,19 @@
-/** Route-layer helper: paste text → docs chrome title/version via OpenAPI parse. */
-import { parseOpenApiDocument } from "@/domains/openapi/api/parse-openapi-document";
+/** Route-layer helper: paste text → docs chrome title/version via loadDocsDocument. */
+import { loadDocsDocument } from "@/app/load-docs-document";
 
 /** Success or failure chrome extracted for the docs shell route. */
 export type DocsChromeResult =
   | { ok: true; title: string; version: string }
   | { ok: false; message: string };
 
-/** Trim a chrome field; blank or missing → fallback. */
-function chromeField(value: string | null | undefined, fallback: string): string {
-  return (value ?? "").trim() || fallback;
-}
-
 /**
  * Parse OpenAPI paste text and map `info` into shell chrome strings.
- * Empty title/version after trim use `"Untitled document"` / `"—"`.
+ * Thin wrapper over `loadDocsDocument` — chrome fields only.
  */
 export function loadDocsChrome(input: string): DocsChromeResult {
-  const result = parseOpenApiDocument(input);
+  const result = loadDocsDocument(input);
   if (!result.ok) {
-    return { ok: false, message: result.error.message };
+    return result;
   }
-  const title = chromeField(result.document.info.title, "Untitled document");
-  const version = chromeField(result.document.info.version, "—");
-  return { ok: true, title, version };
+  return { ok: true, title: result.title, version: result.version };
 }
