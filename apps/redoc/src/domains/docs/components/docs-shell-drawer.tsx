@@ -1,6 +1,8 @@
 /** Modal drawer for nav/samples content below the md breakpoint. */
 import { useEffect, useId, useRef, type ReactNode, type RefObject } from "react";
 
+import { MD_UP_QUERY } from "@/domains/docs/hooks/use-md-up";
+
 /** Focusable controls inside a drawer panel (for the Tab trap). */
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -63,6 +65,26 @@ function onDrawerKeyDown(event: KeyboardEvent, panel: HTMLElement, onClose: () =
   }
 }
 
+/** Open as a modal when the platform supports it; otherwise fall back to `open`. */
+function openDrawerDialog(panel: HTMLDialogElement): void {
+  if (typeof panel.showModal === "function") {
+    if (!panel.open) {
+      panel.showModal();
+    }
+    return;
+  }
+  panel.setAttribute("open", "");
+}
+
+/** Close a dialog opened via showModal or the open attribute. */
+function closeDrawerDialog(panel: HTMLDialogElement): void {
+  if (typeof panel.close === "function" && panel.open) {
+    panel.close();
+    return;
+  }
+  panel.removeAttribute("open");
+}
+
 /** Dialog drawer with focus trap, Escape/Close/backdrop dismiss, and focus restore. */
 export function DocsShellDrawer({
   title,
@@ -84,21 +106,25 @@ export function DocsShellDrawer({
 
     const panel = panelRef.current;
     const opener = openerRef.current;
-    panel?.focus();
+    if (panel === null) {
+      return undefined;
+    }
+
+    openDrawerDialog(panel);
+    panel.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (panel) {
-        onDrawerKeyDown(event, panel, () => {
-          onCloseRef.current();
-        });
-      }
+      onDrawerKeyDown(event, panel, () => {
+        onCloseRef.current();
+      });
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      closeDrawerDialog(panel);
       // Restore to opener only while still below md; md flip focuses <main> instead.
-      if (!window.matchMedia("(min-width: 860px)").matches) {
+      if (!window.matchMedia(MD_UP_QUERY).matches) {
         opener?.focus();
       }
     };
@@ -114,14 +140,12 @@ export function DocsShellDrawer({
     <>
       <button
         type="button"
-        aria-hidden="true"
-        tabIndex={-1}
+        aria-label="Dismiss drawer"
         className="fixed inset-0 z-40 bg-background/80"
         onClick={onClose}
       />
       <dialog
         ref={panelRef}
-        open
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}

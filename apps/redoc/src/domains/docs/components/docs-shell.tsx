@@ -46,6 +46,7 @@ function DocsShellRegions({
   setSamplesOpen,
   navButtonRef,
   samplesButtonRef,
+  backgroundInert,
 }: {
   isMdUp: boolean;
   nav: ReactNode;
@@ -57,6 +58,7 @@ function DocsShellRegions({
   setSamplesOpen: (open: boolean) => void;
   navButtonRef: RefObject<HTMLButtonElement | null>;
   samplesButtonRef: RefObject<HTMLButtonElement | null>;
+  backgroundInert: boolean;
 }) {
   return (
     <div className="flex min-w-0 flex-col md:flex-row">
@@ -79,6 +81,7 @@ function DocsShellRegions({
       )}
       <section
         aria-label="Operation"
+        inert={backgroundInert ? true : undefined}
         className="min-w-0 flex-1 overflow-auto border-border bg-background p-4"
       >
         {main}
@@ -115,6 +118,7 @@ export function DocsShell({ nav, main, rail }: DocsShellProps) {
   const [samplesOpen, setSamplesOpen] = useState(false);
   const toggleNav = useExclusiveDrawerToggle(setNavOpen, setSamplesOpen);
   const toggleSamples = useExclusiveDrawerToggle(setSamplesOpen, setNavOpen);
+  const drawerOpen = navOpen || samplesOpen;
 
   useEffect(() => {
     if (!isMdUp) {
@@ -150,6 +154,7 @@ export function DocsShell({ nav, main, rail }: DocsShellProps) {
         setSamplesOpen={setSamplesOpen}
         navButtonRef={navButtonRef}
         samplesButtonRef={samplesButtonRef}
+        backgroundInert={drawerOpen && !isMdUp}
       />
     </div>
   );

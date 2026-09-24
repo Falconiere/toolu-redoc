@@ -78,7 +78,7 @@ describe("docs route chrome (AC-1 / AC-6)", () => {
     if (chrome.ok) {
       throw new Error("expected parse failure for whitespace-only input");
     }
-    expect(chrome.message.length).toBeGreaterThan(0);
+    expect(chrome.message.toLowerCase()).toMatch(/empty|document|yaml|json/);
   });
 
   it("returns ok:false with a message for Swagger 2 JSON", () => {
@@ -94,5 +94,21 @@ describe("docs route chrome (AC-1 / AC-6)", () => {
       throw new Error("expected parse failure for Swagger 2");
     }
     expect(chrome.message.toLowerCase()).toContain("swagger");
+  });
+
+  it("falls back for whitespace-only title and version", () => {
+    const chrome = loadDocsChrome(
+      JSON.stringify({
+        openapi: "3.0.3",
+        info: { title: "  ", version: "" },
+        paths: {},
+      }),
+    );
+    expect(chrome.ok).toBe(true);
+    if (!chrome.ok) {
+      throw new Error(`expected ok chrome, got: ${chrome.message}`);
+    }
+    expect(chrome.title).toBe("Untitled document");
+    expect(chrome.version).toBe("—");
   });
 });

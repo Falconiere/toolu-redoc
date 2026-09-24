@@ -159,6 +159,43 @@ describe("DocsShellScreen", () => {
     expect(samplesButton).toHaveFocus();
   });
 
+  it("AC-3: Close button and backdrop dismiss restore focus to the opener", async () => {
+    const user = userEvent.setup();
+    stubViewport(375);
+    renderShell({ nav: <span>Nav body</span>, rail: <span>Samples body</span> });
+
+    const navButton = screen.getByRole("button", { name: "Navigation" });
+    await user.click(navButton);
+    const navDialog = screen.getByRole("dialog", { name: "Navigation" });
+    await user.click(within(navDialog).getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(navButton).toHaveFocus();
+
+    await user.click(navButton);
+    await user.click(screen.getByRole("button", { name: "Dismiss drawer" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(navButton).toHaveFocus();
+  });
+
+  it("AC-3: Tab cycles inside the open dialog (native modal trap)", async () => {
+    const user = userEvent.setup();
+    stubViewport(375);
+    renderShell({ nav: <button type="button">Nav action</button> });
+
+    await user.click(screen.getByRole("button", { name: "Navigation" }));
+    const dialog = screen.getByRole("dialog", { name: "Navigation" });
+    const closeButton = within(dialog).getByRole("button", { name: "Close" });
+    const navAction = within(dialog).getByRole("button", { name: "Nav action" });
+
+    closeButton.focus();
+    await user.tab();
+    expect(navAction).toHaveFocus();
+    await user.tab();
+    expect(closeButton).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(navAction).toHaveFocus();
+  });
+
   it("AC-4: every listed width keeps regions reachable without page overflow", async () => {
     const user = userEvent.setup();
     for (const width of VIEWPORT_WIDTHS) {
