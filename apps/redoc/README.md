@@ -87,6 +87,24 @@ Signal three-column docs shell.
 
 Both should be required checks on `main`.
 
+## Loading an OpenAPI document
+
+On `/` (Spec load screen):
+
+1. **Paste** OpenAPI JSON or YAML into the text area and choose **Parse paste**.
+2. **URL** — enter an absolute `http://` or `https://` link (no userinfo) and
+   choose **Load URL**, or open `/?url=<encoded-href>` to auto-load.
+3. Loading, validation, and network failures use Signal banner/empty patterns.
+   Opaque network errors offer paste recovery and never claim a definitive CORS
+   diagnosis.
+4. Share search params: `url` (source) and `op` (operation identity for later
+   deep links). Document bytes are never stored in the URL.
+
+```bash
+bun run --filter @toolu-redoc/redoc test   # includes fixture-HTTP-server load suites
+bun run --filter @toolu-redoc/redoc dev    # interactive paste / URL load
+```
+
 ## Conventions
 
 Strict TypeScript, no barrel files, no default exports, kebab-case filenames,

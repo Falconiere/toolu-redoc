@@ -1,7 +1,33 @@
-/** `/` — the console home. A route file maps a URL to a domain screen, nothing more. */
+/** `/` — Spec load screen. Thin route: validate search, pass search + navigate. */
 import { createFileRoute } from "@tanstack/react-router";
-import { HomeScreen } from "@/domains/home/screens/home-screen";
+
+import {
+  validateSpecLoadSearch,
+  type SpecLoadSearch,
+} from "@/domains/openapi/api/spec-source-search";
+import { SpecLoadScreen } from "@/domains/openapi/screens/spec-load-screen";
 
 export const Route = createFileRoute("/")({
-  component: HomeScreen,
+  validateSearch: (raw: Record<string, unknown>) => validateSpecLoadSearch(raw),
+  component: SpecLoadRoute,
 });
+
+/** Route shell — maps validated search into the openapi SpecLoadScreen. */
+function SpecLoadRoute() {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  return (
+    <SpecLoadScreen
+      search={search}
+      onSourceUrlChange={(href) => {
+        void navigate({
+          search: (previous: SpecLoadSearch) => ({
+            ...previous,
+            url: href,
+          }),
+        });
+      }}
+    />
+  );
+}
