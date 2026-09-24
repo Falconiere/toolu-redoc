@@ -271,8 +271,10 @@ export function createHttpClient(config: HttpClientConfig): HttpClient {
   ): Promise<{ response: Response; requestUrl: string }> {
     const { response, url } = await request("GET", path, undefined, options);
     if (!response.ok) {
+      // Cap error body reads so a huge 4xx/5xx payload cannot blow memory.
       const text = await response.text();
-      throw new HttpError(response.status, url, text);
+      const capped = text.length > 64 * 1024 ? `${text.slice(0, 64 * 1024)}…` : text;
+      throw new HttpError(response.status, url, capped);
     }
     return { response, requestUrl: url };
   }

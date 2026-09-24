@@ -32,6 +32,7 @@ export type FetchOpenApiTextOptions = {
 /**
  * Validate `href`, GET via `http` with credentials omit, byte-cap the body,
  * and HTML-sniff before parse. Never uses bare `fetch` in this module.
+ * Timeout covers headers **and** body read.
  */
 export async function fetchOpenApiText(
   href: string,
@@ -49,16 +50,29 @@ export async function fetchOpenApiText(
     return cancelledResult();
   }
 
+  const timeoutMs = options?.timeoutMs ?? FETCH_TIMEOUT_MS;
+  const gate = openLoadAbortGate(timeoutMs, options?.signal);
+
   try {
     const httpOptions = {
-      timeoutMs: options?.timeoutMs ?? FETCH_TIMEOUT_MS,
+      timeoutMs,
       headers: { accept: "application/json, text/plain, */*" },
-      ...(options?.signal === undefined ? {} : { signal: options.signal }),
+      signal: gate.signal,
     };
     const { response, requestUrl } = await http.getResponse(validated.href, httpOptions);
-    return await readOkResponse(response, requestUrl, options?.signal);
+    return await readOkResponse(response, requestUrl, gate.signal);
   } catch (cause) {
+    if (gate.timedOut) {
+      return {
+        ok: false,
+        error: specLoadError("timeout", "The request timed out. Try again.", {
+          recovery: "retry",
+        }),
+      };
+    }
     return mapFetchFailure(cause, validated.href);
+  } finally {
+    closeLoadAbortGate(gate);
   }
 }
 
@@ -85,12 +99,20 @@ async function readOkResponse(
   }
 
   const finalHref = responseUrlOr(requestUrl, response);
+  const finalValidated = validateSpecSourceUrl(finalHref);
+  if (!finalValidated.ok) {
+    return {
+      ok: false,
+      error: specLoadError("disallowed_url", finalValidated.error.message, { recovery: "paste" }),
+    };
+  }
+
   return {
     ok: true,
     value: {
       text: body.text,
-      href: finalHref,
-      redirectCount: finalHref === requestUrl ? 0 : 1,
+      href: finalValidated.href,
+      redirectCount: finalValidated.href === requestUrl ? 0 : 1,
     },
   };
 }
@@ -208,4 +230,40 @@ function concatChunks(chunks: readonly Uint8Array[], total: number): Uint8Array 
     offset += chunk.byteLength;
   }
   return merged;
+}
+
+type LoadAbortGate = {
+  signal: AbortSignal;
+  timedOut: boolean;
+  timer: ReturnType<typeof setTimeout>;
+  forwardAbort: () => void;
+  outer: AbortSignal | undefined;
+};
+
+/** Abort covering the whole URL load (headers + body). */
+function openLoadAbortGate(timeoutMs: number, outer: AbortSignal | undefined): LoadAbortGate {
+  const controller = new AbortController();
+  const gate: LoadAbortGate = {
+    signal: controller.signal,
+    timedOut: false,
+    timer: setTimeout(() => {
+      gate.timedOut = true;
+      controller.abort();
+    }, timeoutMs),
+    forwardAbort: () => {
+      controller.abort();
+    },
+    outer,
+  };
+  if (outer?.aborted === true) {
+    controller.abort();
+  } else {
+    outer?.addEventListener("abort", gate.forwardAbort);
+  }
+  return gate;
+}
+
+function closeLoadAbortGate(gate: LoadAbortGate): void {
+  clearTimeout(gate.timer);
+  gate.outer?.removeEventListener("abort", gate.forwardAbort);
 }

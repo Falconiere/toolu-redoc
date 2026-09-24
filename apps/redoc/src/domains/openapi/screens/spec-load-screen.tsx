@@ -27,8 +27,10 @@ export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProp
   const pasteRef = useRef<HTMLTextAreaElement>(null);
   const loadRef = useRef(hook.load);
   loadRef.current = hook.load;
+  /** URLs already claimed by a manual load so auto-load does not double-fetch. */
+  const claimedUrlRef = useRef<string | null>(null);
 
-  useAutoLoadUrl(search.url, loadRef, setPhase);
+  useAutoLoadUrl(search.url, loadRef, setPhase, claimedUrlRef);
   useSyncUrlField(search.url, setUrlField);
 
   const focusPaste = (): void => {
@@ -47,6 +49,7 @@ export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProp
           loadRef={loadRef}
           setPhase={setPhase}
           onPaste={focusPaste}
+          claimedUrlRef={claimedUrlRef}
           {...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange })}
         />
         <SpecLoadForm
@@ -67,6 +70,7 @@ export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProp
             void runUrlLoad(urlField, {
               load: loadRef.current,
               setPhase,
+              claimedUrlRef,
               ...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange }),
             });
           }}
@@ -101,6 +105,7 @@ function SpecLoadNotices({
   setPhase,
   onSourceUrlChange,
   onPaste,
+  claimedUrlRef,
 }: {
   search: SpecLoadSearch;
   error: SpecLoadHook["error"];
@@ -109,6 +114,7 @@ function SpecLoadNotices({
   setPhase: (phase: "fetching" | "parsing" | null) => void;
   onSourceUrlChange?: (href: string) => void;
   onPaste: () => void;
+  claimedUrlRef: RefObject<string | null>;
 }) {
   return (
     <>
@@ -128,6 +134,7 @@ function SpecLoadNotices({
             void runUrlLoad(urlField, {
               load: loadRef.current,
               setPhase,
+              claimedUrlRef,
               ...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange }),
             });
           }}
@@ -152,10 +159,15 @@ function useAutoLoadUrl(
   searchUrl: string | undefined,
   loadRef: RefObject<SpecLoadHook["load"]>,
   setPhase: (phase: "fetching" | "parsing" | null) => void,
+  claimedUrlRef: RefObject<string | null>,
 ): void {
   const autoKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (searchUrl === undefined || autoKeyRef.current === searchUrl) {
+      return;
+    }
+    if (claimedUrlRef.current === searchUrl) {
+      autoKeyRef.current = searchUrl;
       return;
     }
     autoKeyRef.current = searchUrl;
@@ -163,7 +175,7 @@ function useAutoLoadUrl(
     void loadRef.current({ kind: "url", href: searchUrl }).finally(() => {
       setPhase(null);
     });
-  }, [searchUrl, loadRef, setPhase]);
+  }, [searchUrl, loadRef, setPhase, claimedUrlRef]);
 }
 
 async function runUrlLoad(
@@ -171,6 +183,7 @@ async function runUrlLoad(
   options: {
     load: SpecLoadHook["load"];
     setPhase: (phase: "fetching" | "parsing" | null) => void;
+    claimedUrlRef: RefObject<string | null>;
     onSourceUrlChange?: (href: string) => void;
   },
 ): Promise<void> {
@@ -178,6 +191,8 @@ async function runUrlLoad(
   if (href.length === 0) {
     return;
   }
+  // Claim before navigate so useAutoLoadUrl skips the duplicate fetch.
+  options.claimedUrlRef.current = href;
   options.onSourceUrlChange?.(href);
   options.setPhase("fetching");
   try {
