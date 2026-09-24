@@ -25,7 +25,7 @@ function mapResponseHeaders(
   for (const [name, value] of Object.entries(headers)) {
     let typeSummary: string;
     let ref: string | null = null;
-    if (hasRef(value) && !("schema" in value)) {
+    if (hasRef(value)) {
       ref = value.$ref;
       typeSummary = `$ref ${ref}`;
     } else if (isRecord(value) && "schema" in value) {
@@ -55,7 +55,7 @@ function mapResponseHeaders(
 
 /** Map one response status entry (inline or `$ref`). */
 export function mapResponse(status: string, response: unknown): OperationResponseRow {
-  if (hasRef(response) && !("description" in response)) {
+  if (hasRef(response)) {
     return {
       status,
       description: `$ref ${response.$ref}`,

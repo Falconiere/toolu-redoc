@@ -1,5 +1,5 @@
 /** Main-column operation detail panel (null → empty selection state). */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { OperationDetailHeader } from "@/domains/docs/components/operation-detail-header";
 import { OperationDetailParameters } from "@/domains/docs/components/operation-detail-parameters";
@@ -25,7 +25,6 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
         typeSummary: "—",
         ref: null,
         exampleKey: null,
-        exampleValue: undefined,
         externalValue: null,
       };
     }
@@ -34,6 +33,9 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
     if (media !== undefined && mediaType !== null) {
       const exampleKey = media.defaultExampleKey;
       const named = media.namedExamples.find((entry) => entry.key === exampleKey);
+      const exampleValue = media.singularExample.present
+        ? media.singularExample.value
+        : named?.value;
       return {
         kind: "response",
         status: firstResponse.status,
@@ -42,7 +44,7 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
         typeSummary: media.typeSummary,
         ref: media.schemaHandle.kind === "response" ? media.schemaHandle.ref : null,
         exampleKey: media.singularExample.present ? null : exampleKey,
-        exampleValue: media.singularExample.present ? media.singularExample.value : named?.value,
+        ...(exampleValue !== undefined ? { exampleValue } : {}),
         externalValue: media.singularExample.present ? null : (named?.externalValue ?? null),
       };
     }
@@ -62,14 +64,12 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
 
 /** Operation detail root: empty copy or full regions with focus bridge. */
 export function OperationDetail({ operation, onFocusChange }: OperationDetailProps) {
+  const onFocusChangeRef = useRef(onFocusChange);
+  onFocusChangeRef.current = onFocusChange;
+
   useEffect(() => {
-    if (operation === null) {
-      onFocusChange?.(null);
-      return;
-    }
-    onFocusChange?.(null);
-    onFocusChange?.(defaultFocus(operation));
-  }, [operation, onFocusChange]);
+    onFocusChangeRef.current?.(operation ? defaultFocus(operation) : null);
+  }, [operation]);
 
   if (operation === null) {
     return (

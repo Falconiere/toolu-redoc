@@ -11,24 +11,42 @@ export type ExampleValuePanelProps = {
 /** Singular / named / external example as React text only. */
 export function ExampleValuePanel({ media, exampleKey }: ExampleValuePanelProps) {
   if (media === undefined) {
-    return <p className="type-meta text-text-faint">No example.</p>;
+    return (
+      <p className="type-meta text-text-faint" aria-label="Example value">
+        No example.
+      </p>
+    );
   }
   if (exampleKey === null && media.singularExample.present) {
     return (
-      <pre className="type-data overflow-x-auto whitespace-pre-wrap text-text">
+      <pre
+        className="type-data overflow-x-auto whitespace-pre-wrap text-text"
+        aria-label="Example value"
+      >
         {formatExampleValue(media.singularExample.value)}
       </pre>
     );
   }
   const named = media.namedExamples.find((entry) => entry.key === exampleKey);
   if (named === undefined) {
-    return <p className="type-meta text-text-faint">No example.</p>;
+    return (
+      <p className="type-meta text-text-faint" aria-label="Example value">
+        No example.
+      </p>
+    );
   }
-  if (named.externalValue !== null && !Object.hasOwn(named, "value")) {
-    return <p className="type-data break-all text-text">externalValue: {named.externalValue}</p>;
+  if (named.externalValue !== null && named.value === undefined) {
+    return (
+      <p className="type-data break-all text-text" aria-label="Example value">
+        externalValue: {named.externalValue}
+      </p>
+    );
   }
   return (
-    <pre className="type-data overflow-x-auto whitespace-pre-wrap text-text">
+    <pre
+      className="type-data overflow-x-auto whitespace-pre-wrap text-text"
+      aria-label="Example value"
+    >
       {formatExampleValue(named.value)}
     </pre>
   );

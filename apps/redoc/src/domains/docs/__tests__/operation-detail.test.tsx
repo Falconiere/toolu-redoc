@@ -74,8 +74,10 @@ describe("OperationDetail acceptance", () => {
     for (const model of models) {
       const { unmount } = render(<OperationDetail operation={model} />);
       const article = screen.getByRole("article");
-      expect(article.textContent).toContain(model.path);
-      expect(article.textContent.toLowerCase()).toContain(model.method.toLowerCase());
+      const methodSpan = article.querySelector("span.uppercase");
+      const pathSpan = methodSpan?.nextElementSibling;
+      expect(methodSpan?.textContent).toBe(model.method);
+      expect(pathSpan?.textContent).toBe(model.path);
       unmount();
     }
   });
@@ -97,7 +99,7 @@ describe("OperationDetail acceptance", () => {
 
     const items = byPath(models, "get", "/items/{itemId}");
     const { unmount } = render(<OperationDetail operation={items} />);
-    expect(screen.getByText(/Path parameter `itemId`: missing/)).toBeInTheDocument();
+    expect(screen.getByText("Path parameter `itemId`: missing")).toBeInTheDocument();
     expect(screen.getByText("verbose")).toBeInTheDocument();
     unmount();
   });
@@ -192,8 +194,7 @@ describe("OperationDetail acceptance", () => {
     await user.click(within(exampleBox).getByRole("radio", { name: "zero" }));
     expect(within(request).getByText("0")).toBeInTheDocument();
     await user.click(within(exampleBox).getByRole("radio", { name: "empty" }));
-    const emptyPre = [...request.querySelectorAll("pre")].find((node) => node.textContent === "");
-    expect(emptyPre).toBeDefined();
+    expect(within(request).getByLabelText("Example value")).toHaveTextContent("");
     await user.click(within(exampleBox).getByRole("radio", { name: "nil" }));
     expect(within(request).getByText("null")).toBeInTheDocument();
     await user.click(within(exampleBox).getByRole("radio", { name: /External example URL/ }));
@@ -209,6 +210,33 @@ describe("OperationDetail acceptance", () => {
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.queryByLabelText("Request body")).toBeNull();
     expect(screen.queryByLabelText("Responses")).toBeNull();
+  });
+
+  it("emits a single default focus on mount and on operation change", () => {
+    const onFocusChange = vi.fn();
+    const upload = mapFixture("operation-detail-bodies.json")[0];
+    const bare = byPath(mapFixture("operation-detail-meta.json"), "get", "/bare");
+    if (upload === undefined) {
+      throw new Error("missing upload op");
+    }
+    const { rerender } = render(
+      <OperationDetail operation={upload} onFocusChange={onFocusChange} />,
+    );
+    expect(onFocusChange).toHaveBeenCalledTimes(1);
+    expect(onFocusChange.mock.calls[0]?.[0]).not.toBeNull();
+
+    onFocusChange.mockClear();
+    rerender(<OperationDetail operation={bare} onFocusChange={onFocusChange} />);
+    expect(onFocusChange).toHaveBeenCalledTimes(1);
+    expect(onFocusChange.mock.calls[0]?.[0]).toMatchObject({
+      kind: "response",
+      status: bare.responses[0]?.status,
+    });
+
+    onFocusChange.mockClear();
+    rerender(<OperationDetail operation={null} onFocusChange={onFocusChange} />);
+    expect(onFocusChange).toHaveBeenCalledTimes(1);
+    expect(onFocusChange).toHaveBeenCalledWith(null);
   });
 
   it("AC-7: FSAFE strings stay inert text with zero fetch", () => {

@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { mapOperationDetail } from "@/app/map-operation-detail";
+import { mapParameter } from "@/app/map-operation-detail-params";
+import { mapResponse } from "@/app/map-operation-detail-responses";
+import type { OpenApiParameterOrRef } from "@/domains/openapi/api/openapi-parameter-schema";
 import { parseOpenApiDocument } from "@/domains/openapi/api/parse-openapi-document";
 
 const fixturesDir = join(
@@ -127,5 +130,38 @@ describe("mapOperationDetail", () => {
     if (json?.schemaHandle.kind === "request") {
       expect(json.schemaHandle.ref).toBe("#/components/schemas/Payload");
     }
+  });
+
+  it("classifies $ref parameters and headers before coincident inline fields", () => {
+    const ambiguous: OpenApiParameterOrRef = {
+      $ref: "#/components/parameters/Limit",
+      name: "limit",
+      in: "query",
+    };
+    const paramRow = mapParameter(ambiguous);
+    expect(paramRow.in).toBe("$ref");
+    expect(paramRow.name).toBe("#/components/parameters/Limit");
+    expect(paramRow.schemaHandle.ref).toBe("#/components/parameters/Limit");
+    expect(paramRow.typeSummary).toBe("$ref #/components/parameters/Limit");
+
+    const response = mapResponse("200", {
+      description: "ok",
+      headers: {
+        Trace: {
+          $ref: "#/components/headers/Trace",
+          schema: { type: "string" },
+        },
+      },
+    });
+    expect(response.headers).toHaveLength(1);
+    expect(response.headers[0]?.typeSummary).toBe("$ref #/components/headers/Trace");
+    expect(response.headers[0]?.schemaHandle.ref).toBe("#/components/headers/Trace");
+
+    const refResponse = mapResponse("default", {
+      $ref: "#/components/responses/Error",
+      description: "should not win",
+    });
+    expect(refResponse.description).toBe("$ref #/components/responses/Error");
+    expect(refResponse.emptyContent).toBe(true);
   });
 });

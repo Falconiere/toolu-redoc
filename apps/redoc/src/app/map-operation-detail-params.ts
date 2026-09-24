@@ -19,9 +19,9 @@ import type {
   OpenApiParameterOrRef,
 } from "@/domains/openapi/api/openapi-parameter-schema";
 
-/** True when the value is an inline Parameter Object (has name + in). */
+/** True when the value is an inline Parameter Object (`$ref` absent, name + in present). */
 function isParameterObject(parameter: OpenApiParameterOrRef): parameter is OpenApiParameter {
-  return "name" in parameter && "in" in parameter;
+  return !hasRef(parameter) && "name" in parameter && "in" in parameter;
 }
 
 /** Map an inline Parameter Object into a table row. */
@@ -56,7 +56,7 @@ function mapInlineParameter(parameter: OpenApiParameter): OperationParameterRow 
 
 /** Map one parameter or parameter `$ref` into a table row. */
 export function mapParameter(parameter: OpenApiParameterOrRef): OperationParameterRow {
-  if (hasRef(parameter) && !isParameterObject(parameter)) {
+  if (hasRef(parameter)) {
     const ref = parameter.$ref;
     const typeSummary = `$ref ${ref}`;
     return {

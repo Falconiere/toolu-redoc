@@ -50,7 +50,7 @@ function responseFocus(
     };
   }
   const named = media.namedExamples.find((entry) => entry.key === exampleKey);
-  const handle: SchemaFocus = {
+  return {
     kind: "response",
     status: row.status,
     mediaType,
@@ -58,12 +58,9 @@ function responseFocus(
     typeSummary: media.typeSummary,
     ref,
     exampleKey,
+    ...(named?.value !== undefined ? { exampleValue: named.value } : {}),
     externalValue: named?.externalValue ?? null,
   };
-  if (named !== undefined && Object.hasOwn(named, "value")) {
-    handle.exampleValue = named.value;
-  }
-  return handle;
 }
 
 /** Ordered status keys with description, headers, and body/example controls. */
