@@ -20,6 +20,8 @@ specs via `@/api/http-client`, and present the Signal load screen on `/`.
 | `api/normalize-openapi-document.ts` | Operations, notices, parameter merge |
 | `api/merge-parameters.ts` | Path + operation parameter merge by `(name,in)` |
 | `api/operation-identity.ts` | Reversible method+path identity keys |
+| `api/build-operation-nav-model.ts` | Tag-grouped `OperationNavModel` for the docs sidebar |
+| `api/filter-operation-nav-model.ts` | Case-insensitive nav filter + `selectionVisible` |
 | `api/resolve-local-ref.ts` | Same-document JSON Pointer expansion |
 | `hooks/use-spec-load.ts` | Latest-wins load state (cancel, retain, reset) |
 | `screens/spec-load-screen.tsx` | Signal paste + URL load UI |
@@ -32,6 +34,8 @@ Public entries:
 
 - `@/domains/openapi/api/parse-openapi-document` → `parseOpenApiDocument`
 - `@/domains/openapi/api/load-openapi-document` → `loadOpenApiDocument`
+- `@/domains/openapi/api/build-operation-nav-model` → `buildOperationNavModel`
+- `@/domains/openapi/api/filter-operation-nav-model` → `filterOperationNavModel`
 - `@/domains/openapi/screens/spec-load-screen` → `SpecLoadScreen` (via `src/app/index.tsx`)
 
 Only `src/app/**` routes may import this domain.
