@@ -123,11 +123,15 @@ describe("resolveLocalRef", () => {
 
   it("labels external URI refs without fetching (AC-10)", () => {
     expect(isExternalRef("https://example.com/schemas/Pet.json")).toBe(true);
+    expect(isExternalRef("./schemas/Pet.json")).toBe(true);
+    expect(isExternalRef("Pet.yaml#/components/schemas/Pet")).toBe(true);
     expect(isExternalRef("#/components/schemas/Pet")).toBe(false);
     const doc = loadFref();
     const result = resolveLocalRef(doc, "https://example.com/schemas/Pet.json");
     expect(asUnresolved(result.value).reason).toBe("external");
     expect(result.notices.some((n) => n.code === "external-ref")).toBe(true);
+    const relative = resolveLocalRef(doc, "./schemas/Pet.json");
+    expect(asUnresolved(relative.value).reason).toBe("external");
   });
 
   it("stops expansion when depth exceeds MAX_SCHEMA_DEPTH (AC-10)", () => {

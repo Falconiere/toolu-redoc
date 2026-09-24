@@ -59,12 +59,9 @@ export function resolveLocalRef(
   return expandPointer(doc, pointer, path, depth, new Set<string>(), notices);
 }
 
-/** True when `$ref` is an absolute URI or non-document-relative pointer. */
+/** True when `$ref` is not a same-document JSON Pointer (`#...`). */
 export function isExternalRef(pointer: string): boolean {
-  if (pointer.startsWith("#")) {
-    return false;
-  }
-  return /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(pointer);
+  return !pointer.startsWith("#");
 }
 
 /** Strip `#` and ensure a leading `/`; undefined when not a local pointer. */

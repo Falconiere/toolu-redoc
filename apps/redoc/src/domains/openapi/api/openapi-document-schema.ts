@@ -6,6 +6,7 @@ import { OpenApiRequestBodyOrRefSchema, OpenApiResponseOrRefSchema } from "./ope
 import { OpenApiParameterOrRefSchema } from "./openapi-parameter-schema";
 import { OpenApiPathItemSchema } from "./openapi-path-item-schema";
 import { OpenApiSchemaObjectSchema } from "./openapi-schema-object";
+import { stringKeyedMap } from "./string-keyed-map";
 
 /** True when value is a non-null plain object. */
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -14,12 +15,12 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 
 /** OAS Components Object — supported maps only; extras preserved. */
 export const OpenApiComponentsSchema = z.looseObject({
-  schemas: z.record(z.string(), OpenApiSchemaObjectSchema).optional(),
-  parameters: z.record(z.string(), OpenApiParameterOrRefSchema).optional(),
-  requestBodies: z.record(z.string(), OpenApiRequestBodyOrRefSchema).optional(),
-  responses: z.record(z.string(), OpenApiResponseOrRefSchema).optional(),
-  headers: z.record(z.string(), z.unknown()).optional(),
-  examples: z.record(z.string(), z.unknown()).optional(),
+  schemas: stringKeyedMap(OpenApiSchemaObjectSchema).optional(),
+  parameters: stringKeyedMap(OpenApiParameterOrRefSchema).optional(),
+  requestBodies: stringKeyedMap(OpenApiRequestBodyOrRefSchema).optional(),
+  responses: stringKeyedMap(OpenApiResponseOrRefSchema).optional(),
+  headers: stringKeyedMap(z.unknown()).optional(),
+  examples: stringKeyedMap(z.unknown()).optional(),
 });
 
 /** Inferred Components Object. */
@@ -33,8 +34,8 @@ const OpenApiDocumentBodySchema = z.looseObject({
   info: OpenApiInfoSchema,
   servers: z.array(OpenApiServerSchema).optional(),
   tags: z.array(OpenApiTagSchema).optional(),
-  paths: z.record(z.string(), OpenApiPathItemSchema).default({}),
-  webhooks: z.record(z.string(), z.unknown()).optional(),
+  paths: stringKeyedMap(OpenApiPathItemSchema).default({}),
+  webhooks: stringKeyedMap(z.unknown()).optional(),
   components: OpenApiComponentsSchema.optional(),
   jsonSchemaDialect: z.string().optional(),
 });

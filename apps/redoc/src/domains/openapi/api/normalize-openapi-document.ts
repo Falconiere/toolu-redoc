@@ -97,11 +97,16 @@ function collectComponentKeywordNotices(
     return;
   }
   for (const [name, schema] of Object.entries(components.schemas)) {
-    if (typeof schema !== "object") {
+    if (!isRecordObject(schema)) {
       continue;
     }
     pushDynamicKeywordNotices(schema, `#/components/schemas/${name}`, notices);
   }
+}
+
+/** True for non-null object values (excludes booleans / arrays handled elsewhere). */
+function isRecordObject(value: unknown): value is object {
+  return value !== null && typeof value === "object";
 }
 
 /** Emit notices for unsupported 3.1 dynamic keywords on a schema object. */
@@ -133,6 +138,14 @@ function collectOperations(
 ): NormalizedOpenApiOperation[] {
   const operations: NormalizedOpenApiOperation[] = [];
   for (const [path, pathItem] of Object.entries(document.paths)) {
+    if (pathItem.$ref !== undefined) {
+      notices.push({
+        code: "path-item-ref",
+        message: "Path Item $ref is not expanded in MVP; operations on this path are omitted.",
+        path: `#/paths/${path}`,
+      });
+      continue;
+    }
     for (const method of OPENAPI_HTTP_METHODS) {
       const operation = pathItem[method];
       if (operation === undefined) {

@@ -66,6 +66,17 @@ describe("decodeOpenApiText", () => {
     }
   });
 
+  it("rejects !!binary and local custom YAML tags", () => {
+    for (const name of ["fbad-custom-tag.yaml", "fbad-local-tag.yaml"] as const) {
+      const result = decodeOpenApiText(fixture(name));
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error.code).toBe("yaml");
+        expect(result.error.message.toLowerCase()).toContain("tag");
+      }
+    }
+  });
+
   it("preserves JSON-compatible YAML scalar types", () => {
     const result = decodeOpenApiText(`
 openapi: 3.0.3

@@ -53,6 +53,8 @@ function parseYamlStream(
       uniqueKeys: true,
       prettyErrors: true,
       strict: true,
+      schema: "core",
+      resolveKnownTags: false,
     });
     return { ok: true, documents };
   } catch (cause) {
@@ -100,8 +102,16 @@ function selectSingleDocument(documents: Document[]): DecodeOpenApiTextResult {
 
 /** Convert a YAML document to a JSON-compatible value with alias limits. */
 function materializeDocumentJs(document: Document): DecodeOpenApiTextResult {
+  const tagError = rejectUnsafeYamlTags(document);
+  if (tagError !== undefined) {
+    return { ok: false, error: tagError };
+  }
   try {
     const value = readDocumentJs(document);
+    const jsonError = rejectNonJsonValues(value);
+    if (jsonError !== undefined) {
+      return { ok: false, error: jsonError };
+    }
     return { ok: true, value };
   } catch (cause) {
     const aliasError = mapThrownAlias(cause);
@@ -113,6 +123,50 @@ function materializeDocumentJs(document: Document): DecodeOpenApiTextResult {
       error: openApiParseError("yaml", formatUnknownCause(cause)),
     };
   }
+}
+
+/** Treat unresolved / non-core YAML tags as hard failures. */
+function rejectUnsafeYamlTags(document: Document): OpenApiParseError | undefined {
+  for (const warning of document.warnings) {
+    const text = `${warning.code} ${warning.message}`.toLowerCase();
+    if (text.includes("tag") || text.includes("unresolved")) {
+      return openApiParseError("yaml", "Unsupported or unsafe YAML tags are not allowed.");
+    }
+  }
+  return undefined;
+}
+
+/** Reject Buffer / bigint / function values that are not JSON-compatible. */
+function rejectNonJsonValues(value: unknown): OpenApiParseError | undefined {
+  const stack: unknown[] = [value];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (current === null || current === undefined) {
+      continue;
+    }
+    const type = typeof current;
+    if (type === "string" || type === "boolean" || type === "number") {
+      continue;
+    }
+    if (type === "bigint" || type === "function" || type === "symbol") {
+      return openApiParseError("yaml", "Document contains non-JSON values.");
+    }
+    if (typeof Buffer !== "undefined" && Buffer.isBuffer(current)) {
+      return openApiParseError("yaml", "Unsupported or unsafe YAML tags are not allowed.");
+    }
+    if (Array.isArray(current)) {
+      for (const item of current) {
+        stack.push(item);
+      }
+      continue;
+    }
+    if (type === "object") {
+      for (const key of Reflect.ownKeys(current)) {
+        stack.push(Reflect.get(current, key));
+      }
+    }
+  }
+  return undefined;
 }
 
 /** `toJS` is typed `any` by eemeli — annotate the boundary as `unknown`. */

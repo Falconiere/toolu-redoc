@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info:
+  title: Tagged
+  version: "1.0.0"
+paths: {}
+x-bin: !!binary aGVsbG8=
