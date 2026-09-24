@@ -1,0 +1,50 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Schema distinctions",
+    "version": "1.0.0"
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "NullableString30": {
+        "type": "string",
+        "nullable": true
+      },
+      "NoTypeInvented": {
+        "description": "no type or required invented"
+      },
+      "FalsyLiterals": {
+        "type": "object",
+        "properties": {
+          "flag": { "type": "boolean", "default": false, "enum": [false, true] },
+          "count": { "type": "integer", "default": 0, "enum": [0, 1] },
+          "name": { "type": "string", "default": "", "enum": ["", "x"] },
+          "maybe": { "nullable": true, "default": null, "enum": [null, "y"] }
+        },
+        "additionalProperties": false,
+        "readOnly": false,
+        "writeOnly": false
+      },
+      "ArrayConstraints": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 0,
+        "maxItems": 3,
+        "uniqueItems": true,
+        "default": []
+      },
+      "ReadWrite": {
+        "type": "object",
+        "properties": {
+          "createdAt": { "type": "string", "readOnly": true },
+          "secret": { "type": "string", "writeOnly": true }
+        }
+      },
+      "AdditionalPropsSchema": {
+        "type": "object",
+        "additionalProperties": { "type": "number" }
+      }
+    }
+  }
+}

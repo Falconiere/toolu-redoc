@@ -1,0 +1,9 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Empty paths",
+    "version": "0.0.1",
+    "description": "Valid document with no operations"
+  },
+  "paths": {}
+}

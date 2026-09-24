@@ -1,0 +1,56 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Identity path edge cases",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets/{petId}": {
+      "get": {
+        "operationId": "sameId",
+        "responses": { "200": { "description": "ok" } }
+      },
+      "post": {
+        "operationId": "sameId",
+        "responses": { "201": { "description": "created" } }
+      }
+    },
+    "/a/b/c": {
+      "get": {
+        "responses": { "200": { "description": "no operationId" } }
+      }
+    },
+    "/tilde~and/slash": {
+      "get": {
+        "operationId": "tildePath",
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/space path/here": {
+      "get": {
+        "operationId": "spacePath",
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/unicodé/路径": {
+      "get": {
+        "operationId": "unicodePath",
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/brace{name}/ok": {
+      "get": {
+        "operationId": "bracePath",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  }
+}

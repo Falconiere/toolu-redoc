@@ -1,0 +1,45 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "F31 null-union sample",
+    "version": "1.0.0",
+    "description": "Hand-authored OpenAPI 3.1.0 exercising null union and boolean schemas"
+  },
+  "paths": {
+    "/items": {
+      "get": {
+        "operationId": "listItems",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Item" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Always": true,
+      "Never": false,
+      "Item": {
+        "type": ["object", "null"],
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "integer", "default": 0 },
+          "label": {
+            "type": ["string", "null"],
+            "enum": ["", "a", null]
+          }
+        }
+      }
+    }
+  }
+}

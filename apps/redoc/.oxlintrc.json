@@ -133,6 +133,45 @@
       }
     },
     {
+      "files": ["src/domains/**/__tests__/**/*.{ts,tsx}"],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off",
+        "no-console": "off",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-non-null-assertion": "off",
+        "typescript/consistent-type-assertions": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-floating-promises": "off",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/index", "**/index.js", "**/index.ts", "**/index.tsx"],
+                "message": "No barrel imports - import the concrete file"
+              },
+              {
+                "group": ["../*", "../**"],
+                "message": "No parent-relative imports - use @/ aliases or same-directory ./"
+              },
+              {
+                "group": ["axios", "axios/*"],
+                "message": "No axios - use the fetch client in @/utilities/http"
+              },
+              {
+                "group": ["yup", "joi", "valibot", "superstruct", "ajv"],
+                "message": "One validator: use zod (CORE rule 13)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["*.config.{ts,js,mjs}", "vite.config.ts"],
       "rules": {
         "max-lines": "off",

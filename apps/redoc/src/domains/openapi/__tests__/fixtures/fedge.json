@@ -1,0 +1,60 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FEDGE eight verbs and tags",
+    "version": "1.0.0"
+  },
+  "tags": [
+    { "name": "alpha", "description": "declared first" },
+    { "name": "beta" },
+    { "name": "alpha", "description": "duplicate declaration" }
+  ],
+  "paths": {
+    "/meta": {
+      "summary": "Path Item metadata only — not an operation",
+      "description": "Must not become an HTTP operation",
+      "servers": [{ "url": "https://meta.example" }],
+      "parameters": [
+        {
+          "name": "x-meta",
+          "in": "header",
+          "schema": { "type": "string" }
+        }
+      ],
+      "x-vendor-ignore": true
+    },
+    "/verbs": {
+      "get": {
+        "tags": ["alpha"],
+        "operationId": "listVerbs",
+        "responses": { "200": { "description": "ok" } }
+      },
+      "put": {
+        "tags": ["beta", "undeclared"],
+        "responses": { "200": { "description": "ok" } }
+      },
+      "post": {
+        "tags": ["alpha", "alpha"],
+        "responses": { "201": { "description": "created" } }
+      },
+      "delete": {
+        "responses": { "204": { "description": "gone" } }
+      },
+      "options": {
+        "tags": ["beta"],
+        "responses": { "200": { "description": "ok" } }
+      },
+      "head": {
+        "responses": { "200": { "description": "ok" } }
+      },
+      "patch": {
+        "tags": ["ghost"],
+        "responses": { "200": { "description": "ok" } }
+      },
+      "trace": {
+        "tags": ["alpha"],
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  }
+}
