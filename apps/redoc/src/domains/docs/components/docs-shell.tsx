@@ -34,6 +34,36 @@ function useExclusiveDrawerToggle(
   };
 }
 
+/** Apply or clear the HTML `inert` attribute on a node. */
+function useInertAttribute(ref: RefObject<HTMLElement | null>, inert: boolean): void {
+  useEffect(() => {
+    const node = ref.current;
+    if (node === null) {
+      return;
+    }
+    if (inert) {
+      node.setAttribute("inert", "");
+    } else {
+      node.removeAttribute("inert");
+    }
+  }, [ref, inert]);
+}
+
+/** Props for the three-region layout body. */
+type DocsShellRegionsProps = {
+  isMdUp: boolean;
+  nav: ReactNode;
+  main: ReactNode;
+  rail: ReactNode;
+  navOpen: boolean;
+  samplesOpen: boolean;
+  setNavOpen: (open: boolean) => void;
+  setSamplesOpen: (open: boolean) => void;
+  navButtonRef: RefObject<HTMLButtonElement | null>;
+  samplesButtonRef: RefObject<HTMLButtonElement | null>;
+  backgroundInert: boolean;
+};
+
 /** Nav / Operation / Samples regions — in-flow columns or drawers by breakpoint. */
 function DocsShellRegions({
   isMdUp,
@@ -47,19 +77,10 @@ function DocsShellRegions({
   navButtonRef,
   samplesButtonRef,
   backgroundInert,
-}: {
-  isMdUp: boolean;
-  nav: ReactNode;
-  main: ReactNode;
-  rail: ReactNode;
-  navOpen: boolean;
-  samplesOpen: boolean;
-  setNavOpen: (open: boolean) => void;
-  setSamplesOpen: (open: boolean) => void;
-  navButtonRef: RefObject<HTMLButtonElement | null>;
-  samplesButtonRef: RefObject<HTMLButtonElement | null>;
-  backgroundInert: boolean;
-}) {
+}: DocsShellRegionsProps) {
+  const operationRef = useRef<HTMLElement>(null);
+  useInertAttribute(operationRef, backgroundInert);
+
   return (
     <div className="flex min-w-0 flex-col md:flex-row">
       {isMdUp ? (
@@ -80,8 +101,8 @@ function DocsShellRegions({
         </DocsShellDrawer>
       )}
       <section
+        ref={operationRef}
         aria-label="Operation"
-        {...(backgroundInert ? { inert: true as const } : {})}
         className="min-w-0 flex-1 overflow-auto border-border bg-background p-4"
       >
         {main}
@@ -128,13 +149,13 @@ export function DocsShell({ nav, main, rail }: DocsShellProps) {
     setNavOpen(false);
     setSamplesOpen(false);
     if (!wasMdUp.current) {
-      rootRef.current?.closest("main")?.focus();
+      rootRef.current?.focus();
     }
     wasMdUp.current = true;
   }, [isMdUp]);
 
   return (
-    <div ref={rootRef} className="flex min-w-0 flex-col">
+    <div ref={rootRef} tabIndex={-1} className="flex min-w-0 flex-col outline-none">
       <DocsShellToolbar
         navOpen={navOpen}
         samplesOpen={samplesOpen}

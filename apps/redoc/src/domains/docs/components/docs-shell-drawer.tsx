@@ -146,7 +146,7 @@ export function DocsShellDrawer({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`fixed inset-y-0 z-50 m-0 flex w-full max-w-md max-h-none flex-col border-border bg-background p-0 ${sideClass}`}
+        className={`fixed inset-y-0 z-50 m-0 flex w-full max-w-md flex-col border-border bg-background p-0 ${sideClass}`}
       >
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 id={titleId} className="type-label text-text">
@@ -154,7 +154,7 @@ export function DocsShellDrawer({
           </h2>
           <button
             type="button"
-            className={`type-button min-h-touch rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
+            className={`type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
             onClick={onClose}
           >
             Close

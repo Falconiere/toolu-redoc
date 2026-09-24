@@ -274,6 +274,6 @@ describe("DocsShellScreen", () => {
     });
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(screen.getByRole("navigation", { name: "Navigation" })).toBeVisible();
-    expect(document.activeElement?.closest("main")).not.toBeNull();
+    expect(document.activeElement).toHaveAttribute("tabindex", "-1");
   });
 });

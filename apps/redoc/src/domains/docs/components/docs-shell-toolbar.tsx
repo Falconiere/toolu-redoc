@@ -34,7 +34,7 @@ export function DocsShellToolbar({
         ref={navButtonRef}
         type="button"
         aria-expanded={navOpen}
-        className={`type-button min-h-touch rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
+        className={`type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
         onClick={onToggleNav}
       >
         Navigation
@@ -43,7 +43,7 @@ export function DocsShellToolbar({
         ref={samplesButtonRef}
         type="button"
         aria-expanded={samplesOpen}
-        className={`type-button min-h-touch rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
+        className={`type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
         onClick={onToggleSamples}
       >
         Samples
