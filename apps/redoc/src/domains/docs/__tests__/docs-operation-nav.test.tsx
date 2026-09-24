@@ -74,7 +74,7 @@ const FEDGE_NAV_MODEL: OperationNavModel = {
       key: "beta",
       label: "beta",
       items: [
-        PUT_ITEM,
+        { ...PUT_ITEM },
         {
           identity: '["options","/verbs"]',
           method: "options",
@@ -87,7 +87,7 @@ const FEDGE_NAV_MODEL: OperationNavModel = {
     {
       key: "undeclared",
       label: "undeclared",
-      items: [PUT_ITEM],
+      items: [{ ...PUT_ITEM }],
     },
     {
       key: "ghost",

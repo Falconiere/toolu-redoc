@@ -27,6 +27,7 @@ export function filterOperationNavModel(
 
   const filtered: OperationNavModel = {
     sections,
+    // Unfiltered unique-identity total — used for empty-document checks, not visible rows.
     operationCount: model.operationCount,
   };
 

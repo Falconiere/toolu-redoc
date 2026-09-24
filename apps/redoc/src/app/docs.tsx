@@ -1,4 +1,4 @@
-/** Temporary `/docs` — Petstore fixture through parse into DocsShellScreen. */
+/** Temporary `/docs` — Petstore nav, filter, and selection chrome in DocsShell. */
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 

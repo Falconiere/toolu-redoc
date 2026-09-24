@@ -1,4 +1,4 @@
-/** Route-layer helper: paste text → docs chrome title/version via OpenAPI parse. */
+/** Route-layer helper: paste text → docs chrome title/version via loadDocsDocument. */
 import { loadDocsDocument } from "@/app/load-docs-document";
 
 /** Success or failure chrome extracted for the docs shell route. */

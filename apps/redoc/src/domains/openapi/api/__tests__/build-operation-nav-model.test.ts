@@ -36,7 +36,6 @@ function assertFixtureSha(name: string, expected: string): string {
   const text = fixtureText(name);
   const digest = createHash("sha256").update(text).digest("hex");
   expect(digest).toBe(expected);
-  expect(digest.startsWith(expected.slice(0, 8))).toBe(true);
   return text;
 }
 
@@ -99,10 +98,15 @@ describe("buildOperationNavModel", () => {
     expect(byKey.undeclared?.items[0]?.identity).toBe(putIdentity);
     expect(byKey.undeclared?.items[0]?.tags).toEqual(["beta", "undeclared"]);
 
-    // Path Item metadata never becomes a row; only /verbs.
+    // Flat section rows = 9 (eight ops + put under a second tag); unique identities = 8.
     const allPaths = model.sections.flatMap((section) => section.items.map((item) => item.path));
     expect(allPaths.every((path) => path === "/verbs")).toBe(true);
-    expect(allPaths).toHaveLength(8 + 1); // put listed twice across sections
+    expect(allPaths).toHaveLength(9);
+    expect(
+      model.sections
+        .flatMap((section) => section.items)
+        .filter((item) => item.identity === putIdentity),
+    ).toHaveLength(2);
 
     // Untagged-collision: tagless bucket uses sentinel key, not label as key.
     const tagless = byKey[UNTAGGED_SECTION_KEY];
