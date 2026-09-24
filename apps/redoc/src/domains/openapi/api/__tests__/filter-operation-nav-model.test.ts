@@ -6,7 +6,10 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { buildOperationNavModel, UNTAGGED_SECTION_KEY } from "@/domains/openapi/api/build-operation-nav-model";
+import {
+  buildOperationNavModel,
+  UNTAGGED_SECTION_KEY,
+} from "@/domains/openapi/api/build-operation-nav-model";
 import { filterOperationNavModel } from "@/domains/openapi/api/filter-operation-nav-model";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
 import { parseOpenApiDocument } from "@/domains/openapi/api/parse-openapi-document";

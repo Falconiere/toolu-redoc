@@ -147,3 +147,13 @@ openapi nav model+filter → docs nav UI → `/docs` composition → docs/gate �
 - Final product check: `bun run check`.
 - Delivery: commit on `feat/5-sidebar-tags-and-operations-navigation`, push, PR
   targeting `main` with required Closes/Part-of lines, then babysit.
+
+## Deviations
+
+1. **Tagless sentinel key:** `__toolu.untagged__` instead of `__untagged__` so a
+   literal OpenAPI tag named `__untagged__` cannot collide with the tagless
+   bucket (pre-push review).
+2. **Rebase onto #12:** merged main's URL/paste load docs; `/docs` still uses
+   the Petstore twin while home `/` loads real sources.
+3. **Parse once:** module-level `loadDocsDocument(petstoreText)` + `useMemo`
+   for nav model so filter/selection re-renders do not re-parse.

@@ -379,6 +379,21 @@ describe("DocsOperationNav", () => {
     expect(screen.getByText("No operations in this document.")).toBeVisible();
     expect(screen.queryByText("No matching operations.")).toBeNull();
   });
+
+  it("keeps empty-document message when operationCount is 0 even with a filter query", () => {
+    render(
+      <DocsOperationNav
+        model={{ sections: [], operationCount: 0 }}
+        filterQuery="anything"
+        selectedIdentity={null}
+        selectionVisible={true}
+        onFilterQueryChange={() => {}}
+        onSelectIdentity={() => {}}
+      />,
+    );
+    expect(screen.getByText("No operations in this document.")).toBeVisible();
+    expect(screen.queryByText("No matching operations.")).toBeNull();
+  });
 });
 
 describe("DocsOperationSelection", () => {
