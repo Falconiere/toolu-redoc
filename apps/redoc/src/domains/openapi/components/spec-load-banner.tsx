@@ -46,15 +46,17 @@ export function SpecLoadErrorBanner({
   onPaste?: () => void;
   onRetry?: () => void;
 }) {
-  return (
-    <SpecLoadBanner
-      message={error.message}
-      tone="danger"
-      {...(error.recovery === undefined ? {} : { recovery: error.recovery })}
-      {...(onPaste === undefined ? {} : { onPaste })}
-      {...(onRetry === undefined ? {} : { onRetry })}
-    />
-  );
+  const props: SpecLoadBannerProps = { message: error.message, tone: "danger" };
+  if (error.recovery !== undefined) {
+    props.recovery = error.recovery;
+  }
+  if (onPaste !== undefined) {
+    props.onPaste = onPaste;
+  }
+  if (onRetry !== undefined) {
+    props.onRetry = onRetry;
+  }
+  return <SpecLoadBanner {...props} />;
 }
 
 function recoveryAction(
