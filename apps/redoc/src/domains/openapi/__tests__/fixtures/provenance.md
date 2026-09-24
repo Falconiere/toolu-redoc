@@ -33,5 +33,12 @@ Document reports `openapi: 3.0.4`, title `Swagger Petstore - OpenAPI 3.0`.
 | `fbad-dup-key.yaml` | AC-6 duplicate keys | `be9862e0783ef169a923831f9d5bf688201c9cb5ebfa9724c1d7ec7c51b318b3` |
 | `fbad-multi-doc.yaml` | AC-6 multi-document YAML | `a154f6155e597058895a02b0cdafe6e896535d311ce4ef1222d0fd52e5b38037` |
 | `fbad-alias-bomb.yaml` | AC-6 / AC-13 alias limit | `fd4663c0836429f5e84907e004fb36cb04575a8933bc89abd3d0036786527031` |
+| `fbad-html-login.html` | #3 load AC-3 HTML login body (200) | `a98359a52dc203c4471dc2ac9810c0cf0d7328e581514d480939f3da90df406f` |
 
-Size-boundary inputs for AC-13 (`MAX_INPUT_BYTES` and `MAX_INPUT_BYTES + 1`) are generated in-test with `TextEncoder` rather than committed as blobs.
+Size-boundary inputs for parse AC-13 / load AC-10 (`MAX_INPUT_BYTES` and `+1`) are
+generated in-test (or streamed by `fixture-http-server` `/oversize`) rather than
+committed as blobs.
+
+Load tests use `__tests__/fixture-http-server.ts` (real Node `http` server) — not
+MSW or mocked client responses.
+
