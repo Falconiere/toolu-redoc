@@ -9,7 +9,7 @@ const fieldClass =
   "focus:border-accent focus:outline-none focus:ring-(--spacing-focus-ring) focus:ring-focus-ring";
 
 const buttonClass =
-  "type-button border border-border-strong px-3 py-2 text-text " +
+  "type-label border border-border-strong px-3 py-2 text-text " +
   "hover:border-accent active:translate-y-px duration-(--duration-hover) " +
   "disabled:border-border disabled:bg-disabled-fill disabled:text-disabled-text";
 
@@ -112,8 +112,7 @@ function SpecLoadActions({
 }
 
 /** Still skeleton of the result panel — mono progress copy, never a spinner. */
-export function SpecLoadSkeleton({ phase }: { phase: "fetching" | "parsing" }) {
-  const label = phase === "parsing" ? "loading · parsing" : "loading · fetching";
+export function SpecLoadSkeleton() {
   return (
     <div
       aria-busy="true"
@@ -121,7 +120,7 @@ export function SpecLoadSkeleton({ phase }: { phase: "fetching" | "parsing" }) {
       className="border border-border bg-surface px-4 py-6"
       data-testid="spec-load-skeleton"
     >
-      <p className="type-label text-text-faint">{label}</p>
+      <p className="type-label text-text-faint">loading · document</p>
       <div className="mt-4 h-16 border border-dashed border-border-inner bg-surface-inset" />
       <div className="mt-3 h-8 w-1/2 border border-dashed border-border-inner bg-surface-inset" />
     </div>

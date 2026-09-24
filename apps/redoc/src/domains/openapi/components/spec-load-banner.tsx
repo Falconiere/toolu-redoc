@@ -68,7 +68,7 @@ function recoveryAction(
     return (
       <button
         type="button"
-        className="type-button border border-danger px-3 py-1 text-text hover:border-accent active:translate-y-px duration-(--duration-hover)"
+        className="type-label border border-danger px-3 py-1 text-text hover:border-accent active:translate-y-px duration-(--duration-hover)"
         onClick={onPaste}
       >
         Paste
@@ -79,7 +79,7 @@ function recoveryAction(
     return (
       <button
         type="button"
-        className="type-button border border-danger px-3 py-1 text-text hover:border-accent active:translate-y-px duration-(--duration-hover)"
+        className="type-label border border-danger px-3 py-1 text-text hover:border-accent active:translate-y-px duration-(--duration-hover)"
         onClick={onRetry}
       >
         Retry
