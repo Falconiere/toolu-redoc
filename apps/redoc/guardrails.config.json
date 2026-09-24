@@ -13,7 +13,10 @@
   },
   "fileSize": {
     "max": 300,
-    "skipExtensions": [".ts", ".tsx"]
+    "skipExtensions": [".ts", ".tsx"],
+    "overrides": {
+      "src/domains/docs/api/dev-petstore-3.0.json": 800
+    }
   },
   "functionSize": {
     "max": 50,

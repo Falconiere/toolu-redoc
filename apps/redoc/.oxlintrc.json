@@ -85,7 +85,7 @@
   },
   "overrides": [
     {
-      "files": ["src/main.tsx"],
+      "files": ["src/main.tsx", "vitest.setup.ts"],
       "rules": {
         "import/no-unassigned-import": "off"
       }
@@ -133,14 +133,85 @@
       }
     },
     {
-      "files": ["src/domains/**/__tests__/**/*.{ts,tsx}"],
+      "files": ["src/domains/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/index", "**/index.js", "**/index.ts", "**/index.tsx"],
+                "message": "No barrel imports - import the concrete file"
+              },
+              {
+                "group": ["../*", "../**"],
+                "message": "No parent-relative imports - use @/ aliases or same-directory ./"
+              },
+              {
+                "group": [
+                  "@/ui/theme/colors",
+                  "@/ui/theme/spacing",
+                  "@/ui/theme/typography",
+                  "@/ui/theme/motion",
+                  "**/ui/theme/colors",
+                  "**/ui/theme/spacing",
+                  "**/ui/theme/typography",
+                  "**/ui/theme/motion"
+                ],
+                "message": "Web style tokens live in CSS - use ui/theme/palette.css or scale.css (a TS colour cannot follow .band-light)"
+              },
+              {
+                "group": ["axios", "axios/*"],
+                "message": "No axios - use the fetch client in @/utilities/http"
+              },
+              {
+                "group": ["yup", "joi", "valibot", "superstruct", "ajv"],
+                "message": "One validator: use zod (CORE rule 13)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.config.{ts,js,mjs}", "vite.config.ts"],
+      "rules": {
+        "max-lines": "off",
+        "import/no-default-export": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "max-lines-per-function": [
+          "error",
+          {
+            "max": 80,
+            "skipBlankLines": true,
+            "skipComments": true
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/domains/**/__tests__/**/*.{ts,tsx}",
+        "**/__tests__/**/*.{ts,tsx}",
+        "**/*.test.{ts,tsx}",
+        "vitest.setup.ts"
+      ],
       "rules": {
         "max-lines": "off",
         "max-lines-per-function": "off",
         "no-console": "off",
+        "no-await-in-loop": "off",
+        "no-script-url": "off",
         "typescript/no-explicit-any": "off",
         "typescript/no-non-null-assertion": "off",
         "typescript/consistent-type-assertions": "off",
+        "typescript/no-unnecessary-type-assertion": "off",
+        "typescript/no-unsafe-type-assertion": "off",
         "typescript/no-unsafe-assignment": "off",
         "typescript/no-unsafe-call": "off",
         "typescript/no-unsafe-member-access": "off",
@@ -167,43 +238,6 @@
                 "message": "One validator: use zod (CORE rule 13)"
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "files": ["*.config.{ts,js,mjs}", "vite.config.ts"],
-      "rules": {
-        "max-lines": "off",
-        "import/no-default-export": "off",
-        "max-lines-per-function": "off"
-      }
-    },
-    {
-      "files": ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "vitest.setup.ts"],
-      "rules": {
-        "max-lines": "off",
-        "typescript/no-explicit-any": "off",
-        "typescript/no-non-null-assertion": "off",
-        "typescript/consistent-type-assertions": "off",
-        "typescript/no-unsafe-assignment": "off",
-        "typescript/no-unsafe-call": "off",
-        "typescript/no-unsafe-member-access": "off",
-        "typescript/no-unsafe-argument": "off",
-        "typescript/no-floating-promises": "off",
-        "no-console": "off",
-        "max-lines-per-function": "off"
-      }
-    },
-    {
-      "files": ["**/*.tsx"],
-      "rules": {
-        "max-lines-per-function": [
-          "error",
-          {
-            "max": 80,
-            "skipBlankLines": true,
-            "skipComments": true
           }
         ]
       }
