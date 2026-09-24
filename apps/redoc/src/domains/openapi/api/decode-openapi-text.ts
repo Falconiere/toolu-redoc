@@ -84,20 +84,19 @@ function selectSingleDocument(documents: Document[]): DecodeOpenApiTextResult {
     };
   }
 
-  const document = meaningful[0];
-  if (document === undefined) {
-    return {
-      ok: false,
-      error: openApiParseError("yaml", "Failed to parse the document."),
-    };
+  // Length is exactly 1 — iterate once so TypeScript narrows without a dead branch.
+  for (const document of meaningful) {
+    const mapped = mapDocumentErrors(document.errors);
+    if (mapped !== undefined) {
+      return { ok: false, error: mapped };
+    }
+    return materializeDocumentJs(document);
   }
 
-  const mapped = mapDocumentErrors(document.errors);
-  if (mapped !== undefined) {
-    return { ok: false, error: mapped };
-  }
-
-  return materializeDocumentJs(document);
+  return {
+    ok: false,
+    error: openApiParseError("yaml", "Failed to parse the document."),
+  };
 }
 
 /** Convert a YAML document to a JSON-compatible value with alias limits. */
