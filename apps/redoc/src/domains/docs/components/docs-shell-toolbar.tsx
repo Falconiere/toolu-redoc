@@ -1,9 +1,7 @@
 /** Below-md toolbar that opens Navigation and Samples drawers. */
 import type { RefObject } from "react";
 
-/** Shared focus-ring utilities for toolbar openers. */
-const CONTROL_FOCUS =
-  "focus-visible:border-accent focus-visible:ring-(--spacing-focus-ring) focus-visible:ring-focus-ring";
+import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 
 /** Props for the docs shell mobile toolbar. */
 export type DocsShellToolbarProps = {

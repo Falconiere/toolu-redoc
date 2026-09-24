@@ -26,8 +26,8 @@ function petstoreText(): string {
 
 /** Minimal matchMedia stub so DocsShell can mount under jsdom. */
 function stubMatchMedia(matches = true): void {
-  window.matchMedia = (query: string): MediaQueryList =>
-    ({
+  window.matchMedia = (query: string): MediaQueryList => {
+    const mql = {
       matches,
       media: query,
       onchange: null,
@@ -36,9 +36,19 @@ function stubMatchMedia(matches = true): void {
       addListener: () => {},
       removeListener: () => {},
       dispatchEvent: () => false,
-    }) as MediaQueryList;
+    } satisfies {
+      matches: boolean;
+      media: string;
+      onchange: null;
+      addEventListener: (...args: never[]) => void;
+      removeEventListener: (...args: never[]) => void;
+      addListener: (...args: never[]) => void;
+      removeListener: (...args: never[]) => void;
+      dispatchEvent: (...args: never[]) => boolean;
+    };
+    return mql;
+  };
 }
-
 describe("docs route chrome (AC-1 / AC-6)", () => {
   beforeEach(() => {
     stubMatchMedia(true);

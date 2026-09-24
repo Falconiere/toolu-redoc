@@ -1,15 +1,12 @@
 /** Modal drawer for nav/samples content below the md breakpoint. */
 import { useEffect, useId, useRef, type ReactNode, type RefObject } from "react";
 
+import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 import { MD_UP_QUERY } from "@/domains/docs/hooks/use-md-up";
 
 /** Focusable controls inside a drawer panel (for the Tab trap). */
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-/** Shared focus-ring utilities for drawer controls. */
-const CONTROL_FOCUS =
-  "focus-visible:border-accent focus-visible:ring-(--spacing-focus-ring) focus-visible:ring-focus-ring";
 
 /** Props for a docs shell drawer dialog. */
 export type DocsShellDrawerProps = {
@@ -149,7 +146,7 @@ export function DocsShellDrawer({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`fixed inset-y-0 z-50 m-0 flex w-full max-h-none flex-col border-border bg-background p-0 sm:w-1/2 ${sideClass}`}
+        className={`fixed inset-y-0 z-50 m-0 flex w-full max-w-md max-h-none flex-col border-border bg-background p-0 ${sideClass}`}
       >
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 id={titleId} className="type-label text-text">

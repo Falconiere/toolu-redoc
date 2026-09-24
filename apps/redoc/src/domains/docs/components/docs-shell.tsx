@@ -81,7 +81,7 @@ function DocsShellRegions({
       )}
       <section
         aria-label="Operation"
-        inert={backgroundInert ? true : undefined}
+        {...(backgroundInert ? { inert: true as const } : {})}
         className="min-w-0 flex-1 overflow-auto border-border bg-background p-4"
       >
         {main}

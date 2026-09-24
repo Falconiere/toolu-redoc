@@ -6,15 +6,14 @@ import petstoreText from "@/domains/docs/api/dev-petstore-3.0.json?raw";
 import { DocsShellPlaceholder } from "@/domains/docs/components/docs-shell-placeholder";
 import { DocsShellScreen } from "@/domains/docs/screens/docs-shell-screen";
 
-/** Parse Petstore once at module load — temporary until #3 owns URL/paste load. */
-const chrome = loadDocsChrome(petstoreText);
-
 export const Route = createFileRoute("/docs")({
   component: DocsRoute,
 });
 
 /** Compose Petstore chrome into the docs shell, or an incident note on parse failure. */
 function DocsRoute() {
+  const chrome = loadDocsChrome(petstoreText);
+
   if (!chrome.ok) {
     return (
       <main className="band min-h-screen p-8">

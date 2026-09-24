@@ -235,24 +235,29 @@ describe("DocsShellScreen", () => {
         throw new Error("fetch must not run during docs shell render");
       });
 
-      const { container, unmount } = renderShell({
-        nav: payload,
-        main: payload,
-        rail: payload,
-      });
+      try {
+        const { container, unmount } = renderShell({
+          nav: payload,
+          main: payload,
+          rail: payload,
+        });
 
-      const shell = container.querySelector("main.band");
-      expect(shell).not.toBeNull();
-      if (shell === null) {
-        throw new Error("expected band main");
+        const shell = container.querySelector("main.band");
+        expect(shell).not.toBeNull();
+        if (shell === null) {
+          throw new Error("expected band main");
+        }
+
+        expect(shell.textContent).toContain(payload);
+        expect(shell.querySelector("script")).toBeNull();
+        expect(shell.innerHTML).not.toMatch(/<script/i);
+        expect(shell.innerHTML).not.toMatch(/<img/i);
+        expect(fetchSpy).not.toHaveBeenCalled();
+
+        unmount();
+      } finally {
+        fetchSpy.mockRestore();
       }
-
-      expect(shell.textContent).toContain(payload);
-      expect(shell.querySelector("script")).toBeNull();
-      expect(fetchSpy).not.toHaveBeenCalled();
-
-      fetchSpy.mockRestore();
-      unmount();
     }
   });
 

@@ -6,6 +6,11 @@ export type DocsChromeResult =
   | { ok: true; title: string; version: string }
   | { ok: false; message: string };
 
+/** Trim a chrome field; blank or missing → fallback. */
+function chromeField(value: string | null | undefined, fallback: string): string {
+  return (value ?? "").trim() || fallback;
+}
+
 /**
  * Parse OpenAPI paste text and map `info` into shell chrome strings.
  * Empty title/version after trim use `"Untitled document"` / `"—"`.
@@ -15,7 +20,7 @@ export function loadDocsChrome(input: string): DocsChromeResult {
   if (!result.ok) {
     return { ok: false, message: result.error.message };
   }
-  const title = result.document.info.title.trim() || "Untitled document";
-  const version = result.document.info.version.trim() || "—";
+  const title = chromeField(result.document.info.title, "Untitled document");
+  const version = chromeField(result.document.info.version, "—");
   return { ok: true, title, version };
 }
