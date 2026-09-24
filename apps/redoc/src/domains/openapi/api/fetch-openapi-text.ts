@@ -13,7 +13,7 @@ export type FetchOpenApiTextSuccess = {
   text: string;
   /** Final response URL after redirects. */
   href: string;
-  /** Redirect chain length (0 = no redirect; ≥1 when final URL differs). */
+  /** 0 when final URL equals the request URL; 1 when the browser reports a different final URL (hop count is not exposed by fetch). */
   redirectCount: number;
 };
 

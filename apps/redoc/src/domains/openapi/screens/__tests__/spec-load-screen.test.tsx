@@ -60,10 +60,9 @@ describe("SpecLoadScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: /parse paste/i }));
 
     const panel = await screen.findByTestId("spec-load-success");
-    expect(within(panel).getByText(/Swagger Petstore/i)).toBeTruthy();
-    expect(within(panel).getByText(/version · 1\.0\.27/)).toBeTruthy();
-    const ops = within(panel).getByText(/operations · \d+/);
-    expect(ops.textContent).toMatch(/operations · [1-9]\d*/);
+    expect(within(panel).getByText(/Swagger Petstore/i)).toBeInTheDocument();
+    expect(within(panel).getByText(/version · 1\.0\.27/)).toBeInTheDocument();
+    expect(within(panel).getByText(/operations · [1-9]\d*/)).toBeInTheDocument();
   });
 
   it("shows network failure banner with Paste recovery (AC-4 / AC-11)", async () => {
@@ -73,7 +72,7 @@ describe("SpecLoadScreen", () => {
     const text = alert.textContent.toLowerCase();
     expect(text).toMatch(/connectivity|blocking|cors/);
     expect(text).not.toContain("cors confirmed");
-    expect(screen.getByRole("button", { name: /^paste$/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^paste$/i })).toBeInTheDocument();
   });
 
   it("shows html_body banner for HTML login fixture URL (AC-11)", async () => {
@@ -91,15 +90,15 @@ describe("SpecLoadScreen", () => {
 
     render(<SearchHarness initial={{ url, op }} />);
 
-    expect(screen.getByTestId("search-op").textContent).toBe(op);
+    expect(screen.getByTestId("search-op")).toHaveTextContent(op);
 
     await waitFor(() => {
-      expect(screen.getByTestId("spec-load-success")).toBeTruthy();
+      expect(screen.getByTestId("spec-load-success")).toBeInTheDocument();
     });
 
-    expect(screen.getByTestId("search-op").textContent).toBe(op);
-    expect(screen.getByTestId("search-url").textContent).toBe(url);
-    expect(screen.getByText(/Swagger Petstore/i)).toBeTruthy();
+    expect(screen.getByTestId("search-op")).toHaveTextContent(op);
+    expect(screen.getByTestId("search-url")).toHaveTextContent(url);
+    expect(screen.getByText(/Swagger Petstore/i)).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole("textbox", { name: /url/i }), {
       target: { value: `${fixture.baseUrl}/fixtures/missing` },
@@ -109,19 +108,19 @@ describe("SpecLoadScreen", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert").textContent.toLowerCase()).toMatch(/404|not found|status/);
     });
-    expect(screen.getByTestId("search-op").textContent).toBe(op);
+    expect(screen.getByTestId("search-op")).toHaveTextContent(op);
   });
 
   it("shows missing-source message when op is present without url (AC-9)", () => {
     const op = encodeURIComponent(JSON.stringify(["get", "/pets"]));
     render(<SpecLoadScreen search={{ op }} />);
 
-    expect(screen.getByRole("alert").textContent).toContain(MISSING_SOURCE_MESSAGE);
-    expect(screen.getByRole("button", { name: /^paste$/i })).toBeTruthy();
+    expect(screen.getByRole("alert")).toHaveTextContent(MISSING_SOURCE_MESSAGE);
+    expect(screen.getByRole("button", { name: /^paste$/i })).toBeInTheDocument();
   });
 
   it("shows missing-source message when url and op are both absent (AC-9)", () => {
     render(<SpecLoadScreen search={{}} />);
-    expect(screen.getByRole("alert").textContent).toContain(MISSING_SOURCE_MESSAGE);
+    expect(screen.getByRole("alert")).toHaveTextContent(MISSING_SOURCE_MESSAGE);
   });
 });

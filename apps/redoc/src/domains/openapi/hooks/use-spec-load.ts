@@ -8,7 +8,7 @@ import {
   type SpecLoadSuccess,
   type SpecSource,
 } from "../api/load-openapi-document";
-import type { SpecLoadError } from "../api/spec-load-error";
+import { specLoadError, type SpecLoadError } from "../api/spec-load-error";
 
 /** Observable load lifecycle for the SpecLoadScreen. */
 export type SpecLoadStatus = "idle" | "loading" | "success" | "failure";
@@ -74,6 +74,17 @@ async function runLoad(
     success: prev.success,
     error: null,
   }));
+
+  if (controller.signal.aborted || options?.signal?.aborted === true) {
+    if (generation !== refs.generationRef.current) {
+      return;
+    }
+    applyLoadResult(
+      { ok: false, error: specLoadError("cancelled", "The request was cancelled.") },
+      refs.setState,
+    );
+    return;
+  }
 
   const result = await loadOpenApiDocument(source, {
     ...options,
