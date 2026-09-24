@@ -21,7 +21,7 @@ export default defineConfig({
       // its own output as a route. Ignore helpers (`load-*`) and colocated tests.
       routesDirectory: "./src/app",
       generatedRouteTree: "./src/route-tree.gen.ts",
-      routeFileIgnorePattern: "^(__tests__|load-)",
+      routeFileIgnorePattern: "^(__tests__|load-|map-)",
     }),
     react(),
     // Tailwind is the styling system, not an option: src/ui/globals.css is the

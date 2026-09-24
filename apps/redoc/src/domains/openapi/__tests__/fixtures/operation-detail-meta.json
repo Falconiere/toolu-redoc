@@ -1,0 +1,55 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Operation detail meta",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://root.example/{version}",
+      "description": "document root server",
+      "variables": {
+        "version": {
+          "default": "v1",
+          "enum": ["v1", "v2"]
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/bare": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    },
+    "/legacy": {
+      "get": {
+        "operationId": "getLegacy",
+        "summary": "Legacy deprecated op",
+        "description": "Still readable",
+        "deprecated": true,
+        "servers": [
+          {
+            "url": "https://op.example/{tenant}",
+            "description": "operation override",
+            "variables": {
+              "tenant": {
+                "default": "acme",
+                "enum": ["acme", "other"]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    }
+  }
+}

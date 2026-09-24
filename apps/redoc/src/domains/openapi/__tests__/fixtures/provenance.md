@@ -27,6 +27,8 @@ Document reports `openapi: 3.0.4`, title `Swagger Petstore - OpenAPI 3.0`.
 | `fref.json` | AC-10 local `$ref` / escaped keys / cycle / wrong-kind | `2a099aa3943bd81fde8dd633ce3cad48cb289b53d3d4674f7a2928df8ff915e5` |
 | `identity-paths.json` | AC-8 operation identity edge paths | `83d1b134bfded771fd29761932e0305a2f029558ab9bb32f1a4f51155e3de078` |
 | `param-merge.json` | AC-9 path + operation parameter merge | `b211af36cb33a6032c9ef648e8e7862cfef8348f1e215e50c2c40fb301e8cd20` |
+| `operation-detail-bodies.json` | Issue #6 T14 multi-media body + headers/default/2XX/204 | `51d4865a7d07baf33cb97e6173ebb75d501572446de5280957f4c0adaeb33b22` |
+| `operation-detail-meta.json` | Issue #6 T15 missing fields / deprecated / op servers | `7a6a215e0191020c4a493a457b1fb9ff4369a6e72af9036fb669cca9f1c98ec8` |
 | `empty-paths.json` | AC-5 empty `paths` | `4f74e3ca75d9c4448ab0ee89fb714640f6db4b1d5e1a6d7708c79ea9e4e3f49a` |
 | `webhook-only-3.1.yaml` | AC-5 webhook-only 3.1 | `6e700ea816b91b2a92f9c17e9d5380e38eafc7a1015c660b08d1318830f7eaee` |
 | `fbad-empty.txt` | AC-4 / AC-6 empty-ish decode | `2106c36011520fe73876d45bfb9ef8bf7b2e9f4362096a320376d8ee9b27ef12` |
