@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/knip/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    ".": {
+      "entry": [],
+      "project": []
+    },
+    "apps/redoc": {
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignore": ["src/route-tree.gen.ts", "src/constants/env.ts", "src/ui/theme/**"],
+      "ignoreDependencies": ["tailwindcss"]
+    },
+    "apps/api": {
+      "project": ["src/**/*.ts"],
+      "ignore": ["src/constants/env.ts"],
+      "ignoreDependencies": ["cloudflare:workers"]
+    },
+    "packages/ui": {
+      "entry": [
+        "src/components/surface.tsx",
+        "src/utilities/class-names.ts",
+        "vitest.config.ts",
+        "vitest.setup.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/types": {
+      "entry": ["src/contracts/*.ts", "vitest.config.ts"],
+      "project": ["src/**/*.ts"]
+    }
+  }
+}

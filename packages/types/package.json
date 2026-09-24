@@ -1,0 +1,32 @@
+{
+  "name": "@toolu-redoc/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./contracts/health-response": "./src/contracts/health-response.ts"
+  },
+  "scripts": {
+    "check": "bun run type-check && bun run lint && bun run fmt:check && bun run check:structure && bun run check:dupes && bun run test",
+    "type-check": "tsc --noEmit",
+    "lint": "oxlint --type-aware --deny-warnings",
+    "lint:fix": "oxlint --fix --type-aware --deny-warnings",
+    "fmt": "oxfmt --ignore-path ../../.oxfmtignore",
+    "fmt:check": "oxfmt --check --ignore-path ../../.oxfmtignore",
+    "check:structure": "bash ../../scripts/guardrails/run.sh",
+    "check:dupes": "jscpd",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "jscpd": "4.0.5",
+    "oxfmt": "0.62.0",
+    "oxlint": "1.77.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "5.9.3",
+    "vitest": "4.1.0"
+  }
+}

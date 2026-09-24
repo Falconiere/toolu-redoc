@@ -1,0 +1,67 @@
+# GitHub Actions — the quality gate for every PR (and pushes to main).
+#
+# The WORKSPACE variant. Each member owns its own gate, so almost everything
+# here fans out with `bun --filter` rather than running once at the root.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: types · lint · format · structure · unused · dupes · test · build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check generated Worker types are current (apps/api)
+        working-directory: apps/api
+        run: |
+          bun run cf-typegen
+          git diff --exit-code -- worker-configuration.d.ts
+
+      - name: Type-check
+        run: bun run --filter '*' type-check
+
+      # The guardrails oxlint plugin resolves guardrails.config.json from the
+      # working directory, so lint runs inside each member, never at the root.
+      - name: Lint
+        run: bun run --filter '*' lint
+
+      - name: Format check
+        run: bun run --filter '*' fmt:check
+
+      - name: Structure check
+        run: bash scripts/guardrails/run.sh
+
+      - name: Unused files, exports, dependencies (knip)
+        run: bunx knip
+
+      - name: Copy-paste detection (jscpd)
+        run: bun run --filter '*' check:dupes
+
+      - name: Test
+        run: bun run --filter '*' test
+
+      - name: Build (dry-run deploy, apps/api)
+        working-directory: apps/api
+        run: bunx wrangler deploy --dry-run --outdir dist

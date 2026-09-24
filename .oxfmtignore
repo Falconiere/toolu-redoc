@@ -1,0 +1,7 @@
+*.md
+**/.astro/**
+**/.wrangler/**
+scripts/guardrails/**
+**/src/ui/theme/**
+**/*.gen.ts
+**/worker-configuration.d.ts

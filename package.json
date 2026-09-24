@@ -1,0 +1,26 @@
+{
+  "name": "toolu-redoc",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "check": "bun run check:structure && bun run check:unused && bun run --filter '*' check",
+    "type-check": "bun run --filter '*' type-check",
+    "lint": "bun run --filter '*' lint",
+    "fmt:check": "bun run --filter '*' fmt:check",
+    "fmt": "oxfmt --ignore-path .oxfmtignore",
+    "check:structure": "bash scripts/guardrails/run.sh",
+    "check:unused": "knip --no-config-hints",
+    "check:dupes": "bun run --filter '*' check:dupes",
+    "test": "bun run --filter '*' test",
+    "prepare": "lefthook install --force || true"
+  },
+  "devDependencies": {
+    "knip": "5.88.1",
+    "lefthook": "2.1.10",
+    "oxfmt": "0.62.0"
+  }
+}

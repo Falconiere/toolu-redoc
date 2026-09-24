@@ -1,0 +1,21 @@
+{
+  "$schema": "./scripts/guardrails/workspace.schema.json",
+  "version": 2,
+  "packages": ["apps/redoc", "apps/api", "packages/ui", "packages/types"],
+  "bannedDeps": ["axios", "yup", "joi", "valibot", "superstruct", "ajv"],
+  "secrets": {
+    "neverTracked": [".dev.vars", ".env", "apps/redoc/.env", "apps/api/.dev.vars"]
+  },
+  "shadowConfigs": [
+    {
+      "found": "lefthook.yaml",
+      "use": "lefthook.yml",
+      "why": "the lefthook 2.x installer shadows a .yaml, so the hooks never run"
+    },
+    {
+      "found": "guardrails.config.json",
+      "use": "guardrails.workspace.json",
+      "why": "the oxlint plugin resolves guardrails.config.json from the working directory, so one at the workspace root lints every package against it and silently disables whatever each package declares ownedByLinter"
+    }
+  ]
+}

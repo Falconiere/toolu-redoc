@@ -1,0 +1,6 @@
+{
+  "$schema": "./node_modules/knip/schema.json",
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["src/route-tree.gen.ts", "src/constants/env.ts", "src/ui/theme/**"],
+  "ignoreDependencies": ["tailwindcss"]
+}

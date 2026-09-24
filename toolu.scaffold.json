@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.9.2",
+  "project": {
+    "name": "toolu-redoc",
+    "displayName": "Toolu Redoc",
+    "targetDirectory": "toolu-redoc"
+  },
+  "operations": ["cloudflare", "infisical"],
+  "environments": ["local", "development", "production"],
+  "staging": false,
+  "theme": {
+    "kind": "preset",
+    "preset": "chalk"
+  },
+  "recipes": [
+    "layout/monorepo",
+    "workspace/bun",
+    "app/redoc/stack/console",
+    "app/api/stack/backend-ts",
+    "package/ui",
+    "package/config",
+    "package/types",
+    "operation/cloudflare",
+    "operation/infisical",
+    "theme/preset/chalk"
+  ],
+  "layout": "monorepo",
+  "apps": [
+    {
+      "id": "redoc",
+      "stack": {
+        "id": "console"
+      },
+      "integrations": [],
+      "port": 5173
+    },
+    {
+      "id": "api",
+      "stack": {
+        "id": "backend-ts",
+        "persistence": "turso",
+        "workspace": false
+      },
+      "integrations": [],
+      "port": 8787
+    }
+  ],
+  "packages": ["ui", "config", "types"],
+  "runtime": {}
+}

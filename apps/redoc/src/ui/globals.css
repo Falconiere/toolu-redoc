@@ -1,0 +1,73 @@
+/* The one global stylesheet — CodaSignal "Signal" design language.
+ *
+ * Copy to src/ui/globals.css and import it exactly once, from the app entry:
+ * src/main.tsx in the console stack, the base layout in the marketing stack. The
+ * two token files it pulls in ship beside it (copy all three).
+ *
+ * No reset here — Tailwind's Preflight covers it.
+ *
+ * THIS IS THE ONLY HAND-WRITTEN STYLESHEET IN THE PROJECT. Components are styled
+ * with utilities, full stop: no CSS Modules, no Astro scoped <style> block, no
+ * inline style object, no styled-components. What lives here is what a utility
+ * cannot express — the band backdrop's ruled gradient and the reduced-motion
+ * escape hatch — plus the token files' values. Anything else you are tempted to
+ * add belongs in an @utility inside theme/scale.css, where it becomes a class
+ * every component can compose and a variant can modify.
+ *
+ * Read theme/palette.css's header before writing a component: the two rules it
+ * documents (never `dark:`, never name a --color-… directly) are the two ways to
+ * silently break the band seam.
+ */
+
+@import "tailwindcss";
+@import "./theme/palette.css"; /* what swaps: the two bands, four signals */
+@import "./theme/scale.css"; /* what never swaps: size, shape, type, motion */
+
+/* @layer base, because an unlayered declaration beats every layered utility
+ * regardless of specificity — these rules would otherwise override the bg-* and
+ * text-* utilities set on the same element. */
+@layer base {
+  body {
+    background-color: var(--tone-background);
+    color: var(--tone-text);
+    font-family: var(--font-sans); /* both declared in theme/palette.css */
+  }
+
+  ::selection {
+    background-color: var(--tone-accent);
+    color: var(--tone-on-primary);
+  }
+
+  /* The ruled backdrop. Quarter-width vertical rules run through every band; the
+     crosshairs that mark the seams are separate elements (see DESIGN.md §1).
+     Rules halve at phone width so they still read. A light band is
+     <section class="band band-light"> — those two classes are the whole theming
+     surface. */
+  .band {
+    background-color: var(--tone-background);
+    background-image: linear-gradient(90deg, var(--tone-grid) 0 1px, transparent 1px 100%);
+    background-size: 25% 100%;
+    background-position: 48px 0;
+  }
+
+  @media (max-width: 599px) {
+    .band {
+      background-size: 50% 100%;
+      background-position: 24px 0;
+    }
+  }
+
+  /* Blanket flatten, not a per-component opt-in: the language's motion budget is
+     small enough that nothing here needs to survive the preference. The live dot
+     goes static at full opacity, the progress bar jumps to its real value, and
+     disclosure opens without a transition. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

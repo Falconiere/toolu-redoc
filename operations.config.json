@@ -1,0 +1,41 @@
+{
+  "$schema": "./scripts/operations/schema.json",
+  "version": 1,
+  "stack": "workspace",
+  "runtime": "mixed",
+  "environments": ["local", "development", "production"],
+  "services": [
+    {
+      "name": "redoc",
+      "runtime": "client",
+      "command": "bun run --filter @toolu-redoc/redoc dev",
+      "port": 5173
+    },
+    {
+      "name": "api",
+      "runtime": "server",
+      "command": "bun run --filter @toolu-redoc/api dev",
+      "port": 8787,
+      "healthcheck": "http://127.0.0.1:8787/health",
+      "localHostname": "local-api.toolu-redoc.example.com",
+      "secretsTarget": "apps/api/.dev.vars"
+    }
+  ],
+  "cloudflare": {
+    "zone": "toolu-redoc.example.com",
+    "tunnelName": "toolu-redoc-local",
+    "deploy": {
+      "development": {
+        "worker": "toolu-redoc-api-dev",
+        "command": "bun run --filter @toolu-redoc/api deploy --env development"
+      },
+      "production": {
+        "worker": "toolu-redoc-api",
+        "command": "bun run --filter @toolu-redoc/api deploy"
+      }
+    }
+  },
+  "infisical": {
+    "secretPath": "/"
+  }
+}
