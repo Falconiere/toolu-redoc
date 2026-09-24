@@ -58,6 +58,10 @@ TanStack Router Vite plugin: `shifts.tsx` → `/shifts`, `shifts.$id.tsx` →
 `/shifts/:id`, `_authed.settings.tsx` → `/settings` behind a pathless layout.
 Navigate with `<Link to="…">` so a renamed route is a compile error, not a 404.
 
+Temporary until #3 (URL/paste load): `/docs` wires a docs-owned Petstore fixture
+(`domains/docs/api/dev-petstore-3.0.json`) through `parseOpenApiDocument` into the
+Signal three-column docs shell.
+
 ## Scripts
 
 | Script | Does |

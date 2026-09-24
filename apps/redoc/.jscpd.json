@@ -6,5 +6,11 @@
   "minTokens": 60,
   "reporters": ["console"],
   "gitignore": true,
-  "ignore": ["**/__tests__/**", "**/*.gen.ts", "**/node_modules/**", "**/dist/**"]
+  "ignore": [
+    "**/__tests__/**",
+    "**/dev-petstore-3.0.json",
+    "**/*.gen.ts",
+    "**/node_modules/**",
+    "**/dist/**"
+  ]
 }
