@@ -136,8 +136,12 @@ function rejectUnsafeYamlTags(document: Document): OpenApiParseError | undefined
   return undefined;
 }
 
-/** Reject Buffer / bigint / function values that are not JSON-compatible. */
+/**
+ * Reject binary / bigint / function values that are not JSON-compatible.
+ * Walks only plain arrays and plain objects; cycles are skipped via WeakSet.
+ */
 function rejectNonJsonValues(value: unknown): OpenApiParseError | undefined {
+  const seen = new WeakSet<object>();
   const stack: unknown[] = [value];
   while (stack.length > 0) {
     const current = stack.pop();
@@ -151,22 +155,54 @@ function rejectNonJsonValues(value: unknown): OpenApiParseError | undefined {
     if (type === "bigint" || type === "function" || type === "symbol") {
       return openApiParseError("yaml", "Document contains non-JSON values.");
     }
-    if (typeof Buffer !== "undefined" && Buffer.isBuffer(current)) {
+    if (type !== "object") {
+      continue;
+    }
+    if (isBinaryBufferLike(current)) {
       return openApiParseError("yaml", "Unsupported or unsafe YAML tags are not allowed.");
     }
+    if (seen.has(current)) {
+      continue;
+    }
+    seen.add(current);
     if (Array.isArray(current)) {
-      for (const item of current) {
-        stack.push(item);
+      for (let index = 0; index < current.length; index += 1) {
+        stack.push(current[index]);
       }
       continue;
     }
-    if (type === "object") {
-      for (const key of Reflect.ownKeys(current)) {
-        stack.push(Reflect.get(current, key));
-      }
+    if (!isPlainJsonObject(current)) {
+      return openApiParseError("yaml", "Document contains non-JSON values.");
+    }
+    for (const key of Object.keys(current)) {
+      stack.push(current[key]);
     }
   }
   return undefined;
+}
+
+/** True for ArrayBuffer, Uint8Array, or a Node Buffer without naming the Buffer global. */
+function isBinaryBufferLike(value: object): boolean {
+  if (value instanceof ArrayBuffer || value instanceof Uint8Array) {
+    return true;
+  }
+  return readConstructorName(value) === "Buffer";
+}
+
+/** Read `constructor.name` when present, without assuming a typed constructor. */
+function readConstructorName(value: object): string | undefined {
+  const ctor: unknown = Reflect.get(value, "constructor");
+  if (typeof ctor !== "function") {
+    return undefined;
+  }
+  const name: unknown = Reflect.get(ctor, "name");
+  return typeof name === "string" ? name : undefined;
+}
+
+/** True for `{}`-style objects (including null-prototype maps). */
+function isPlainJsonObject(value: object): value is Record<string, unknown> {
+  const proto: unknown = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
 
 /** `toJS` is typed `any` by eemeli — annotate the boundary as `unknown`. */

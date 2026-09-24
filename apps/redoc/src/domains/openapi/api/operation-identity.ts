@@ -22,7 +22,7 @@ export type OperationIdentity = {
 };
 
 /** True when value is one of the eight Path Item verbs. */
-export function isOpenApiHttpMethod(value: string): value is OpenApiHttpMethod {
+function isOpenApiHttpMethod(value: string): value is OpenApiHttpMethod {
   return OPENAPI_HTTP_METHODS.some((method) => method === value);
 }
 
