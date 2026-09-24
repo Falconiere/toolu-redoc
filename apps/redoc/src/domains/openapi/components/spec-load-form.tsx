@@ -2,7 +2,7 @@
 
 import type { RefObject } from "react";
 
-import type { SpecLoadSuccess } from "../api/load-openapi-document";
+import type { SpecLoadSuccess } from "@/domains/openapi/api/load-openapi-document";
 
 const fieldClass =
   "w-full border border-border bg-background px-3 py-2 type-body text-text " +

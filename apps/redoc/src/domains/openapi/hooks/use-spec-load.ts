@@ -7,8 +7,8 @@ import {
   type LoadOpenApiDocumentOptions,
   type SpecLoadSuccess,
   type SpecSource,
-} from "../api/load-openapi-document";
-import type { SpecLoadError } from "../api/spec-load-error";
+} from "@/domains/openapi/api/load-openapi-document";
+import type { SpecLoadError } from "@/domains/openapi/api/spec-load-error";
 
 /** Observable load lifecycle for the SpecLoadScreen. */
 export type SpecLoadStatus = "idle" | "loading" | "success" | "failure";

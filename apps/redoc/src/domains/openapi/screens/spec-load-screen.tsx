@@ -2,10 +2,14 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-import type { SpecLoadSearch } from "../api/spec-source-search";
-import { SpecLoadBanner, SpecLoadErrorBanner } from "../components/spec-load-banner";
-import { SpecLoadForm, SpecLoadSkeleton, SpecLoadSuccessPanel } from "../components/spec-load-form";
-import { useSpecLoad, type SpecLoadHook } from "../hooks/use-spec-load";
+import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
+import { SpecLoadBanner, SpecLoadErrorBanner } from "@/domains/openapi/components/spec-load-banner";
+import {
+  SpecLoadForm,
+  SpecLoadSkeleton,
+  SpecLoadSuccessPanel,
+} from "@/domains/openapi/components/spec-load-form";
+import { useSpecLoad, type SpecLoadHook } from "@/domains/openapi/hooks/use-spec-load";
 
 /** Missing-source copy when the share link has no `url` (AC-9). */
 export const MISSING_SOURCE_MESSAGE =

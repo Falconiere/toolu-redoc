@@ -1,6 +1,6 @@
 /** Signal failure / missing-source banner: `dot | message | action`. */
 
-import type { SpecLoadError, SpecLoadRecovery } from "../api/spec-load-error";
+import type { SpecLoadError, SpecLoadRecovery } from "@/domains/openapi/api/spec-load-error";
 
 /** Props for {@link SpecLoadBanner}. */
 export type SpecLoadBannerProps = {
