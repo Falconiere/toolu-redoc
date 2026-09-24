@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Parameter merge",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets/{petId}": {
+      "parameters": [
+        {
+          "name": "petId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "path-item petId"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": { "type": "integer" },
+          "description": "path-item limit"
+        },
+        {
+          "name": "X-Trace",
+          "in": "header",
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "operationId": "getPet",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "maximum": 100 },
+            "description": "operation limit wins"
+          },
+          {
+            "name": "limit",
+            "in": "header",
+            "schema": { "type": "string" },
+            "description": "distinct in keeps both limits"
+          }
+        ],
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/items/{itemId}": {
+      "get": {
+        "operationId": "getItemMissingPathParam",
+        "parameters": [
+          {
+            "name": "verbose",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": { "200": { "description": "ok" } }
+      }
+    },
+    "/optional/{optId}": {
+      "get": {
+        "operationId": "getOptionalPathParam",
+        "parameters": [
+          {
+            "name": "optId",
+            "in": "path",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  }
+}

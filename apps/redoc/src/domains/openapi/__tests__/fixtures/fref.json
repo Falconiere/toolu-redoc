@@ -1,0 +1,67 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FREF local refs",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" }
+        }
+      },
+      "Node": {
+        "type": "object",
+        "properties": {
+          "next": { "$ref": "#/components/schemas/Node" }
+        }
+      },
+      "LoopA": { "$ref": "#/components/schemas/LoopB" },
+      "LoopB": { "$ref": "#/components/schemas/LoopA" },
+      "tilde~key": {
+        "type": "string",
+        "description": "key contains a literal tilde; pointer uses ~0"
+      },
+      "slash/key": {
+        "type": "string",
+        "description": "key contains a slash; pointer uses ~1"
+      },
+      "Escaped": {
+        "type": "object",
+        "properties": {
+          "a": { "$ref": "#/components/schemas/tilde~0key" },
+          "b": { "$ref": "#/components/schemas/slash~1key" }
+        }
+      },
+      "WrongKind": {
+        "$ref": "#/components/parameters/Limit"
+      }
+    },
+    "parameters": {
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": { "type": "integer" }
+      }
+    }
+  }
+}

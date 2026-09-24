@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info:
+  title: LocalTag
+  version: "1.0.0"
+paths: {}
+x-custom: !custom foo

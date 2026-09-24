@@ -1,0 +1,98 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Composition and unsupported",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets": {
+      "post": {
+        "callbacks": {
+          "petEvent": {
+            "{$request.body#/callbackUrl}": {
+              "post": {
+                "responses": { "200": { "description": "ok" } }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PetInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ok",
+            "links": {
+              "GetPet": {
+                "operationId": "getPet"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Pet" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "petCreated": {
+      "post": {
+        "responses": { "200": { "description": "ok" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "petType",
+          "mapping": {
+            "cat": "#/components/schemas/Cat",
+            "dog": "#/components/schemas/Dog"
+          }
+        },
+        "oneOf": [{ "$ref": "#/components/schemas/Cat" }, { "$ref": "#/components/schemas/Dog" }]
+      },
+      "Cat": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "petType": { "type": "string" },
+              "hunts": { "type": "boolean" }
+            }
+          }
+        ]
+      },
+      "Dog": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "petType": { "type": "string" },
+              "bark": { "type": "boolean" }
+            }
+          }
+        ]
+      },
+      "PetInput": {
+        "$id": "https://example.com/schemas/PetInput",
+        "$dynamicRef": "#pet",
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "x-unsupported-vendor": true
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+openapi: 3.0.3
+info:
+  title: F30 nullable sample
+  version: 1.0.0
+  description: Hand-authored OpenAPI 3.0.3 exercising nullable
+paths:
+  /items:
+    get:
+      operationId: listItems
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Item"
+components:
+  schemas:
+    Item:
+      type: object
+      nullable: true
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          default: 0
+        label:
+          type: string
+          nullable: true
+          enum:
+            - ""
+            - a
+            - null

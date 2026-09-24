@@ -1,0 +1,61 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Examples falsy and external",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/demo": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Payload" },
+              "example": false,
+              "examples": {
+                "zero": { "value": 0 },
+                "empty": { "value": "" },
+                "nil": { "value": null },
+                "remote": {
+                  "summary": "External example URL — do not fetch",
+                  "externalValue": "https://example.com/examples/payload.json"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": { "type": "boolean" },
+                "example": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Payload": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean", "example": false },
+          "n": { "type": "integer", "example": 0 },
+          "s": { "type": "string", "example": "" },
+          "z": { "example": null }
+        }
+      }
+    },
+    "examples": {
+      "componentRemote": {
+        "summary": "component example with external URL",
+        "externalValue": "https://example.com/examples/component.json"
+      }
+    }
+  }
+}
