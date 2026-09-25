@@ -28,6 +28,13 @@ export type FixtureHttpServer = {
 const petstoreJson = (): Buffer => readFileSync(join(fixturesDir, "petstore-3.0.json"));
 const loginHtml = (): Buffer => readFileSync(join(fixturesDir, "fbad-html-login.html"));
 
+/** CORS headers so Chromium preview-smoke can URL-load across localhost ports. */
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+  "Access-Control-Allow-Headers": "*",
+} as const;
+
 /** Write a body larger than {@link MAX_INPUT_BYTES} without Content-Length. */
 function writeOversizeStream(res: ServerResponse): void {
   res.writeHead(200, {
@@ -52,13 +59,6 @@ function writeOversizeStream(res: ServerResponse): void {
   };
   pump();
 }
-
-/** CORS headers so Chromium preview-smoke can URL-load across localhost ports. */
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "*",
-} as const;
 
 function sendBuffer(res: ServerResponse, status: number, contentType: string, body: Buffer): void {
   res.writeHead(status, {

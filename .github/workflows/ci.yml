@@ -66,6 +66,7 @@ jobs:
         run: bun run --filter @toolu-redoc/redoc build
 
       - name: Install Chromium (Playwright)
+        working-directory: apps/redoc
         run: bunx playwright install --with-deps chromium
 
       - name: Preview smoke (apps/redoc T27)
