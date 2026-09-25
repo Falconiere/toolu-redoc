@@ -14,6 +14,7 @@ temporary Petstore twin for shell/nav/detail demos (share links target `/`).
 | `components/docs-shell-focus.ts` | Re-exports shared `CONTROL_FOCUS` from `@/utilities/control-focus` |
 | `components/docs-operation-nav.tsx` | Filter + tag sections; DTO props only (no openapi import) |
 | `components/docs-operation-nav-row.tsx` | One selectable operation row |
+| `components/docs-operation-pager.tsx` | Prev/next operation pager (document order) |
 | `components/unknown-operation-empty.tsx` | Distinct empty when share `op` is malformed/missing |
 | `components/operation-detail*.tsx` | Main-column operation detail (header, params, request, responses, servers) |
 | `components/schema-rail*.tsx` / `schema-tree-node.tsx` | Samples rail: schema disclosure tree + example panel |
