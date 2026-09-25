@@ -1,0 +1,96 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Schema rail ops 3.1",
+    "version": "1.0.0",
+    "description": "Hand-authored for issue #7 — T16 3.1 null unions, boolean schemas, $id/$dynamicRef"
+  },
+  "paths": {
+    "/items": {
+      "get": {
+        "operationId": "listItems",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Item" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/always": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "boolean true schema",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Always" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/never": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "boolean false schema",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Never" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dynamic": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "unsupported 3.1 dynamic keywords",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DynamicMarked" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Always": true,
+      "Never": false,
+      "Item": {
+        "type": ["object", "null"],
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "integer", "default": 0 },
+          "label": {
+            "type": ["string", "null"],
+            "enum": ["", "a", null]
+          }
+        }
+      },
+      "DynamicMarked": {
+        "$id": "https://example.com/schemas/DynamicMarked",
+        "$dynamicRef": "#item",
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "x-unsupported-vendor": true
+      }
+    }
+  }
+}

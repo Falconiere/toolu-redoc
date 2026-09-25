@@ -60,10 +60,10 @@ Navigate with `<Link to="…">` so a renamed route is a compile error, not a 404
 
 `/docs` wires a docs-owned Petstore fixture
 (`domains/docs/api/dev-petstore-3.0.json`) through `loadDocsDocument` into the Signal
-three-column docs shell, with tag-grouped operation nav/filter (#5) and main-column
-`OperationDetail` (summary, params, request, responses). The Samples rail shows a
-stub schema-focus label until #7. URL sync lands in #8. Home `/` loads specs via
-URL/paste (#3).
+three-column docs shell, with tag-grouped operation nav/filter (#5), main-column
+`OperationDetail` (summary, params, request, responses), and Samples `SchemaRail`
+(schema disclosure tree + examples for the focused handle). URL sync lands in #8.
+Home `/` loads specs via URL/paste (#3).
 
 ## Scripts
 
