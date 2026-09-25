@@ -1,14 +1,16 @@
-/** Temporary `/docs` — Petstore nav, filter, and selection chrome in DocsShell. */
+/** Temporary `/docs` — Petstore nav + operation detail in DocsShell. */
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { loadDocsDocument } from "@/app/load-docs-document";
+import { mapOperationDetail } from "@/app/map-operation-detail";
 import petstoreText from "@/domains/docs/api/dev-petstore-3.0.json?raw";
 import { DocsOperationNav } from "@/domains/docs/components/docs-operation-nav";
 import type { OperationNavItem } from "@/domains/docs/components/docs-operation-nav";
-import { DocsOperationSelection } from "@/domains/docs/components/docs-operation-selection";
 import { DocsShellPlaceholder } from "@/domains/docs/components/docs-shell-placeholder";
 import { DocsShellScreen } from "@/domains/docs/screens/docs-shell-screen";
+import { OperationDetail } from "@/domains/docs/components/operation-detail";
+import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
 import {
   buildOperationNavModel,
   type OperationNavModel,
@@ -40,13 +42,27 @@ function resolveSelectedItem(
   return null;
 }
 
+/** Summarize SchemaFocus for the temporary Samples stub until #7. */
+function focusStubLabel(focus: SchemaFocus): string {
+  if (focus.kind === "parameter") {
+    return `Schema focus: parameter ${focus.name} (${focus.in})`;
+  }
+  if (focus.kind === "request") {
+    return `Schema focus: request ${focus.mediaType}`;
+  }
+  const media = focus.mediaType ?? "—";
+  const header = focus.headerName !== null ? ` header ${focus.headerName}` : "";
+  return `Schema focus: response ${focus.status} ${media}${header}`;
+}
+
 /**
- * Compose Petstore chrome + tag-grouped nav into the docs shell, or an incident
+ * Compose Petstore chrome + tag-grouped nav + operation detail, or an incident
  * note on parse failure. Selection and filter are route-local (no URL sync).
  */
 export function DocsRoute() {
   const [selectedIdentity, setSelectedIdentity] = useState<string | null>(null);
   const [filterQuery, setFilterQuery] = useState("");
+  const [focus, setFocus] = useState<SchemaFocus | null>(null);
 
   const navModel = useMemo(() => {
     if (!LOADED_PETSTORE.ok) {
@@ -73,6 +89,16 @@ export function DocsRoute() {
 
   const filtered = filterOperationNavModel(navModel, filterQuery, selectedIdentity);
   const selectedItem = resolveSelectedItem(navModel, selectedIdentity);
+  const selectedOperation =
+    selectedItem === null
+      ? null
+      : (LOADED_PETSTORE.document.operations.find(
+          (operation) => operation.identity === selectedItem.identity,
+        ) ?? null);
+  const detailModel =
+    selectedOperation === null
+      ? null
+      : mapOperationDetail(selectedOperation, LOADED_PETSTORE.document.servers);
 
   return (
     <DocsShellScreen
@@ -84,12 +110,21 @@ export function DocsRoute() {
           filterQuery={filterQuery}
           onFilterQueryChange={setFilterQuery}
           selectedIdentity={selectedIdentity}
-          onSelectIdentity={setSelectedIdentity}
+          onSelectIdentity={(identity) => {
+            setSelectedIdentity(identity);
+            setFocus(null);
+          }}
           selectionVisible={filtered.selectionVisible}
         />
       }
-      main={<DocsOperationSelection item={selectedItem} />}
-      rail={<DocsShellPlaceholder message="Schemas and examples appear here." />}
+      main={<OperationDetail operation={detailModel} onFocusChange={setFocus} />}
+      rail={
+        focus === null ? (
+          <DocsShellPlaceholder message="Schemas and examples appear here." />
+        ) : (
+          <p className="type-meta text-text-muted">{focusStubLabel(focus)}</p>
+        )
+      }
     />
   );
 }

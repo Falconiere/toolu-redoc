@@ -94,7 +94,7 @@ describe("docs route chrome (AC-1 / AC-6)", () => {
     if (chrome.ok) {
       throw new Error("expected parse failure for whitespace-only input");
     }
-    expect(chrome.message.toLowerCase()).toMatch(/empty|document|yaml|json/);
+    expect(chrome.message.toLowerCase()).toMatch(/openapi|document|paste/);
   });
 
   it("returns ok:false with a message for Swagger 2 JSON", () => {
@@ -194,10 +194,15 @@ describe("docs route operation nav (AC-1 / AC-3 / AC-8)", () => {
     );
 
     const main = screen.getByRole("region", { name: "Operation" });
-    expect(within(main).getByText(first.method.toUpperCase())).toBeInTheDocument();
-    expect(within(main).getByText(first.path)).toBeInTheDocument();
+    const article = within(main).getByRole("article");
+    const methodSpan = article.querySelector("span.uppercase");
+    const pathSpan = methodSpan?.nextElementSibling;
+    expect(methodSpan?.textContent).toBe(first.method);
+    expect(pathSpan?.textContent).toBe(first.path);
     if (first.summary !== undefined && first.summary.trim().length > 0) {
-      expect(within(main).getByText(first.summary.trim())).toBeInTheDocument();
+      expect(within(article).getByRole("heading", { level: 2 })).toHaveTextContent(
+        first.summary.trim(),
+      );
     }
     expect(screen.queryByText("Select an operation.")).not.toBeInTheDocument();
   });
