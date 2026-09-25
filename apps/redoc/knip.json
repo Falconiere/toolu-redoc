@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/knip/schema.json",
+  "entry": ["src/domains/openapi/__tests__/preview-smoke.ts"],
   "project": ["src/**/*.{ts,tsx}"],
   "ignore": ["src/route-tree.gen.ts", "src/constants/env.ts", "src/ui/theme/**"],
   "ignoreDependencies": ["tailwindcss"]
