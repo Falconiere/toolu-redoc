@@ -2,7 +2,8 @@
 
 Owns OpenAPI 3.0/3.1 paste/parse **and** URL/paste load UX: decode JSON/YAML,
 Zod-validate a practical subset, normalize an in-memory model, fetch remote
-specs via `@/api/http-client`, and present the Signal load screen on `/`.
+specs via `@/api/http-client`, present the Signal load screen on `/`, and after
+success hand off to the docs viewer (selection via search `op`, share copy UI).
 
 | Path | Holds |
 | --- | --- |
@@ -14,6 +15,9 @@ specs via `@/api/http-client`, and present the Signal load screen on `/`.
 | `api/fetch-openapi-text.ts` | URL fetch with byte cap, timeout, HTML sniff |
 | `api/validate-spec-source-url.ts` | http(s)-only source URL gate (no userinfo) |
 | `api/spec-source-search.ts` | `/` search coerce for `url` + `op` params |
+| `api/resolve-operation-selection.ts` | Resolve `op` → none \| selected \| unknown |
+| `api/build-share-href.ts` | Compose public `/?url=&op=` share href |
+| `api/write-operation-search.ts` | Merge `op` into search while preserving `url` |
 | `api/network-error-message.ts` | Honest network / mixed-content guidance |
 | `api/spec-load-error.ts` | Structured load failure codes |
 | `api/openapi-*-schema*.ts` | Zod boundary schemas (`z.infer` types only) |
@@ -24,7 +28,9 @@ specs via `@/api/http-client`, and present the Signal load screen on `/`.
 | `api/filter-operation-nav-model.ts` | Case-insensitive nav filter + `selectionVisible` |
 | `api/resolve-local-ref.ts` | Same-document JSON Pointer expansion |
 | `hooks/use-spec-load.ts` | Latest-wins load state (cancel, retain, reset) |
-| `screens/spec-load-screen.tsx` | Signal paste + URL load UI |
+| `screens/spec-load-screen.tsx` | Signal paste + URL load UI (+ `renderLoaded` handoff) |
+| `components/loaded-docs-toolbar.tsx` | Post-load title/version/share/reset chrome |
+| `components/share-operation-link.tsx` | Copy link + query/paste disclosure |
 | `components/` | Load banner / form pieces |
 | `__tests__/fixtures/` | Petstore + scenario fixtures + `provenance.md` |
 | `__tests__/fixture-http-server.ts` | Real Node fixture HTTP server for load tests |
@@ -44,10 +50,10 @@ Only `src/app/**` routes may import this domain.
 
 | Param | Meaning | Owner |
 | --- | --- | --- |
-| `url` | Absolute http(s) source URL (one search value) | #3 loads |
-| `op` | percent-encoded `encodeOperationIdentity(method, path)` | #8 selects; #3 preserves |
+| `url` | Absolute http(s) source URL (one search value) | loads on `/` |
+| `op` | `encodeOperationIdentity(method, path)` | selects operation after load |
 
 ## Blocked (not claimed pass on this issue)
 
 - T06 full distinct-origin browser CORS matrix → #9 browser harness
-- T20 operation restore / history; T21 pending-`op` after paste; T22 filter/selection/copy chrome → #8
+- Workers SPA direct-link reload harness → #9

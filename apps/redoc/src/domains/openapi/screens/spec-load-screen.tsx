@@ -1,7 +1,8 @@
 /** Signal SpecLoadScreen — paste / URL load form, loading skeleton, success handoff. */
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
+import type { SpecLoadSuccess } from "@/domains/openapi/api/load-openapi-document";
 import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
 import { SpecLoadBanner, SpecLoadErrorBanner } from "@/domains/openapi/components/spec-load-banner";
 import {
@@ -15,19 +16,30 @@ import { useSpecLoad, type SpecLoadHook } from "@/domains/openapi/hooks/use-spec
 export const MISSING_SOURCE_MESSAGE =
   "A pasted OpenAPI document is not in this link. Paste the document to continue.";
 
+/** Args passed to {@link SpecLoadScreenProps.renderLoaded}. */
+export type SpecLoadRenderLoadedArgs = {
+  success: SpecLoadSuccess;
+  reset: () => void;
+};
+
 /** Props for {@link SpecLoadScreen}. Search comes from the thin `/` route. */
 export type SpecLoadScreenProps = {
   search: SpecLoadSearch;
   /** Sync `url` into the location while preserving `op` (parent owns navigate). */
   onSourceUrlChange?: (href: string) => void;
+  /**
+   * When set, replaces the entire load chrome after success (docs viewer).
+   * When omitted, keeps the legacy success panel (tests / fallback).
+   */
+  renderLoaded?: (args: SpecLoadRenderLoadedArgs) => ReactNode;
 };
 
 /** Paste + URL load UI with Signal loading / banner / success states. */
-export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProps) {
+export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: SpecLoadScreenProps) {
   const hook = useSpecLoad();
   const [pasteText, setPasteText] = useState("");
   const [urlField, setUrlField] = useState(search.url ?? "");
-  const pasteRef = useRef<HTMLTextAreaElement>(null);
+  const pasteRef = useRef<HTMLTextAreaElement | null>(null);
   const loadRef = useRef(hook.load);
   loadRef.current = hook.load;
   /** URLs already claimed by a manual load so auto-load does not double-fetch. */
@@ -35,6 +47,23 @@ export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProp
 
   useAutoLoadUrl(search.url, loadRef, claimedUrlRef);
   useSyncUrlField(search.url, setUrlField);
+
+  if (hook.success !== null && renderLoaded !== undefined) {
+    return (
+      <LoadedViewerChrome
+        success={hook.success}
+        status={hook.status}
+        error={hook.error}
+        urlField={urlField}
+        pasteRef={pasteRef}
+        loadRef={loadRef}
+        claimedUrlRef={claimedUrlRef}
+        reset={hook.reset}
+        renderLoaded={renderLoaded}
+        {...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange })}
+      />
+    );
+  }
 
   const focusPaste = (): void => {
     pasteRef.current?.focus();
@@ -93,6 +122,59 @@ function SpecLoadHeader() {
         Paste OpenAPI text or load from an http(s) URL.
       </p>
     </header>
+  );
+}
+
+/** Post-load viewer with optional loading skeleton and replacement-error banner. */
+function LoadedViewerChrome({
+  success,
+  status,
+  error,
+  urlField,
+  pasteRef,
+  loadRef,
+  claimedUrlRef,
+  onSourceUrlChange,
+  reset,
+  renderLoaded,
+}: {
+  success: SpecLoadSuccess;
+  status: SpecLoadHook["status"];
+  error: SpecLoadHook["error"];
+  urlField: string;
+  pasteRef: RefObject<HTMLTextAreaElement | null>;
+  loadRef: RefObject<SpecLoadHook["load"]>;
+  claimedUrlRef: RefObject<string | null>;
+  onSourceUrlChange?: (href: string) => void;
+  reset: () => void;
+  renderLoaded: (args: SpecLoadRenderLoadedArgs) => ReactNode;
+}) {
+  return (
+    <div className="band min-h-screen" data-testid="loaded-with-optional-error">
+      {status === "loading" ? (
+        <div className="border-b border-border px-4 py-3">
+          <SpecLoadSkeleton />
+        </div>
+      ) : null}
+      {error !== null ? (
+        <div className="border-b border-border px-4 py-3">
+          <SpecLoadErrorBanner
+            error={error}
+            onPaste={() => {
+              pasteRef.current?.focus();
+            }}
+            onRetry={() => {
+              void runUrlLoad(urlField, {
+                load: loadRef.current,
+                claimedUrlRef,
+                ...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange }),
+              });
+            }}
+          />
+        </div>
+      ) : null}
+      {renderLoaded({ success, reset })}
+    </div>
   );
 }
 
