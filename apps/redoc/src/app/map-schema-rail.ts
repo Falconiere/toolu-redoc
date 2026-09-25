@@ -128,9 +128,10 @@ function locateParameterSchema(
   notices: SchemaRailNotice[],
 ): unknown {
   for (const parameter of operation.parameters) {
-    if (isSchemaRecord(parameter) && typeof parameter.$ref === "string") {
-      if (focus.in === "$ref" && (focus.ref === parameter.$ref || focus.name === parameter.$ref)) {
-        const resolved = resolveLocalRef(document, parameter.$ref, {
+    const entry: unknown = parameter;
+    if (isSchemaRecord(entry) && typeof entry.$ref === "string") {
+      if (focus.in === "$ref" && (focus.ref === entry.$ref || focus.name === entry.$ref)) {
+        const resolved = resolveLocalRef(document, entry.$ref, {
           expectedKind: "parameter",
         });
         notices.push(
@@ -143,8 +144,14 @@ function locateParameterSchema(
       }
       continue;
     }
-    if (isSchemaRecord(parameter) && parameter.name === focus.name && parameter.in === focus.in) {
-      return schemaFromParameterObject(parameter);
+    if (
+      isSchemaRecord(entry) &&
+      typeof entry.name === "string" &&
+      typeof entry.in === "string" &&
+      entry.name === focus.name &&
+      entry.in === focus.in
+    ) {
+      return schemaFromParameterObject(entry);
     }
   }
   return undefined;
