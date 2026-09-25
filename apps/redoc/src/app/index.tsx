@@ -1,7 +1,7 @@
 /** `/` — Spec load screen + post-load docs viewer. Thin route. */
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ComposeLoadedDocs } from "@/app/map-loaded-docs";
+import { ComposeLoadedDocs } from "@/app/compose-loaded-docs";
 import {
   validateSpecLoadSearch,
   type SpecLoadSearch,

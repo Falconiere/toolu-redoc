@@ -36,6 +36,11 @@ export function resolveOperationSelection(
     return { kind: "none" };
   }
 
+  const identitySet = toIdentitySet(identities);
+  if (identitySet.has(op)) {
+    return { kind: "selected", identity: op };
+  }
+
   let decoded: ReturnType<typeof decodeOperationIdentity>;
   try {
     decoded = decodeOperationIdentity(op);
@@ -43,7 +48,6 @@ export function resolveOperationSelection(
     return { kind: "unknown", rawOp: op, reason: "malformed" };
   }
 
-  const identitySet = toIdentitySet(identities);
   for (const identity of identitySet) {
     try {
       const candidate = decodeOperationIdentity(identity);

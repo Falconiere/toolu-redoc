@@ -95,14 +95,14 @@ resolve/share pure APIs → op navigate helper → unknown empty + toolbar → `
     "depends_on": ["resolve-selection", "write-op-search", "unknown-empty", "toolbar-share"],
     "ac_refs": ["AC-1", "AC-2", "AC-4", "AC-5", "AC-10", "AC-11"],
     "paths": [
-      "apps/redoc/src/app/map-loaded-docs.tsx",
+      "apps/redoc/src/app/compose-loaded-docs.tsx",
       "apps/redoc/src/app/index.tsx",
       "apps/redoc/src/domains/openapi/screens/spec-load-screen.tsx",
       "apps/redoc/src/domains/openapi/hooks/use-spec-load.ts",
       "apps/redoc/src/domains/docs/components/docs-operation-nav.tsx",
       "apps/redoc/src/domains/docs/components/operation-detail.tsx",
       "apps/redoc/src/app/map-operation-detail.ts",
-      "apps/redoc/src/app/__tests__/map-loaded-docs.test.tsx"
+      "apps/redoc/src/app/__tests__/compose-loaded-docs.test.tsx"
     ],
     "input": "parseOpenApiDocument on Petstore twin bytes; select get /pet/findByStatus; filter smoke narrow/clear; unknown op raw; replace document A→B",
     "check": "bun run --filter @toolu-redoc/redoc test",
@@ -165,7 +165,7 @@ resolve/share pure APIs → op navigate helper → unknown empty + toolbar → `
 | create | `apps/redoc/src/domains/docs/components/unknown-operation-empty.tsx` (+ test) |
 | create | `apps/redoc/src/domains/openapi/components/loaded-docs-toolbar.tsx` |
 | create | `apps/redoc/src/domains/openapi/components/share-operation-link.tsx` (+ test) |
-| create | `apps/redoc/src/app/map-loaded-docs.tsx` (+ test) |
+| create | `apps/redoc/src/app/compose-loaded-docs.tsx` (+ test) |
 | create | `apps/redoc/src/app/__tests__/deep-link-routing.test.tsx` |
 | modify | `apps/redoc/src/app/index.tsx`, `spec-load-screen.tsx` |
 | modify | READMEs listed in `docs-sync` |

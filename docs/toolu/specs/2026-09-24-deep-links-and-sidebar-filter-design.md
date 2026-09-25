@@ -87,7 +87,7 @@ apps/redoc/src/
       unknown-operation-empty.tsx     # distinct unknown-op empty (docs-owned DTO)
   app/
     index.tsx                         # pass navigate helpers for op + url
-    map-loaded-docs.tsx           # route-only: doc + search → shell slots
+    compose-loaded-docs.tsx           # route-only: doc + search → shell slots
                                       # (prefix load-/map-/compose- ignored by router)
 ```
 
@@ -170,7 +170,7 @@ When `useSpecLoad().success !== null`:
      `OperationDetail` for the matched operation (or empty “Select an
      operation.” when `none`).
    - `rail`: existing focus stub (#7 unchanged).
-6. App route (`map-loaded-docs` / `index.tsx`) maps openapi success + search
+6. App route (`compose-loaded-docs` / `index.tsx`) maps openapi success + search
    into docs DTOs/callbacks so `domains/docs` never imports `openapi`.
 
 While `success === null`, keep the existing SpecLoad form / banners / missing-
@@ -305,7 +305,7 @@ invent mock documents.
 
 - `apps/redoc/README.md` — `/` after load shows the docs viewer; share via
   `url`+`op`; `/docs` remains Petstore playground; remove “URL sync lands in #8”.
-- `apps/redoc/src/app/README.md` — note `map-loaded-docs` (or final helper
+- `apps/redoc/src/app/README.md` — note `compose-loaded-docs` (or final helper
   name) and `op` navigation.
 - `apps/redoc/src/domains/openapi/README.md` — selection resolve + share href +
   success→viewer handoff.

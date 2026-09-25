@@ -1,4 +1,4 @@
-/** Route-only: map loaded OpenAPI success + search into DocsShell slots. */
+/** App composition helper: loaded OpenAPI success + search → DocsShell slots. */
 import { useMemo, useState, type ReactNode } from "react";
 
 import { mapOperationDetail } from "@/app/map-operation-detail";

@@ -2,7 +2,7 @@
 
 Owns the Signal three-column docs shell (nav · main · rail), tag-grouped operation
 navigation, and operation detail view-model UI. `/` after a successful load
-composes this shell via `src/app/map-loaded-docs.tsx`. `/docs` still wires a
+composes this shell via `src/app/compose-loaded-docs.tsx`. `/docs` still wires a
 temporary Petstore twin for shell/nav/detail demos.
 
 | Path | Holds |

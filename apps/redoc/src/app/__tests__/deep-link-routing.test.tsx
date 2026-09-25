@@ -7,7 +7,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { ComposeLoadedDocs } from "@/app/map-loaded-docs";
+import { ComposeLoadedDocs } from "@/app/compose-loaded-docs";
 import {
   startFixtureHttpServer,
   type FixtureHttpServer,

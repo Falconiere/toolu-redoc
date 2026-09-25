@@ -49,7 +49,28 @@ export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: Spec
   useSyncUrlField(search.url, setUrlField);
 
   if (hook.success !== null && renderLoaded !== undefined) {
-    return <>{renderLoaded({ success: hook.success, reset: hook.reset })}</>;
+    return (
+      <div className="band min-h-screen" data-testid="loaded-with-optional-error">
+        {hook.error !== null ? (
+          <div className="border-b border-border px-4 py-3">
+            <SpecLoadErrorBanner
+              error={hook.error}
+              onPaste={() => {
+                pasteRef.current?.focus();
+              }}
+              onRetry={() => {
+                void runUrlLoad(urlField, {
+                  load: loadRef.current,
+                  claimedUrlRef,
+                  ...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange }),
+                });
+              }}
+            />
+          </div>
+        ) : null}
+        {renderLoaded({ success: hook.success, reset: hook.reset })}
+      </div>
+    );
   }
 
   const focusPaste = (): void => {

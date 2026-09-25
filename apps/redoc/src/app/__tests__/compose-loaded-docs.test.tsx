@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ComposeLoadedDocs } from "@/app/map-loaded-docs";
+import { ComposeLoadedDocs } from "@/app/compose-loaded-docs";
 import { UNKNOWN_OPERATION_TITLE } from "@/domains/docs/components/unknown-operation-empty";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
 import { parseOpenApiDocument } from "@/domains/openapi/api/parse-openapi-document";

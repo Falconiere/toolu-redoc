@@ -46,10 +46,13 @@ export function ShareOperationLink({
         type="button"
         className={`${CONTROL_FOCUS} type-label border border-border px-3 py-2 text-text`}
         onClick={() => {
-          void navigator.clipboard.writeText(href).then(() => {
-            setCopied(true);
-            return undefined;
-          });
+          void navigator.clipboard.writeText(href).then(
+            () => {
+              setCopied(true);
+              return undefined;
+            },
+            () => undefined,
+          );
         }}
       >
         {copied ? "Copied" : "Copy link"}
