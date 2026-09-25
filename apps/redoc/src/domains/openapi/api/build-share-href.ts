@@ -3,7 +3,7 @@ import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
 
 /** Wrap a base path in exactly one leading and one trailing slash (`"a"` → `"/a/"`). */
 export function normalizeBasePath(basePath: string): string {
-  const trimmed = basePath.replace(/^\/+|\/+$/g, "");
+  const trimmed = basePath.replace(/^\/+/, "").replace(/\/+$/, "");
   return trimmed.length === 0 ? "/" : `/${trimmed}/`;
 }
 

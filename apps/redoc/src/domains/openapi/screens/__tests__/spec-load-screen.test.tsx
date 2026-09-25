@@ -132,6 +132,8 @@ describe("SpecLoadScreen", () => {
 
     const gallery = screen.getByRole("list", { name: "Try an example" });
     fireEvent.click(within(gallery).getByRole("link", { name: /Redocly Museum API/ }));
+    // In flight: like the disabled Load/Parse buttons, the gallery cannot start a second load.
+    expect(screen.queryByRole("list", { name: "Try an example" })).not.toBeInTheDocument();
 
     const panel = await screen.findByTestId("spec-load-success");
     expect(within(panel).getByText(/Redocly Museum API/)).toBeInTheDocument();

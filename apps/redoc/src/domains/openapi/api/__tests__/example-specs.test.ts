@@ -152,5 +152,8 @@ describe("exampleSpecHref", () => {
     expect(exampleSpecHref(museum, "https://falconiere.github.io", "toolu-redoc")).toBe(
       "https://falconiere.github.io/toolu-redoc/examples/museum-3.1.yaml",
     );
+    expect(exampleSpecHref(museum, "https://falconiere.github.io", "//toolu-redoc//")).toBe(
+      "https://falconiere.github.io/toolu-redoc/examples/museum-3.1.yaml",
+    );
   });
 });

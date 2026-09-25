@@ -109,7 +109,7 @@ export function SpecLoadScreen(props: SpecLoadScreenProps) {
         />
         {hook.status === "loading" ? <SpecLoadSkeleton /> : null}
         {hook.success !== null ? <SpecLoadSuccessPanel success={hook.success} /> : null}
-        {hook.success === null ? (
+        {hook.success === null && hook.status !== "loading" ? (
           <SpecExampleGallery
             specs={EXAMPLE_SPECS}
             origin={examplesOrigin ?? window.location.origin}

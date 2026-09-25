@@ -125,8 +125,9 @@ On `/` (Spec load screen):
    `public/examples/` (manifest: `src/domains/openapi/api/example-specs.ts`). A click
    loads one through the same path as **Load URL**, and because the file is on the
    same origin, CORS never gets in the way. Ctrl/⌘-click opens the share link in a
-   new tab. The gallery hides once a document has loaded and comes back after
-   **Reset**.
+   new tab. Like the disabled **Load URL** / **Parse paste** buttons, the gallery
+   steps aside while a load is in flight; it also hides once a document has loaded
+   and comes back after **Reset**.
 2. **Paste** OpenAPI JSON or YAML into the text area and choose **Parse paste**.
 3. **URL** — enter an absolute `http://` or `https://` link (no userinfo) and
    choose **Load URL**, or open `/?url=<encoded-href>` to auto-load. Optional

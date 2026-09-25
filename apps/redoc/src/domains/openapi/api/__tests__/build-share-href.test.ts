@@ -42,6 +42,16 @@ describe("buildShareHref", () => {
     ).toBe(expected);
   });
 
+  it("collapses repeated leading and trailing slashes in the base path", () => {
+    const source = "https://falconiere.github.io/toolu-redoc/examples/petstore-3.0.json";
+    expect(buildShareHref("https://falconiere.github.io", { url: source }, "//toolu-redoc//")).toBe(
+      `https://falconiere.github.io/toolu-redoc/?${new URLSearchParams({ url: source }).toString()}`,
+    );
+    expect(buildShareHref("https://falconiere.github.io", {}, "///")).toBe(
+      "https://falconiere.github.io/",
+    );
+  });
+
   it("returns the base path itself when search is empty", () => {
     expect(buildShareHref("https://falconiere.github.io", {}, "/toolu-redoc")).toBe(
       "https://falconiere.github.io/toolu-redoc/",

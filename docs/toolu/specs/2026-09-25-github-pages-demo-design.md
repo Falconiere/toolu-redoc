@@ -209,7 +209,7 @@ script spawns `vite preview`, which reads the same config.
 | Direct hit `/toolu-redoc/docs` on Pages | `404.html` (copy of index) boots the SPA and renders `/docs`, with HTTP status 404 | Accepted (Non-Goal 8) |
 | Unknown path under base | Existing router not-found behavior | Unchanged |
 | Example fetch fails (offline, Pages outage) | Existing URL network-error banner with paste recovery. No new copy. | Recovered by existing path |
-| Gallery click while another load is in flight | Latest load wins (existing `useSpecLoad` semantics) | Existing path |
+| Load in flight (gallery click, Load URL, or `?url=` auto-load) | Gallery hidden until the load settles, matching the disabled Load/Parse buttons. `useSpecLoad` stays latest-wins for any other trigger | By design (PR #19 review) |
 | Gallery modifier or middle click | New tab opens the full share href, which auto-loads | Browser default |
 | Gallery after a successful load | Not rendered (loaded viewer replaces load chrome); back after **Reset** | By design |
 | Manifest entry whose file is missing, too big, fails to parse, or has a title/version mismatch | Unit test fails in CI, so deploy is blocked | Propagates to gate |
