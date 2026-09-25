@@ -37,7 +37,6 @@ export function DocsOperationNavRow({
     <button
       type="button"
       aria-current={selected ? "true" : undefined}
-      aria-pressed={selected}
       className={`flex h-10 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-sm border px-2.5 text-left transition duration-(--duration-hover) ease-signal active:translate-y-px ${selectedClass} ${CONTROL_FOCUS}`}
       onClick={() => {
         onSelectIdentity(item.identity);

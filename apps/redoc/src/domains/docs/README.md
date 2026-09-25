@@ -11,7 +11,7 @@ temporary Petstore twin for shell/nav/detail demos (share links target `/`).
 | --- | --- |
 | `screens/docs-shell-screen.tsx` | Band + chrome + `DocsShell` composition |
 | `components/docs-shell*.tsx` | Layout, drawers, toolbar, empty placeholders |
-| `components/docs-shell-focus.ts` | Shared `CONTROL_FOCUS` class string for toolbar + drawer |
+| `components/docs-shell-focus.ts` | Re-exports shared `CONTROL_FOCUS` from `@/utilities/control-focus` |
 | `components/docs-operation-nav.tsx` | Filter + tag sections; DTO props only (no openapi import) |
 | `components/docs-operation-nav-row.tsx` | One selectable operation row |
 | `components/unknown-operation-empty.tsx` | Distinct empty when share `op` is malformed/missing |

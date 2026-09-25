@@ -91,9 +91,7 @@ export function OperationDetailParameters({
 
   return (
     <fieldset className="flex min-w-0 flex-col gap-9 border-0 p-0">
-      <legend className="absolute -m-px h-px w-px overflow-hidden border-0 p-0 whitespace-nowrap">
-        Parameters
-      </legend>
+      <legend className="sr-only">Parameters</legend>
       {pathParameterIssues.length > 0 ? (
         <ul className="flex flex-col gap-1">
           {pathParameterIssues.map((issue) => (

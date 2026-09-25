@@ -7,7 +7,7 @@ import {
   ShareOperationProvider,
   type ShareOperationLinkProps,
 } from "@/domains/openapi/components/share-operation-link";
-import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
+import { CONTROL_FOCUS } from "@/utilities/control-focus";
 import { BandThemeToggle } from "@/ui/band-theme-toggle";
 
 /** Primary inverted control — reset / primary actions. */

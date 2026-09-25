@@ -23,5 +23,5 @@ python3 -m http.server 8765
 | Rail | 600px Example/Schema panels (mock also shows curl/ts/py) | `SchemaRail` panels — **no** SDK codegen in MVP |
 
 Tokens: Signal jade, Archivo + JetBrains Mono, surface panels `rounded-xl`,
-hairline borders. Values live in `src/ui/theme/*` — never copy mock hex into
-components.
+hairline borders. The mock's hex values inform the token definitions in
+`src/ui/theme/*` — never paste mock hex directly into components.

@@ -1,9 +1,9 @@
 /** Copy share link for the loaded docs viewer (url+op disclosure). */
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
-import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 import { buildShareHref } from "@/domains/openapi/api/build-share-href";
 import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
+import { CONTROL_FOCUS } from "@/utilities/control-focus";
 import { useTimedFlag } from "@/utilities/use-timed-flag";
 
 /** Ghost mono control matching the API Reference mock chrome. */
