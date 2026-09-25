@@ -9,7 +9,7 @@ import { describe, expect, it, vi } from "vitest";
 import { mapOperationDetail } from "@/app/map-operation-detail";
 import { mapSchemaRail } from "@/app/map-schema-rail";
 import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
-import type { SchemaRailModel } from "@/domains/docs/api/schema-rail-model";
+import { schemaRailHasContent, type SchemaRailModel } from "@/domains/docs/api/schema-rail-model";
 import { SchemaRail } from "@/domains/docs/components/schema-rail";
 import { parseOpenApiDocument } from "@/domains/openapi/api/parse-openapi-document";
 
@@ -187,5 +187,46 @@ describe("SchemaRail", () => {
   it("shows the empty placeholder when model is null", () => {
     render(<SchemaRail model={null} />);
     expect(screen.getByText("Schemas and examples appear here.")).toBeInTheDocument();
+  });
+});
+
+describe("schemaRailHasContent", () => {
+  it("is false for null and empty example+schema without notices", () => {
+    expect(schemaRailHasContent(null)).toBe(false);
+    expect(
+      schemaRailHasContent({
+        heading: "Response 200",
+        notices: [],
+        root: null,
+        example: { kind: "empty" },
+      }),
+    ).toBe(false);
+  });
+
+  it("is true when schema, example, or notices are present", () => {
+    expect(
+      schemaRailHasContent({
+        heading: "Response 200",
+        notices: [{ code: "depth", message: "bounded" }],
+        root: null,
+        example: { kind: "empty" },
+      }),
+    ).toBe(true);
+    expect(
+      schemaRailHasContent({
+        heading: "Response 200",
+        notices: [],
+        root: { kind: "boolean", value: true, description: null },
+        example: { kind: "empty" },
+      }),
+    ).toBe(true);
+    expect(
+      schemaRailHasContent({
+        heading: "Response 200",
+        notices: [],
+        root: null,
+        example: { kind: "value", value: 1, source: "media", name: null },
+      }),
+    ).toBe(true);
   });
 });

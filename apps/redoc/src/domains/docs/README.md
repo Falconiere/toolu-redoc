@@ -1,7 +1,9 @@
 # src/domains/docs
 
-Owns the Signal three-column docs shell (nav · main · rail), tag-grouped operation
-navigation, and operation detail / Samples rail UI. `/` after a successful load
+Owns the Signal jade API Reference docs shell (nav · main · Samples rail),
+tag-grouped operation navigation, operation detail / Samples panels, and
+prev/next pager. Empty schema/example rails collapse the Samples column. Visual
+source: `docs/design-reference/Main.dc.html`. `/` after a successful load
 composes this shell via `src/app/compose-loaded-docs.tsx`. `/docs` still wires a
 temporary Petstore twin for shell/nav/detail demos (share links target `/`).
 
@@ -9,9 +11,10 @@ temporary Petstore twin for shell/nav/detail demos (share links target `/`).
 | --- | --- |
 | `screens/docs-shell-screen.tsx` | Band + chrome + `DocsShell` composition |
 | `components/docs-shell*.tsx` | Layout, drawers, toolbar, empty placeholders |
-| `components/docs-shell-focus.ts` | Shared `CONTROL_FOCUS` class string for toolbar + drawer |
+| `components/docs-shell-focus.ts` | Re-exports shared `CONTROL_FOCUS` from `@/utilities/control-focus` |
 | `components/docs-operation-nav.tsx` | Filter + tag sections; DTO props only (no openapi import) |
 | `components/docs-operation-nav-row.tsx` | One selectable operation row |
+| `components/docs-operation-pager.tsx` | Prev/next operation pager (document order) |
 | `components/unknown-operation-empty.tsx` | Distinct empty when share `op` is malformed/missing |
 | `components/operation-detail*.tsx` | Main-column operation detail (header, params, request, responses, servers) |
 | `components/schema-rail*.tsx` / `schema-tree-node.tsx` | Samples rail: schema disclosure tree + example panel |

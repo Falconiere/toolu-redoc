@@ -13,6 +13,7 @@ import {
 } from "@/domains/openapi/components/spec-load-form";
 import { SpecExampleGallery } from "@/domains/openapi/components/spec-example-gallery";
 import { useSpecLoad, type SpecLoadHook } from "@/domains/openapi/hooks/use-spec-load";
+import { BandThemeToggle } from "@/ui/band-theme-toggle";
 
 /** Missing-source copy when the share link has no `url` (AC-9). */
 export const MISSING_SOURCE_MESSAGE =
@@ -124,13 +125,16 @@ export function SpecLoadScreen(props: SpecLoadScreenProps) {
 
 function SpecLoadHeader() {
   return (
-    <header>
-      <h1 className="type-display text-text">
-        Spec <span className="text-accent">load</span>
-      </h1>
-      <p className="type-body-sm mt-2 text-text-muted">
-        Paste OpenAPI text or load from an http(s) URL.
-      </p>
+    <header className="flex items-start justify-between gap-4">
+      <div className="min-w-0">
+        <h1 className="type-display text-text">
+          Spec <span className="text-accent">load</span>
+        </h1>
+        <p className="type-body-sm mt-2 text-text-muted">
+          Paste OpenAPI text or load from an http(s) URL.
+        </p>
+      </div>
+      <BandThemeToggle />
     </header>
   );
 }

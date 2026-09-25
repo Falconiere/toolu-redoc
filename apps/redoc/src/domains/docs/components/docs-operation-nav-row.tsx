@@ -21,7 +21,7 @@ export function operationNavPrimaryText(item: OperationNavItem): string {
   return item.path;
 }
 
-/** Focusable operation row — button with house focus ring and local overflow. */
+/** Focusable operation row — live method colour when selected (Signal job 2). */
 export function DocsOperationNavRow({
   item,
   selected,
@@ -29,18 +29,27 @@ export function DocsOperationNavRow({
 }: DocsOperationNavRowProps) {
   const primary = operationNavPrimaryText(item);
   const methodLabel = item.method.toUpperCase();
+  const selectedClass = selected
+    ? "border-border bg-surface"
+    : "border-transparent hover:bg-disabled-fill";
 
   return (
     <button
       type="button"
       aria-current={selected ? "true" : undefined}
-      className={`type-body-sm flex w-full min-w-0 items-baseline gap-2 overflow-auto rounded-xs border border-transparent px-2 py-1.5 text-left text-text transition duration-(--duration-hover) ease-signal hover:border-border active:translate-y-px ${CONTROL_FOCUS}`}
+      className={`flex h-10 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-sm border px-2.5 text-left transition duration-(--duration-hover) ease-signal active:translate-y-px ${selectedClass} ${CONTROL_FOCUS}`}
       onClick={() => {
         onSelectIdentity(item.identity);
       }}
     >
-      <span className="type-data shrink-0 text-text-faint">{methodLabel}</span>
-      <span className="min-w-0">{primary}</span>
+      <span className={`type-data w-12 shrink-0 ${selected ? "text-accent" : "text-text-muted"}`}>
+        {methodLabel}
+      </span>
+      <span
+        className={`type-body-sm min-w-0 truncate ${selected ? "text-text" : "text-text-muted"}`}
+      >
+        {primary}
+      </span>
       {item.deprecated ? (
         <span className="type-meta shrink-0 text-text-faint">(deprecated)</span>
       ) : null}

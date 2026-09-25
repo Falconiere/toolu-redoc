@@ -355,11 +355,11 @@ describe("DocsOperationNav", () => {
       />,
     );
 
-    expect(screen.getByText("No matching operations.")).toBeVisible();
+    expect(screen.getByText("No endpoint matches that filter.")).toBeVisible();
     expect(screen.getByText("Selected operation is hidden by the filter.")).toBeVisible();
 
     await user.click(screen.getByRole("button", { name: "Clear filter" }));
-    expect(screen.queryByText("No matching operations.")).toBeNull();
+    expect(screen.queryByText("No endpoint matches that filter.")).toBeNull();
     expect(screen.queryByText("Selected operation is hidden by the filter.")).toBeNull();
     expect(screen.getByRole("searchbox", { name: "Filter operations" })).toHaveValue("");
     expect(document.querySelector('[data-section-key="beta"]')).not.toBeNull();
@@ -377,7 +377,7 @@ describe("DocsOperationNav", () => {
       />,
     );
     expect(screen.getByText("No operations in this document.")).toBeVisible();
-    expect(screen.queryByText("No matching operations.")).toBeNull();
+    expect(screen.queryByText("No endpoint matches that filter.")).toBeNull();
   });
 
   it("keeps empty-document message when operationCount is 0 even with a filter query", () => {
@@ -392,7 +392,7 @@ describe("DocsOperationNav", () => {
       />,
     );
     expect(screen.getByText("No operations in this document.")).toBeVisible();
-    expect(screen.queryByText("No matching operations.")).toBeNull();
+    expect(screen.queryByText("No endpoint matches that filter.")).toBeNull();
   });
 });
 

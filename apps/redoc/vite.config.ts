@@ -16,6 +16,11 @@ export default defineConfig({
   // runtime reads the result back as `import.meta.env.BASE_URL` (router
   // basepath, share hrefs, example hrefs), so this is the one place it is set.
   base: resolveBasePath(process.env.REDOC_BASE_PATH),
+  // `cloudflared` quick tunnels mint random `*.trycloudflare.com` hosts; a
+  // leading-dot entry allows the apex and every subdomain (Vite host check).
+  server: {
+    allowedHosts: [".trycloudflare.com"],
+  },
   plugins: [
     // The router plugin must come before the React plugin — it rewrites route
     // modules that the React plugin then transforms.

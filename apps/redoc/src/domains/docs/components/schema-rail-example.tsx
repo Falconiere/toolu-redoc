@@ -19,7 +19,7 @@ export function SchemaRailExamplePanel({ example }: SchemaRailExampleProps) {
   if (example.kind === "external") {
     const label = example.name !== null ? `${example.name}: ` : "";
     return (
-      <p className="type-data break-all text-text" aria-label="Example value">
+      <p className="type-code break-all text-text" aria-label="Example value">
         {label}externalValue: {example.url}
       </p>
     );
@@ -33,7 +33,7 @@ export function SchemaRailExamplePanel({ example }: SchemaRailExampleProps) {
         {name}
       </p>
       <pre
-        className="type-data overflow-x-auto whitespace-pre-wrap text-text"
+        className="type-code overflow-x-auto whitespace-pre-wrap text-text"
         aria-label="Example value"
       >
         {formatExampleValue(example.value)}
