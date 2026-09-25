@@ -2,19 +2,21 @@
 import { useMemo, useState, type ReactNode } from "react";
 
 import { mapOperationDetail } from "@/app/map-operation-detail";
-import { mapSchemaFocusLabel } from "@/app/map-schema-focus-label";
+import { mapSchemaRail } from "@/app/map-schema-rail";
 import { DocsOperationNav } from "@/domains/docs/components/docs-operation-nav";
 import { DocsShell } from "@/domains/docs/components/docs-shell";
-import { DocsShellPlaceholder } from "@/domains/docs/components/docs-shell-placeholder";
 import { UnknownOperationEmpty } from "@/domains/docs/components/unknown-operation-empty";
 import { OperationDetail } from "@/domains/docs/components/operation-detail";
+import { SchemaRail } from "@/domains/docs/components/schema-rail";
 import type { OperationDetailModel, SchemaFocus } from "@/domains/docs/api/operation-detail-model";
+import type { SchemaRailModel } from "@/domains/docs/api/schema-rail-model";
 import {
   buildOperationNavModel,
   type OperationNavModel,
 } from "@/domains/openapi/api/build-operation-nav-model";
 import { filterOperationNavModel } from "@/domains/openapi/api/filter-operation-nav-model";
 import type { SpecLoadSuccess } from "@/domains/openapi/api/load-openapi-document";
+import type { NormalizedOpenApiOperation } from "@/domains/openapi/api/normalize-openapi-document";
 import {
   resolveOperationSelection,
   type OperationSelection,
@@ -67,7 +69,10 @@ export function ComposeLoadedDocs({
   const selection = resolveOperationSelection(search.op, document.operations);
   const selectedIdentity = selection.kind === "selected" ? selection.identity : null;
   const filtered = filterOperationNavModel(navModel, filterQuery, selectedIdentity);
-  const detailModel = resolveDetailModel(document, selectedIdentity);
+  const selectedOperation = resolveSelectedOperation(document, selectedIdentity);
+  const detailModel =
+    selectedOperation === null ? null : mapOperationDetail(selectedOperation, document.servers);
+  const railModel = mapSchemaRail(document, selectedOperation, focus);
 
   return (
     <div className="band min-h-screen" data-testid="loaded-docs-viewer">
@@ -86,7 +91,7 @@ export function ComposeLoadedDocs({
         selectionVisible={filtered.selectionVisible}
         selection={selection}
         detailModel={detailModel}
-        focus={focus}
+        railModel={railModel}
         onFocusChange={setFocus}
         onSelectIdentity={(identity) => {
           setFocus(null);
@@ -108,20 +113,15 @@ function SourceSummary({ source }: { source: SpecLoadSuccess["source"] }): React
   );
 }
 
-/** Resolve OperationDetailModel for the selected identity, or null. */
-function resolveDetailModel(
+/** Resolve the selected operation row, or null. */
+function resolveSelectedOperation(
   document: SpecLoadSuccess["document"],
   selectedIdentity: string | null,
-): OperationDetailModel | null {
+): NormalizedOpenApiOperation | null {
   if (selectedIdentity === null) {
     return null;
   }
-  const selectedOperation =
-    document.operations.find((operation) => operation.identity === selectedIdentity) ?? null;
-  if (selectedOperation === null) {
-    return null;
-  }
-  return mapOperationDetail(selectedOperation, document.servers);
+  return document.operations.find((operation) => operation.identity === selectedIdentity) ?? null;
 }
 
 /** DocsShell slots for the loaded viewer (keeps ComposeLoadedDocs under line limits). */
@@ -133,7 +133,7 @@ function LoadedDocsShell({
   selectionVisible,
   selection,
   detailModel,
-  focus,
+  railModel,
   onFocusChange,
   onSelectIdentity,
 }: {
@@ -144,7 +144,7 @@ function LoadedDocsShell({
   selectionVisible: boolean;
   selection: OperationSelection;
   detailModel: OperationDetailModel | null;
-  focus: SchemaFocus | null;
+  railModel: SchemaRailModel | null;
   onFocusChange: (focus: SchemaFocus | null) => void;
   onSelectIdentity: (identity: string) => void;
 }) {
@@ -167,13 +167,7 @@ function LoadedDocsShell({
           <OperationDetail operation={detailModel} onFocusChange={onFocusChange} />
         )
       }
-      rail={
-        focus === null ? (
-          <DocsShellPlaceholder message="Schemas and examples appear here." />
-        ) : (
-          <p className="type-meta text-text-muted">{mapSchemaFocusLabel(focus)}</p>
-        )
-      }
+      rail={<SchemaRail model={railModel} />}
     />
   );
 }

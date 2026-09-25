@@ -16,7 +16,7 @@ operation.
 
 1. Re-implementing sidebar filter matching — reuse `filterOperationNavModel` and
    `DocsOperationNav` from #5 unchanged (T12 already owned there).
-2. Schema/example right rail (#7) — keep the existing focus stub rail.
+2. Schema/example right rail (#7) — wire `SchemaRail` / `mapSchemaRail` once #7 is on the base branch.
 3. Playwright / Workers browser harness ownership (#9). Fresh-session and
    Back/Forward are proven with TanStack Router memory history + RTL (and the
    existing fixture HTTP server for URL-spec loads). Full cross-origin Workers
@@ -169,7 +169,7 @@ When `useSpecLoad().success !== null`:
    - `main`: if `selection.kind === "unknown"` → unknown empty; else
      `OperationDetail` for the matched operation (or empty “Select an
      operation.” when `none`).
-   - `rail`: existing focus stub (#7 unchanged).
+   - `rail`: `SchemaRail` via `mapSchemaRail` (#7).
 6. App route (`compose-loaded-docs` / `index.tsx`) maps openapi success + search
    into docs DTOs/callbacks so `domains/docs` never imports `openapi`.
 

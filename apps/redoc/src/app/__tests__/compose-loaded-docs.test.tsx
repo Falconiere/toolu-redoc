@@ -61,7 +61,7 @@ describe("ComposeLoadedDocs", () => {
     stubMatchMedia();
   });
 
-  it("selects get /pet/findByStatus from op and shows detail (AC-1)", () => {
+  it("selects get /pet/findByStatus from op and shows detail (AC-1)", async () => {
     const op = encodeOperationIdentity("get", "/pet/findByStatus");
     render(
       <ComposeLoadedDocs
@@ -76,6 +76,8 @@ describe("ComposeLoadedDocs", () => {
     expect(screen.getByTestId("loaded-docs-viewer")).toBeInTheDocument();
     expect(screen.getByText(/Swagger Petstore/i)).toBeInTheDocument();
     expect(screen.getByText("/pet/findByStatus")).toBeInTheDocument();
+    // OperationDetail default-focuses; Samples rail maps via #7 SchemaRail.
+    expect(await screen.findByLabelText("Schema rail")).toBeInTheDocument();
   });
 
   it("calls onOperationChange with push when a nav row is clicked (AC-2)", () => {
