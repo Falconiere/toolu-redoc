@@ -8,16 +8,17 @@ import {
   SHARE_URL_QUERY_DISCLOSURE,
   ShareOperationLink,
   ShareOperationMeta,
+  ShareOperationProvider,
   type ShareOperationLinkProps,
 } from "@/domains/openapi/components/share-operation-link";
 
 /** Render chrome button + meta strip together (matches LoadedDocsToolbar). */
 function renderShare(props: ShareOperationLinkProps) {
   return render(
-    <>
-      <ShareOperationLink {...props} />
-      <ShareOperationMeta {...props} />
-    </>,
+    <ShareOperationProvider {...props}>
+      <ShareOperationLink />
+      <ShareOperationMeta />
+    </ShareOperationProvider>,
   );
 }
 

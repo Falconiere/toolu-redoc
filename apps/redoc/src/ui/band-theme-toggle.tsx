@@ -1,9 +1,9 @@
 /** Ghost control that flips the Signal band (dark ↔ light). */
 import { useBandTheme } from "@/providers/band-theme-provider";
 
-/** Focus ring matching house controls. */
+/** Focus ring matching house docs chrome (`focus-visible`, not `focus:`). */
 const CONTROL_FOCUS =
-  "focus:border-accent focus:outline-none focus:ring-(--spacing-focus-ring) focus:ring-focus-ring";
+  "focus-visible:border-accent focus-visible:ring-(--spacing-focus-ring) focus-visible:ring-focus-ring";
 
 /** Shared ghost chrome button. */
 const GHOST_BUTTON =

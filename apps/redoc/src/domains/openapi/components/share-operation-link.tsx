@@ -1,12 +1,10 @@
 /** Copy share link for the loaded docs viewer (url+op disclosure). */
-import { useState } from "react";
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
+import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 import { buildShareHref } from "@/domains/openapi/api/build-share-href";
 import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
-
-/** Focus ring utilities matching SpecLoad form controls. */
-const CONTROL_FOCUS =
-  "focus:border-accent focus:outline-none focus:ring-(--spacing-focus-ring) focus:ring-focus-ring";
+import { useTimedFlag } from "@/utilities/use-timed-flag";
 
 /** Ghost mono control matching the API Reference mock chrome. */
 const GHOST_BUTTON =
@@ -36,38 +34,65 @@ export const SHARE_URL_QUERY_DISCLOSURE =
 export const SHARE_PASTE_DISCLOSURE =
   "This link does not include the document. Paste the same OpenAPI document again in a fresh session to restore the operation.";
 
-/** Resolve share href + which disclosures to show. */
-function useShareOperationModel(props: ShareOperationLinkProps): {
+/** Shared share-link model (one hook instance per toolbar). */
+type ShareOperationModel = {
   href: string;
   copied: boolean;
   copy: () => void;
   showUrlQueryDisclosure: boolean;
   showPasteDisclosure: boolean;
-} {
+};
+
+const ShareOperationContext = createContext<ShareOperationModel | null>(null);
+
+/** Resolve share href + which disclosures to show. */
+function useShareOperationModel(props: ShareOperationLinkProps): ShareOperationModel {
   const { search, sourceKind, sourceHref, origin, basePath = import.meta.env.BASE_URL } = props;
-  const [copied, setCopied] = useState(false);
+  const { active: copied, pulse } = useTimedFlag();
   const resolvedOrigin = origin ?? window.location.origin;
   const href = buildShareHref(resolvedOrigin, search, basePath);
-  return {
-    href,
-    copied,
-    copy: () => {
-      void navigator.clipboard.writeText(href).then(
-        () => {
-          setCopied(true);
-          return undefined;
-        },
-        () => undefined,
-      );
-    },
-    showUrlQueryDisclosure: sourceKind === "url" && Boolean(sourceHref?.includes("?")),
-    showPasteDisclosure: sourceKind === "paste",
-  };
+
+  const copy = useCallback(() => {
+    void navigator.clipboard.writeText(href).then(
+      () => {
+        pulse();
+        return undefined;
+      },
+      () => undefined,
+    );
+  }, [href, pulse]);
+  return useMemo(
+    () => ({
+      href,
+      copied,
+      copy,
+      showUrlQueryDisclosure: sourceKind === "url" && Boolean(sourceHref?.includes("?")),
+      showPasteDisclosure: sourceKind === "paste",
+    }),
+    [href, copied, copy, sourceKind, sourceHref],
+  );
+}
+
+/** Owns one share model for both the copy button and meta strip. */
+export function ShareOperationProvider({
+  children,
+  ...props
+}: ShareOperationLinkProps & { children: ReactNode }) {
+  const model = useShareOperationModel(props);
+  return <ShareOperationContext.Provider value={model}>{children}</ShareOperationContext.Provider>;
+}
+
+function useShareOperationContext(): ShareOperationModel {
+  const ctx = useContext(ShareOperationContext);
+  if (ctx === null) {
+    throw new Error("ShareOperationLink/Meta require ShareOperationProvider");
+  }
+  return ctx;
 }
 
 /** Header action: copy button only (meta lives in {@link ShareOperationMeta}). */
-export function ShareOperationLink(props: ShareOperationLinkProps) {
-  const { href, copied, copy } = useShareOperationModel(props);
+export function ShareOperationLink() {
+  const { href, copied, copy } = useShareOperationContext();
   return (
     <button type="button" className={GHOST_BUTTON} title={href} onClick={copy}>
       {copied ? "Copied" : "Copy link"}
@@ -76,8 +101,8 @@ export function ShareOperationLink(props: ShareOperationLinkProps) {
 }
 
 /** Second-row share href + paste/url disclosures (aligned meta strip). */
-export function ShareOperationMeta(props: ShareOperationLinkProps) {
-  const { href, showUrlQueryDisclosure, showPasteDisclosure } = useShareOperationModel(props);
+export function ShareOperationMeta() {
+  const { href, showUrlQueryDisclosure, showPasteDisclosure } = useShareOperationContext();
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <p className="type-meta truncate text-text-faint" data-testid="share-href">

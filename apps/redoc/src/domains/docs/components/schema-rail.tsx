@@ -39,7 +39,8 @@ export function SchemaRail({ model }: SchemaRailProps) {
   if (model === null) {
     return <DocsShellPlaceholder message="Schemas and examples appear here." />;
   }
-  const isErrorHeading = /\b[45]\d\d\b/.test(model.heading) || /default/i.test(model.heading);
+  const isErrorHeading =
+    /^Response\s+[45]\d\d\b/.test(model.heading) || /^default$/i.test(model.heading);
   return (
     <div className="flex min-w-0 flex-col gap-4" aria-label="Schema rail">
       <p className="type-marker px-1 text-text-faint">{model.heading}</p>

@@ -148,7 +148,7 @@ export function DocsOperationNav({
       {showNoMatch ? (
         <p className="type-body-sm px-2.5 text-text-muted">No endpoint matches that filter.</p>
       ) : null}
-      <nav aria-label="Endpoints" className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto">
         {model.sections.map((section) => (
           <DocsOperationNavSection
             key={section.key}
@@ -157,7 +157,7 @@ export function DocsOperationNav({
             onSelectIdentity={onSelectIdentity}
           />
         ))}
-      </nav>
+      </div>
     </div>
   );
 }

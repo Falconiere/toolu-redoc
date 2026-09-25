@@ -4,13 +4,11 @@ import type { ReactNode } from "react";
 import {
   ShareOperationLink,
   ShareOperationMeta,
+  ShareOperationProvider,
   type ShareOperationLinkProps,
 } from "@/domains/openapi/components/share-operation-link";
+import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 import { BandThemeToggle } from "@/ui/band-theme-toggle";
-
-/** Focus ring utilities matching SpecLoad form controls. */
-const CONTROL_FOCUS =
-  "focus:border-accent focus:outline-none focus:ring-(--spacing-focus-ring) focus:ring-focus-ring";
 
 /** Primary inverted control — reset / primary actions. */
 const PRIMARY_BUTTON =
@@ -40,31 +38,33 @@ export function LoadedDocsToolbar({
   sourceSummary,
 }: LoadedDocsToolbarProps) {
   return (
-    <div className="shrink-0 border-b border-border bg-background">
-      <header className="flex h-(--spacing-docs-header) items-center gap-3 px-6">
-        <h1 className="type-subhead min-w-0 truncate text-text">{title}</h1>
-        <span className="type-marker hidden shrink-0 text-text-muted sm:inline">
-          / API reference
-        </span>
-        <div className="min-w-0 flex-1" />
-        <span className="type-data shrink-0 rounded-xs border border-border px-2 py-1 text-text-muted">
-          v{version}
-        </span>
-        <BandThemeToggle />
-        <ShareOperationLink {...share} />
-        <button type="button" className={PRIMARY_BUTTON} onClick={onReset}>
-          Reset
-          <span className="opacity-50" aria-hidden="true">
-            →
+    <ShareOperationProvider {...share}>
+      <div className="shrink-0 border-b border-border bg-background">
+        <header className="flex h-(--spacing-docs-header) items-center gap-3 px-6">
+          <h1 className="type-subhead min-w-0 truncate text-text">{title}</h1>
+          <span className="type-marker hidden shrink-0 text-text-muted sm:inline">
+            / API reference
           </span>
-        </button>
-      </header>
-      <div className="flex items-start gap-4 px-6 py-2">
-        <div className="min-w-0 flex-1">{sourceSummary}</div>
-        <div className="min-w-0 flex-1 text-right sm:max-w-md">
-          <ShareOperationMeta {...share} />
+          <div className="min-w-0 flex-1" />
+          <span className="type-data shrink-0 rounded-xs border border-border px-2 py-1 text-text-muted">
+            v{version}
+          </span>
+          <BandThemeToggle />
+          <ShareOperationLink />
+          <button type="button" className={PRIMARY_BUTTON} onClick={onReset}>
+            Reset
+            <span className="opacity-50" aria-hidden="true">
+              →
+            </span>
+          </button>
+        </header>
+        <div className="flex items-start gap-4 px-6 py-2">
+          <div className="min-w-0 flex-1">{sourceSummary}</div>
+          <div className="min-w-0 flex-1 text-right sm:max-w-md">
+            <ShareOperationMeta />
+          </div>
         </div>
       </div>
-    </div>
+    </ShareOperationProvider>
   );
 }

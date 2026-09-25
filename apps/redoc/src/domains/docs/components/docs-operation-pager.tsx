@@ -30,34 +30,34 @@ export function DocsOperationPager({ previous, next, onSelectIdentity }: DocsOpe
       aria-label="Pager"
       className="mt-12 flex justify-between gap-4 border-t border-border pt-6"
     >
-      <div>
-        {previous !== null ? (
-          <button
-            type="button"
-            className={`${PAGER_BUTTON} flex flex-col gap-1 text-left`}
-            onClick={() => {
-              onSelectIdentity(previous.identity);
-            }}
-          >
-            <span className="type-marker text-text-faint">← Previous</span>
-            <span className="type-body-sm text-text">{previous.label}</span>
-          </button>
-        ) : null}
-      </div>
-      <div>
-        {next !== null ? (
-          <button
-            type="button"
-            className={`${PAGER_BUTTON} flex flex-col items-end gap-1 text-right`}
-            onClick={() => {
-              onSelectIdentity(next.identity);
-            }}
-          >
-            <span className="type-marker text-text-faint">Next →</span>
-            <span className="type-body-sm text-text">{next.label}</span>
-          </button>
-        ) : null}
-      </div>
+      {previous !== null ? (
+        <button
+          type="button"
+          className={`${PAGER_BUTTON} flex flex-col gap-1 text-left`}
+          onClick={() => {
+            onSelectIdentity(previous.identity);
+          }}
+        >
+          <span className="type-marker text-text-faint">← Previous</span>
+          <span className="type-body-sm text-text">{previous.label}</span>
+        </button>
+      ) : (
+        <span aria-hidden="true" />
+      )}
+      {next !== null ? (
+        <button
+          type="button"
+          className={`${PAGER_BUTTON} flex flex-col items-end gap-1 text-right`}
+          onClick={() => {
+            onSelectIdentity(next.identity);
+          }}
+        >
+          <span className="type-marker text-text-faint">Next →</span>
+          <span className="type-body-sm text-text">{next.label}</span>
+        </button>
+      ) : (
+        <span aria-hidden="true" />
+      )}
     </nav>
   );
 }

@@ -1,8 +1,9 @@
 /** Operation detail header: marker, title, summary, method/path bar. */
-import { useState } from "react";
+import { useEffect } from "react";
 
 import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 import type { OperationDetailModel } from "@/domains/docs/api/operation-detail-model";
+import { useTimedFlag } from "@/utilities/use-timed-flag";
 
 /** Props for the operation detail header region. */
 export type OperationDetailHeaderProps = {
@@ -27,24 +28,27 @@ function groupLabel(operation: OperationDetailModel): string {
 }
 
 /**
- * API Reference mock header: section marker, large title, muted blurb,
+ * API Reference mock header: section marker, large title, muted description,
  * method + path bar with copy (Signal live colour stays on the nav method).
  */
 export function OperationDetailHeader({ operation }: OperationDetailHeaderProps) {
-  const [copied, setCopied] = useState(false);
+  const { active: copied, pulse, clear } = useTimedFlag();
   const title = operation.summary ?? operation.path;
   const group = groupLabel(operation);
   const segments = pathSegments(operation.path);
   const copyText = `${operation.method.toUpperCase()} ${operation.path}`;
-  const blurb =
-    operation.description ??
-    (operation.summary !== null && operation.summary.trim().length > 0 ? operation.summary : null);
+  const blurb = operation.description;
+  const operationKey = `${operation.method}:${operation.path}:${operation.operationId ?? ""}`;
+
+  useEffect(() => {
+    clear();
+  }, [operationKey, clear]);
 
   return (
     <header className="flex min-w-0 flex-col gap-3.5">
       <p className="type-marker text-text-faint">— · {group}</p>
       <h2 className="type-display text-text">{title}</h2>
-      {blurb !== null && blurb !== title ? (
+      {blurb !== null && blurb.trim().length > 0 ? (
         <p className="type-body max-w-(--container-copy) whitespace-pre-wrap text-text-muted">
           {blurb}
         </p>
@@ -70,7 +74,7 @@ export function OperationDetailHeader({ operation }: OperationDetailHeaderProps)
           onClick={() => {
             void navigator.clipboard.writeText(copyText).then(
               () => {
-                setCopied(true);
+                pulse();
                 return undefined;
               },
               () => undefined,

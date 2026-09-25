@@ -46,10 +46,11 @@ export function BandThemeProvider({ children }: { children: ReactNode }) {
 /**
  * Read band theme controls. Uses the provider when present; otherwise a local
  * fallback so isolated test mounts of SpecLoad / toolbar still render.
+ * Fallback starts at dark without reading storage (provider owns persistence).
  */
 export function useBandTheme(): BandThemeContextValue {
   const ctx = useContext(BandThemeContext);
-  const [fallback, setFallback] = useState<BandTheme>(() => readStoredBandTheme());
+  const [fallback, setFallback] = useState<BandTheme>("dark");
 
   useEffect(() => {
     if (ctx !== null) {

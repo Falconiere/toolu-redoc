@@ -9,7 +9,7 @@ export type BandTheme = "dark" | "light";
 /** Read a stored band preference; invalid or missing → dark. */
 export function readStoredBandTheme(): BandTheme {
   try {
-    return globalThis.localStorage.getItem(BAND_THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+    return localStorage.getItem(BAND_THEME_STORAGE_KEY) === "light" ? "light" : "dark";
   } catch {
     return "dark";
   }
@@ -18,7 +18,7 @@ export function readStoredBandTheme(): BandTheme {
 /** Persist the band preference (best-effort; private mode may throw). */
 export function writeStoredBandTheme(theme: BandTheme): void {
   try {
-    globalThis.localStorage.setItem(BAND_THEME_STORAGE_KEY, theme);
+    localStorage.setItem(BAND_THEME_STORAGE_KEY, theme);
   } catch {
     // Ignore quota / private-mode / missing-storage failures.
   }
