@@ -1,7 +1,8 @@
 /** Signal SpecLoadScreen — paste / URL load form, loading skeleton, success handoff. */
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
+import type { SpecLoadSuccess } from "@/domains/openapi/api/load-openapi-document";
 import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
 import { SpecLoadBanner, SpecLoadErrorBanner } from "@/domains/openapi/components/spec-load-banner";
 import {
@@ -15,15 +16,26 @@ import { useSpecLoad, type SpecLoadHook } from "@/domains/openapi/hooks/use-spec
 export const MISSING_SOURCE_MESSAGE =
   "A pasted OpenAPI document is not in this link. Paste the document to continue.";
 
+/** Args passed to {@link SpecLoadScreenProps.renderLoaded}. */
+export type SpecLoadRenderLoadedArgs = {
+  success: SpecLoadSuccess;
+  reset: () => void;
+};
+
 /** Props for {@link SpecLoadScreen}. Search comes from the thin `/` route. */
 export type SpecLoadScreenProps = {
   search: SpecLoadSearch;
   /** Sync `url` into the location while preserving `op` (parent owns navigate). */
   onSourceUrlChange?: (href: string) => void;
+  /**
+   * When set, replaces the entire load chrome after success (docs viewer).
+   * When omitted, keeps the legacy success panel (tests / fallback).
+   */
+  renderLoaded?: (args: SpecLoadRenderLoadedArgs) => ReactNode;
 };
 
 /** Paste + URL load UI with Signal loading / banner / success states. */
-export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProps) {
+export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: SpecLoadScreenProps) {
   const hook = useSpecLoad();
   const [pasteText, setPasteText] = useState("");
   const [urlField, setUrlField] = useState(search.url ?? "");
@@ -35,6 +47,10 @@ export function SpecLoadScreen({ search, onSourceUrlChange }: SpecLoadScreenProp
 
   useAutoLoadUrl(search.url, loadRef, claimedUrlRef);
   useSyncUrlField(search.url, setUrlField);
+
+  if (hook.success !== null && renderLoaded !== undefined) {
+    return <>{renderLoaded({ success: hook.success, reset: hook.reset })}</>;
+  }
 
   const focusPaste = (): void => {
     pasteRef.current?.focus();

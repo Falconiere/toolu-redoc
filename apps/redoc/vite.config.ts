@@ -22,7 +22,7 @@ export default defineConfig({
       // colocated tests.
       routesDirectory: "./src/app",
       generatedRouteTree: "./src/route-tree.gen.ts",
-      routeFileIgnorePattern: "^(__tests__|load-|map-)",
+      routeFileIgnorePattern: "^(__tests__|load-|map-|compose-)",
     }),
     react(),
     // Tailwind is the styling system, not an option: src/ui/globals.css is the
