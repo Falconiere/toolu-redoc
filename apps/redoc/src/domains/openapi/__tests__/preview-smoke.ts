@@ -1,4 +1,4 @@
-/** T27 preview smoke: production dist + fixture URL load → filter → select → share → reload. */
+/** Production-dist Playwright smoke: load Petstore by URL, filter, select, share, reload. */
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -171,9 +171,9 @@ async function main(): Promise<void> {
     if (!opParam.includes("get") || !opParam.includes("/pet/findByStatus")) {
       fail(`expected op to contain get+/pet/findByStatus, got ${opParam}`);
     }
-    // Keep identity helper referenced so the smoke stays pinned to the codec.
-    if (!OP_IDENTITY.includes("findByStatus")) {
-      fail("encodeOperationIdentity fixture drift");
+    // Pin the identity codec to the known Petstore pair (not a tautological includes).
+    if (OP_IDENTITY !== '["get","/pet/findByStatus"]') {
+      fail(`encodeOperationIdentity drift: ${OP_IDENTITY}`);
     }
 
     await page.getByRole("button", { name: "Copy link" }).waitFor({ timeout: 5_000 });
