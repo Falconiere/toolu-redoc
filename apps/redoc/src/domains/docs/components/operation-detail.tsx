@@ -66,10 +66,14 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
 export function OperationDetail({ operation, onFocusChange }: OperationDetailProps) {
   const onFocusChangeRef = useRef(onFocusChange);
   onFocusChangeRef.current = onFocusChange;
+  const operationRef = useRef(operation);
+  operationRef.current = operation;
+  const identity = operation?.identity ?? null;
 
   useEffect(() => {
-    onFocusChangeRef.current?.(operation ? defaultFocus(operation) : null);
-  }, [operation]);
+    const current = operationRef.current;
+    onFocusChangeRef.current?.(current ? defaultFocus(current) : null);
+  }, [identity]);
 
   if (operation === null) {
     return (

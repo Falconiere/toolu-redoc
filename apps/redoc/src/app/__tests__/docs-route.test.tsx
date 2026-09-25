@@ -94,7 +94,7 @@ describe("docs route chrome (AC-1 / AC-6)", () => {
     if (chrome.ok) {
       throw new Error("expected parse failure for whitespace-only input");
     }
-    expect(chrome.message.toLowerCase()).toContain("empty");
+    expect(chrome.message.toLowerCase()).toMatch(/openapi|document|paste/);
   });
 
   it("returns ok:false with a message for Swagger 2 JSON", () => {

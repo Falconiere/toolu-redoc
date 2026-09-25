@@ -113,10 +113,3 @@ export type OperationDetailProps = {
   operation: OperationDetailModel | null;
   onFocusChange?: ((focus: SchemaFocus | null) => void) | undefined;
 };
-
-/** Props for the temporary identity picker until #5. */
-export type OperationNavListProps = {
-  operations: { identity: string; method: string; path: string }[];
-  selectedIdentity: string | null;
-  onSelect: (identity: string) => void;
-};

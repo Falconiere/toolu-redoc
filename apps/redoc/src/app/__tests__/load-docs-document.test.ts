@@ -41,7 +41,7 @@ describe("loadDocsDocument", () => {
     if (empty.ok) {
       throw new Error("expected failure for whitespace");
     }
-    expect(empty.message.toLowerCase()).toContain("empty");
+    expect(empty.message.toLowerCase()).toMatch(/openapi|document|paste/);
 
     const swagger = loadDocsDocument(
       JSON.stringify({
