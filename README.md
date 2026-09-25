@@ -5,7 +5,7 @@ them out.
 
 ## Apps
 
-- `apps/redoc` — console (port 5173)
+- `apps/redoc` — OpenAPI docs viewer console (port 5173). Run/load/Out of scope: [`apps/redoc/README.md`](./apps/redoc/README.md).
 - `apps/api` — backend-ts (port 8787)
 
 ## Shared packages

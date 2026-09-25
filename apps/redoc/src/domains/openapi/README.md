@@ -20,7 +20,7 @@ success hand off to the docs viewer (selection via search `op`, share copy UI).
 | `api/write-operation-search.ts` | Merge `op` into search while preserving `url` |
 | `api/network-error-message.ts` | Honest network / mixed-content guidance |
 | `api/spec-load-error.ts` | Structured load failure codes |
-| `api/openapi-*-schema*.ts` | Zod boundary schemas (`z.infer` types only) |
+| `api/openapi-*-schema*.ts` | Zod boundary schemas (`z.infer` types only) — the domain models |
 | `api/normalize-openapi-document.ts` | Operations, notices, parameter merge |
 | `api/merge-parameters.ts` | Path + operation parameter merge by `(name,in)` |
 | `api/operation-identity.ts` | Reversible method+path identity keys |
@@ -33,7 +33,8 @@ success hand off to the docs viewer (selection via search `op`, share copy UI).
 | `components/share-operation-link.tsx` | Copy link + query/paste disclosure |
 | `components/` | Load banner / form pieces |
 | `__tests__/fixtures/` | Petstore + scenario fixtures + `provenance.md` |
-| `__tests__/fixture-http-server.ts` | Real Node fixture HTTP server for load tests |
+| `__tests__/fixture-http-server.ts` | Real Node fixture HTTP server for load tests + preview smoke |
+| `__tests__/preview-smoke.ts` | T27 Playwright smoke against production `dist/` |
 | `__tests__/parse-acceptance.test.ts` | Parse AC real-fixture suites |
 
 Public entries:
@@ -46,6 +47,15 @@ Public entries:
 
 Only `src/app/**` routes may import this domain.
 
+## Models, parse, and screens
+
+| Concern | Where |
+| --- | --- |
+| Zod models / schemas | `api/openapi-*-schema*.ts` (`z.infer` types; no parallel interfaces) |
+| Parse | `parseOpenApiDocument` ← decode → Zod → normalize |
+| Load | `loadOpenApiDocument` (paste \| URL) + `useSpecLoad` + `SpecLoadScreen` |
+| Screens | `screens/spec-load-screen.tsx` on `/`; post-load viewer composed in `src/app/` |
+
 ## Share URL contract (`/` search)
 
 | Param | Meaning | Owner |
@@ -53,7 +63,23 @@ Only `src/app/**` routes may import this domain.
 | `url` | Absolute http(s) source URL (one search value) | loads on `/` |
 | `op` | `encodeOperationIdentity(method, path)` | selects operation after load |
 
-## Blocked (not claimed pass on this issue)
+## Fixture HTTP server lifecycle
 
-- T06 full distinct-origin browser CORS matrix → #9 browser harness
-- Workers SPA direct-link reload harness → #9
+```ts
+const server = await startFixtureHttpServer();
+try {
+  // server.baseUrl + "/fixtures/petstore.json"
+} finally {
+  await server.close();
+}
+```
+
+Used by Vitest URL-load suites and `__tests__/preview-smoke.ts`. Serves permissive
+CORS for localhost Chromium smoke only — not a production CORS product claim.
+Full distinct-origin browser CORS matrix (epic T06) remains documentation-only:
+opaque fetch errors show paste recovery without diagnosing CORS.
+
+## Explicitly not this domain
+
+Try it out, credentials, hosted platform, Swagger 2, remote `$ref` fetch — see
+`apps/redoc/README.md` Out of scope.

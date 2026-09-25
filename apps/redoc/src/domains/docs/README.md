@@ -1,14 +1,14 @@
 # src/domains/docs
 
 Owns the Signal three-column docs shell (nav · main · rail), tag-grouped operation
-navigation, and operation detail view-model UI. `/` after a successful load
+navigation, and operation detail / Samples rail UI. `/` after a successful load
 composes this shell via `src/app/compose-loaded-docs.tsx`. `/docs` still wires a
-temporary Petstore twin for shell/nav/detail demos.
+temporary Petstore twin for shell/nav/detail demos (share links target `/`).
 
 | Path | Holds |
 | --- | --- |
 | `screens/docs-shell-screen.tsx` | Band + chrome + `DocsShell` composition |
-| `components/docs-shell*.tsx` | Layout, drawers, toolbar, placeholders |
+| `components/docs-shell*.tsx` | Layout, drawers, toolbar, empty placeholders |
 | `components/docs-shell-focus.ts` | Shared `CONTROL_FOCUS` class string for toolbar + drawer |
 | `components/docs-operation-nav.tsx` | Filter + tag sections; DTO props only (no openapi import) |
 | `components/docs-operation-nav-row.tsx` | One selectable operation row |

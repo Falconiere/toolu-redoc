@@ -30,6 +30,9 @@ wrangler.jsonc     Cloudflare Workers deploy config
 Each `src/*` folder has its own `README.md` listing what lives there — read it
 before adding files, and add a line when you add something notable.
 
+**Viewer Out of scope / load journey:** see [`README.md`](./README.md) (Try it
+out, hosted platform, credentials, Swagger 2, … are explicitly not MVP).
+
 ## Tooling
 
 - Use `bun` for everything (`bun install`, `bun run <script>`, `bunx <bin>`).

@@ -33,6 +33,7 @@ function writeOversizeStream(res: ServerResponse): void {
   res.writeHead(200, {
     "Content-Type": "application/octet-stream",
     "Transfer-Encoding": "chunked",
+    ...CORS_HEADERS,
   });
   const chunk = Buffer.alloc(64 * 1024, 0x61);
   let sent = 0;
@@ -52,10 +53,18 @@ function writeOversizeStream(res: ServerResponse): void {
   pump();
 }
 
+/** CORS headers so Chromium preview-smoke can URL-load across localhost ports. */
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+  "Access-Control-Allow-Headers": "*",
+} as const;
+
 function sendBuffer(res: ServerResponse, status: number, contentType: string, body: Buffer): void {
   res.writeHead(status, {
     "Content-Type": contentType,
     "Content-Length": body.byteLength,
+    ...CORS_HEADERS,
   });
   res.end(body);
 }
@@ -84,8 +93,14 @@ function handleRequest(req: IncomingMessage, res: ServerResponse): void {
   const method = req.method ?? "GET";
   const path = pathnameOf(req);
 
+  if (method === "OPTIONS") {
+    res.writeHead(204, { ...CORS_HEADERS });
+    res.end();
+    return;
+  }
+
   if (method !== "GET" && method !== "HEAD") {
-    res.writeHead(405).end();
+    res.writeHead(405, { ...CORS_HEADERS }).end();
     return;
   }
 
@@ -99,17 +114,23 @@ function handleRequest(req: IncomingMessage, res: ServerResponse): void {
       return;
     }
     case "/fixtures/redirect": {
-      res.writeHead(302, { Location: "/fixtures/petstore.json" });
+      res.writeHead(302, { Location: "/fixtures/petstore.json", ...CORS_HEADERS });
       res.end();
       return;
     }
     case "/fixtures/missing": {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.writeHead(404, {
+        "Content-Type": "text/plain; charset=utf-8",
+        ...CORS_HEADERS,
+      });
       res.end("not found");
       return;
     }
     case "/fixtures/error": {
-      res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+      res.writeHead(500, {
+        "Content-Type": "text/plain; charset=utf-8",
+        ...CORS_HEADERS,
+      });
       res.end("internal error");
       return;
     }
@@ -130,7 +151,10 @@ function handleRequest(req: IncomingMessage, res: ServerResponse): void {
       return;
     }
     default: {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.writeHead(404, {
+        "Content-Type": "text/plain; charset=utf-8",
+        ...CORS_HEADERS,
+      });
       res.end("unknown fixture route");
     }
   }

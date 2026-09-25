@@ -15,6 +15,7 @@
     "fmt:check": "oxfmt --check --ignore-path ../../.oxfmtignore",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:preview-smoke": "bun run src/domains/openapi/__tests__/preview-smoke.ts",
     "check:structure": "bash ../../scripts/guardrails/run.sh",
     "check:dupes": "jscpd",
     "check": "bun run type-check && bun run lint && bun run fmt:check && bun run check:structure && bun run check:dupes && bun run test"
@@ -44,6 +45,7 @@
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0",
     "oxlint-tsgolint": "7.0.2001",
+    "playwright": "1.55.0",
     "typescript": "5.9.3",
     "vite": "6.4.1",
     "vite-tsconfig-paths": "5.1.4",
