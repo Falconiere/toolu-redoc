@@ -2,13 +2,13 @@
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
-import { createConnection } from "node:net";
 import { join } from "node:path";
 
 import { chromium, type Browser } from "playwright";
 
 import { startFixtureHttpServer } from "@/domains/openapi/__tests__/fixture-http-server";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
+import { createHttpClient } from "@/utilities/http";
 
 /** Package root — `test:preview-smoke` always runs with cwd = apps/redoc. */
 const rootDir = process.cwd();
@@ -19,35 +19,49 @@ const OP_IDENTITY = encodeOperationIdentity("get", "/pet/findByStatus");
 const PREVIEW_PORT = 4173;
 const PREVIEW_ORIGIN = `http://127.0.0.1:${PREVIEW_PORT}`;
 
+/**
+ * Probe client bound to the preview origin (not the app API base URL).
+ * Overrides Accept so Vite preview does not 404 on application/json.
+ */
+const previewHttp = createHttpClient({
+  baseUrl: PREVIEW_ORIGIN,
+  timeoutMs: 2_000,
+  credentials: "omit",
+  headers: () => ({ accept: "*/*" }),
+});
+
 /** Fail with a clear message and nonzero exit. */
 function fail(message: string): never {
   console.error(`preview-smoke: ${message}`);
   process.exit(1);
 }
 
-/** One TCP poll against the preview listen port (no fetch / no API http client). */
-function probePort(port: number): Promise<boolean> {
-  return new Promise((resolve) => {
-    const socket = createConnection({ host: "127.0.0.1", port }, () => {
-      socket.end();
-      resolve(true);
-    });
-    socket.on("error", () => {
-      resolve(false);
-    });
-  });
+/** One HTTP GET of the preview root via {@link previewHttp}; false on network/HttpError. */
+async function probePreview(): Promise<boolean> {
+  try {
+    const { response, requestUrl } = await previewHttp.getResponse("/");
+    if (!response.ok) {
+      console.warn(`preview-smoke: probe non-OK ${response.status} for ${requestUrl}`);
+      return false;
+    }
+    return true;
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.warn(`preview-smoke: probe miss for ${PREVIEW_ORIGIN}/ — ${detail}`);
+    return false;
+  }
 }
 
-/** Wait until the preview server accepts connections. */
+/** Wait until the preview HTTP URL responds OK. */
 async function waitForPreview(timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs;
-  const ready = await probePort(PREVIEW_PORT);
+  const ready = await probePreview();
   if (ready) {
     return;
   }
   await new Promise<void>((resolve, reject) => {
     const timer = setInterval(() => {
-      void probePort(PREVIEW_PORT).then((ok) => {
+      void probePreview().then((ok) => {
         if (ok) {
           clearInterval(timer);
           resolve();
@@ -55,7 +69,7 @@ async function waitForPreview(timeoutMs: number): Promise<void> {
         }
         if (Date.now() >= deadline) {
           clearInterval(timer);
-          reject(new Error(`timed out waiting for ${PREVIEW_ORIGIN}`));
+          reject(new Error(`timed out waiting for ${PREVIEW_ORIGIN}/`));
           return undefined;
         }
         return undefined;
