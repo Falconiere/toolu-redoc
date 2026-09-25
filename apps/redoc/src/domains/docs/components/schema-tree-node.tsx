@@ -1,4 +1,4 @@
-/** Recursive disclosure row for one SchemaNode (React text children only). */
+/** Recursive disclosure row for one SchemaNode in the Samples rail. */
 import type { SchemaNode } from "@/domains/docs/api/schema-rail-model";
 
 /** Props for a single schema tree node. */

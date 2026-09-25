@@ -1,4 +1,4 @@
-/** Format and render the Samples rail example panel (React text children only). */
+/** Format and render the Samples rail example panel. */
 import { formatExampleValue } from "@/domains/docs/components/format-example-value";
 import type { SchemaRailExample } from "@/domains/docs/api/schema-rail-model";
 
