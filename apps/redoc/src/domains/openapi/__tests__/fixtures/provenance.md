@@ -29,6 +29,8 @@ Document reports `openapi: 3.0.4`, title `Swagger Petstore - OpenAPI 3.0`.
 | `param-merge.json` | AC-9 path + operation parameter merge | `b211af36cb33a6032c9ef648e8e7862cfef8348f1e215e50c2c40fb301e8cd20` |
 | `operation-detail-bodies.json` | Issue #6 T14 multi-media body + headers/default/2XX/204 | `51d4865a7d07baf33cb97e6173ebb75d501572446de5280957f4c0adaeb33b22` |
 | `operation-detail-meta.json` | Issue #6 T15 missing fields / deprecated / op servers | `7a6a215e0191020c4a493a457b1fb9ff4369a6e72af9036fb669cca9f1c98ec8` |
+| `schema-rail-ops.json` | Issue #7 T16 3.0 distinctions + external `$ref` + 204 | `0a448e5a95f541e684b195ef346e6eaf842baffbfbd7eb8b6ec9a643e8c9d137` |
+| `schema-rail-ops-3.1.json` | Issue #7 T16 3.1 null-union/boolean + `$id`/`$dynamicRef` | `280d4e4e3d9a659be4db9ada26ed2f60e7ace7c9b3e61e5ff3d6963794f6ecbf` |
 | `empty-paths.json` | AC-5 empty `paths` | `4f74e3ca75d9c4448ab0ee89fb714640f6db4b1d5e1a6d7708c79ea9e4e3f49a` |
 | `webhook-only-3.1.yaml` | AC-5 webhook-only 3.1 | `6e700ea816b91b2a92f9c17e9d5380e38eafc7a1015c660b08d1318830f7eaee` |
 | `fbad-empty.txt` | AC-4 / AC-6 empty-ish decode | `2106c36011520fe73876d45bfb9ef8bf7b2e9f4362096a320376d8ee9b27ef12` |

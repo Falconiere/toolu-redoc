@@ -1,16 +1,17 @@
-/** Temporary `/docs` — Petstore nav + operation detail in DocsShell. */
+/** Temporary `/docs` — Petstore nav + operation detail + SchemaRail. */
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { loadDocsDocument } from "@/app/load-docs-document";
 import { mapOperationDetail } from "@/app/map-operation-detail";
+import { mapSchemaRail } from "@/app/map-schema-rail";
 import petstoreText from "@/domains/docs/api/dev-petstore-3.0.json?raw";
+import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
 import { DocsOperationNav } from "@/domains/docs/components/docs-operation-nav";
 import type { OperationNavItem } from "@/domains/docs/components/docs-operation-nav";
-import { DocsShellPlaceholder } from "@/domains/docs/components/docs-shell-placeholder";
-import { DocsShellScreen } from "@/domains/docs/screens/docs-shell-screen";
 import { OperationDetail } from "@/domains/docs/components/operation-detail";
-import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
+import { SchemaRail } from "@/domains/docs/components/schema-rail";
+import { DocsShellScreen } from "@/domains/docs/screens/docs-shell-screen";
 import {
   buildOperationNavModel,
   type OperationNavModel,
@@ -42,22 +43,9 @@ function resolveSelectedItem(
   return null;
 }
 
-/** Summarize SchemaFocus for the temporary Samples stub until #7. */
-function focusStubLabel(focus: SchemaFocus): string {
-  if (focus.kind === "parameter") {
-    return `Schema focus: parameter ${focus.name} (${focus.in})`;
-  }
-  if (focus.kind === "request") {
-    return `Schema focus: request ${focus.mediaType}`;
-  }
-  const media = focus.mediaType ?? "—";
-  const header = focus.headerName !== null ? ` header ${focus.headerName}` : "";
-  return `Schema focus: response ${focus.status} ${media}${header}`;
-}
-
 /**
- * Compose Petstore chrome + tag-grouped nav + operation detail, or an incident
- * note on parse failure. Selection and filter are route-local (no URL sync).
+ * Compose Petstore chrome + tag-grouped nav + operation detail + SchemaRail,
+ * or an incident note on parse failure. Selection and filter are route-local.
  */
 export function DocsRoute() {
   const [selectedIdentity, setSelectedIdentity] = useState<string | null>(null);
@@ -99,6 +87,7 @@ export function DocsRoute() {
     selectedOperation === null
       ? null
       : mapOperationDetail(selectedOperation, LOADED_PETSTORE.document.servers);
+  const railModel = mapSchemaRail(LOADED_PETSTORE.document, selectedOperation, focus);
 
   return (
     <DocsShellScreen
@@ -118,13 +107,7 @@ export function DocsRoute() {
         />
       }
       main={<OperationDetail operation={detailModel} onFocusChange={setFocus} />}
-      rail={
-        focus === null ? (
-          <DocsShellPlaceholder message="Schemas and examples appear here." />
-        ) : (
-          <p className="type-meta text-text-muted">{focusStubLabel(focus)}</p>
-        )
-      }
+      rail={<SchemaRail model={railModel} />}
     />
   );
 }

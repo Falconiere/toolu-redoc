@@ -205,6 +205,10 @@ describe("docs route operation nav (AC-1 / AC-3 / AC-8)", () => {
       );
     }
     expect(screen.queryByText("Select an operation.")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Schema focus:/)).not.toBeInTheDocument();
+    const samples = screen.getByRole("region", { name: "Samples" });
+    expect(within(samples).getByRole("heading", { level: 2 })).toBeInTheDocument();
+    expect(within(samples).getByRole("region", { name: "Schema" })).toBeInTheDocument();
   });
 });
 
