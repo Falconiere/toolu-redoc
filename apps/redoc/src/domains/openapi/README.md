@@ -16,7 +16,8 @@ success hand off to the docs viewer (selection via search `op`, share copy UI).
 | `api/validate-spec-source-url.ts` | http(s)-only source URL gate (no userinfo) |
 | `api/spec-source-search.ts` | `/` search coerce for `url` + `op` params |
 | `api/resolve-operation-selection.ts` | Resolve `op` → none \| selected \| unknown |
-| `api/build-share-href.ts` | Compose public `/?url=&op=` share href |
+| `api/build-share-href.ts` | Compose public `<base>?url=&op=` share href (`basePath` = Vite `BASE_URL`) |
+| `api/example-specs.ts` | Gallery manifest `EXAMPLE_SPECS` + `exampleSpecHref` (bytes in `public/examples/`) |
 | `api/write-operation-search.ts` | Merge `op` into search while preserving `url` |
 | `api/network-error-message.ts` | Honest network / mixed-content guidance |
 | `api/spec-load-error.ts` | Structured load failure codes |
@@ -31,10 +32,11 @@ success hand off to the docs viewer (selection via search `op`, share copy UI).
 | `screens/spec-load-screen.tsx` | Signal paste + URL load UI (+ `renderLoaded` handoff) |
 | `components/loaded-docs-toolbar.tsx` | Post-load title/version/share/reset chrome |
 | `components/share-operation-link.tsx` | Copy link + query/paste disclosure |
+| `components/spec-example-gallery.tsx` | "Try an example" index rows; plain click loads in place, modified click opens the share link |
 | `components/` | Load banner / form pieces |
 | `__tests__/fixtures/` | Petstore + scenario fixtures + `provenance.md` |
-| `__tests__/fixture-http-server.ts` | Real Node fixture HTTP server for load tests + preview smoke |
-| `__tests__/preview-smoke.ts` | T27 Playwright smoke against production `dist/` |
+| `__tests__/fixture-http-server.ts` | Real Node fixture HTTP server for load tests + preview smoke (also `/examples/<manifest file>`) |
+| `__tests__/preview-smoke.ts` | T27 Playwright smoke against production `dist/` (root build, or the gallery journey when `REDOC_BASE_PATH` is set) |
 | `__tests__/parse-acceptance.test.ts` | Parse AC real-fixture suites |
 
 Public entries:
@@ -60,7 +62,7 @@ Only `src/app/**` routes may import this domain.
 
 | Param | Meaning | Owner |
 | --- | --- | --- |
-| `url` | Absolute http(s) source URL (one search value) | loads on `/` |
+| `url` | Absolute http(s) source URL (one search value) | loads on `/` (under the deploy base path, e.g. `/toolu-redoc/` on GitHub Pages) |
 | `op` | `encodeOperationIdentity(method, path)` | selects operation after load |
 
 ## Fixture HTTP server lifecycle

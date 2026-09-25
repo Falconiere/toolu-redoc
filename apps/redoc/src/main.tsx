@@ -10,6 +10,8 @@ import "@/ui/globals.css";
 
 const router = createRouter({
   routeTree,
+  // `/` on Cloudflare, `/<repo>/` on GitHub Pages — see vite.config.ts `base`.
+  basepath: import.meta.env.BASE_URL,
   defaultPreload: "intent",
   scrollRestoration: true,
 });

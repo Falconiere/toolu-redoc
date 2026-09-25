@@ -23,8 +23,11 @@ src/utilities/     Shared pure helpers — including http.ts, THE HTTP client
 src/providers/     App-level context providers (mounted in src/main.tsx)
 src/constants/     env.ts (Zod-validated), enums
 src/types/         Cross-cutting types
+public/examples/   Gallery example specs (static, same-origin) + NOTICE.md — manifest in
+                   src/domains/openapi/api/example-specs.ts; bytes are pinned (oxfmt-ignored)
 docs/              design-language.md — the house UI rules; read before UI work
 wrangler.jsonc     Cloudflare Workers deploy config
+                   (GitHub Pages demo: REDOC_BASE_PATH + `build:pages` + .github/workflows/pages.yml)
 ```
 
 Each `src/*` folder has its own `README.md` listing what lives there — read it

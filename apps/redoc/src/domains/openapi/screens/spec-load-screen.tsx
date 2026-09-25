@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
+import { EXAMPLE_SPECS } from "@/domains/openapi/api/example-specs";
 import type { SpecLoadSuccess } from "@/domains/openapi/api/load-openapi-document";
 import type { SpecLoadSearch } from "@/domains/openapi/api/spec-source-search";
 import { SpecLoadBanner, SpecLoadErrorBanner } from "@/domains/openapi/components/spec-load-banner";
@@ -10,6 +11,7 @@ import {
   SpecLoadSkeleton,
   SpecLoadSuccessPanel,
 } from "@/domains/openapi/components/spec-load-form";
+import { SpecExampleGallery } from "@/domains/openapi/components/spec-example-gallery";
 import { useSpecLoad, type SpecLoadHook } from "@/domains/openapi/hooks/use-spec-load";
 
 /** Missing-source copy when the share link has no `url` (AC-9). */
@@ -32,10 +34,13 @@ export type SpecLoadScreenProps = {
    * When omitted, keeps the legacy success panel (tests / fallback).
    */
   renderLoaded?: (args: SpecLoadRenderLoadedArgs) => ReactNode;
+  /** Origin the gallery examples are served from (defaults to window.location.origin). */
+  examplesOrigin?: string;
 };
 
 /** Paste + URL load UI with Signal loading / banner / success states. */
-export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: SpecLoadScreenProps) {
+export function SpecLoadScreen(props: SpecLoadScreenProps) {
+  const { search, onSourceUrlChange, renderLoaded, examplesOrigin } = props;
   const hook = useSpecLoad();
   const [pasteText, setPasteText] = useState("");
   const [urlField, setUrlField] = useState(search.url ?? "");
@@ -70,6 +75,7 @@ export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: Spec
   };
   const showReset = hook.success !== null || hook.error !== null;
   const sourceUrlChangeProps = onSourceUrlChange === undefined ? {} : { onSourceUrlChange };
+  const loadUrl = bindUrlLoad(loadRef, claimedUrlRef, onSourceUrlChange);
 
   return (
     <main className="band min-h-screen px-(--spacing-gutter-md) py-(--spacing-section-y)">
@@ -96,17 +102,21 @@ export function SpecLoadScreen({ search, onSourceUrlChange, renderLoaded }: Spec
             void loadRef.current({ kind: "paste", text: pasteText });
           }}
           onLoadUrl={() => {
-            void runUrlLoad(urlField, {
-              load: loadRef.current,
-              claimedUrlRef,
-              ...sourceUrlChangeProps,
-            });
+            loadUrl(urlField);
           }}
           onCancel={hook.cancel}
           onReset={hook.reset}
         />
         {hook.status === "loading" ? <SpecLoadSkeleton /> : null}
         {hook.success !== null ? <SpecLoadSuccessPanel success={hook.success} /> : null}
+        {hook.success === null ? (
+          <SpecExampleGallery
+            specs={EXAMPLE_SPECS}
+            origin={examplesOrigin ?? window.location.origin}
+            basePath={import.meta.env.BASE_URL}
+            onLoadExample={loadUrl}
+          />
+        ) : null}
       </div>
     </main>
   );
@@ -250,6 +260,21 @@ function useAutoLoadUrl(
     autoKeyRef.current = searchUrl;
     void loadRef.current({ kind: "url", href: searchUrl });
   }, [searchUrl, loadRef, claimedUrlRef]);
+}
+
+/** `(href) => runUrlLoad(href, …)` bound to this screen's refs and URL sync (Load URL + gallery). */
+function bindUrlLoad(
+  loadRef: RefObject<SpecLoadHook["load"]>,
+  claimedUrlRef: RefObject<string | null>,
+  onSourceUrlChange: ((href: string) => void) | undefined,
+): (href: string) => void {
+  return (href) => {
+    void runUrlLoad(href, {
+      load: loadRef.current,
+      claimedUrlRef,
+      ...(onSourceUrlChange === undefined ? {} : { onSourceUrlChange }),
+    });
+  };
 }
 
 async function runUrlLoad(

@@ -5,11 +5,17 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
+import { resolveBasePath } from "./src/utilities/resolve-base-path";
+
 // One config, not two: a separate `vitest.config.ts` REPLACES this file for test
 // runs rather than merging with it, so the router plugin and the `@/*` alias
 // would silently vanish under Vitest. `defineConfig` is imported from
 // `vitest/config` so the `test` block is typed.
 export default defineConfig({
+  // GitHub Pages serves the demo under `/<repo>/`; Cloudflare serves `/`. The
+  // runtime reads the result back as `import.meta.env.BASE_URL` (router
+  // basepath, share hrefs, example hrefs), so this is the one place it is set.
+  base: resolveBasePath(process.env.REDOC_BASE_PATH),
   plugins: [
     // The router plugin must come before the React plugin — it rewrites route
     // modules that the React plugin then transforms.

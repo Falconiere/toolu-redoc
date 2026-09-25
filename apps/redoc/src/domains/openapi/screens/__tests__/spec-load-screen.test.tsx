@@ -34,7 +34,13 @@ async function start(): Promise<FixtureHttpServer> {
 }
 
 /** Stateful harness: merges `url` updates while preserving `op` (AC-8). */
-function SearchHarness({ initial }: { initial: SpecLoadSearch }) {
+function SearchHarness({
+  initial,
+  examplesOrigin,
+}: {
+  initial: SpecLoadSearch;
+  examplesOrigin?: string;
+}) {
   const [search, setSearch] = useState(initial);
   return (
     <div>
@@ -45,6 +51,7 @@ function SearchHarness({ initial }: { initial: SpecLoadSearch }) {
         onSourceUrlChange={(href) => {
           setSearch((previous) => ({ ...previous, url: href }));
         }}
+        {...(examplesOrigin === undefined ? {} : { examplesOrigin })}
       />
     </div>
   );
@@ -117,6 +124,33 @@ describe("SpecLoadScreen", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent(MISSING_SOURCE_MESSAGE);
     expect(screen.getByRole("button", { name: /^paste$/i })).toBeInTheDocument();
+  });
+
+  it("loads a gallery example in place, hides the gallery, and restores it on Reset", async () => {
+    const fixture = await start();
+    render(<SearchHarness initial={{}} examplesOrigin={fixture.baseUrl} />);
+
+    const gallery = screen.getByRole("list", { name: "Try an example" });
+    fireEvent.click(within(gallery).getByRole("link", { name: /Redocly Museum API/ }));
+
+    const panel = await screen.findByTestId("spec-load-success");
+    expect(within(panel).getByText(/Redocly Museum API/)).toBeInTheDocument();
+    expect(screen.getByTestId("search-url")).toHaveTextContent(
+      `${fixture.baseUrl}/examples/museum-3.1.yaml`,
+    );
+    expect(fixture.requestLog.map((entry) => entry.url)).toContain("/examples/museum-3.1.yaml");
+    expect(screen.queryByRole("list", { name: "Try an example" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /reset/i }));
+    expect(screen.getByRole("list", { name: "Try an example" })).toBeInTheDocument();
+  });
+
+  it("does not serve example files that are not in the gallery manifest", async () => {
+    const fixture = await start();
+    render(<SpecLoadScreen search={{ url: `${fixture.baseUrl}/examples/NOTICE.md` }} />);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent.toLowerCase()).toMatch(/404|not found|status/);
   });
 
   it("shows missing-source message when url and op are both absent (AC-9)", () => {

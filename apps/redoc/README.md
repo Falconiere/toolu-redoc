@@ -29,6 +29,28 @@ bun run --filter @toolu-redoc/redoc test:preview-smoke   # T27: dist + real Pets
 bun run --filter @toolu-redoc/redoc preview              # interactive production preview
 ```
 
+## Live demo (GitHub Pages)
+
+<https://falconiere.github.io/toolu-redoc/> is this app, built with a base path.
+
+- **Base path.** `REDOC_BASE_PATH` (default `/`) sets Vite's `base`. It must be `/` or a
+  slash-wrapped path such as `/toolu-redoc/`; anything else fails the build and names
+  the bad value. The router `basepath`, share links, and example links all derive from
+  `import.meta.env.BASE_URL`. The Cloudflare build sets nothing and stays at `/`.
+- **Artifact.** `REDOC_BASE_PATH=/toolu-redoc/ bun run build:pages` runs `vite build`,
+  then copies `dist/index.html` to `dist/404.html` (GitHub Pages has no SPA fallback)
+  and adds `dist/.nojekyll`.
+- **Deploy.** `.github/workflows/pages.yml` runs only after the CI workflow succeeds
+  for a `push` to `main` in this repository, or on manual dispatch from the default
+  branch. It builds with `REDOC_BASE_PATH=/<repo>/` and deploys with
+  `actions/deploy-pages`. CI smokes the same base-path artifact first, so a red `main`
+  never publishes.
+- **One-time setup** (already done for this repo):
+  `gh api -X POST repos/<owner>/<repo>/pages -f build_type=workflow`.
+- **Deep paths.** Opening `/toolu-redoc/docs` directly is served by `404.html`: the app
+  renders normally, but the HTTP status is 404. Share links use `/toolu-redoc/?url=…&op=…`,
+  which is served by `index.html` with status 200.
+
 ## Documented journey (T27)
 
 1. Install and gate: `bun install` then `bun run --filter @toolu-redoc/redoc check`
@@ -36,6 +58,10 @@ bun run --filter @toolu-redoc/redoc preview              # interactive productio
 2. Production build: `bun run --filter @toolu-redoc/redoc build`.
 3. Automated smoke: `bun run --filter @toolu-redoc/redoc test:preview-smoke`
    (Playwright against `dist/`: URL-load Petstore → filter → select → share → reload).
+   For the Pages artifact, run `REDOC_BASE_PATH=/toolu-redoc/ bun run build:pages` and
+   then the smoke with the same env. That journey clicks the Museum gallery example,
+   checks there was no full page load, confirms share links keep `/toolu-redoc/`,
+   reloads the deep link, and opens `/toolu-redoc/docs`.
 4. Interactive: `bun run --filter @toolu-redoc/redoc preview` (or `dev`), then paste
    or open `/?url=<encoded-http(s)-href>`, filter operations, select one, use
    **Copy link**. Share search params are `url` (source) and `op` (operation identity).
@@ -55,10 +81,11 @@ bun run --filter @toolu-redoc/redoc preview              # interactive productio
 | `src/providers/` | App-level context providers (mounted in `src/main.tsx`). |
 | `src/constants/` | `env.ts` (Zod-validated env) + enums. |
 | `src/types/` | Cross-cutting types. |
-| `src/domains/openapi/__tests__/preview-smoke.ts` | Noninteractive T27 preview smoke (Playwright + fixture HTTP). |
+| `src/domains/openapi/__tests__/preview-smoke.ts` | Noninteractive T27 preview smoke (Playwright + fixture HTTP; gallery journey when `REDOC_BASE_PATH` is set). |
+| `public/examples/` | Gallery example specs served as static files, plus `NOTICE.md` (sources, licences, SHA-256). |
 | `docs/` | `design-language.md` — the house UI rules. Read before any UI work. |
 | `wrangler.jsonc` | Cloudflare Workers deploy config (`not_found_handling: single-page-application`). |
-| `.github/workflows/` | `ci.yml` (the gate + redoc build + preview smoke) + `code-review.yml`. |
+| `.github/workflows/` | `ci.yml` (the gate + redoc builds + preview smokes) + `pages.yml` (GitHub Pages deploy after green CI on `main`) + `code-review.yml`. |
 
 Every `src/*` folder has a `README.md` describing its contents. Domain map:
 [`src/domains/README.md`](./src/domains/README.md).
@@ -94,19 +121,25 @@ Share search params on `/`: `url` (absolute http(s) source href) and `op`
 
 On `/` (Spec load screen):
 
-1. **Paste** OpenAPI JSON or YAML into the text area and choose **Parse paste**.
-2. **URL** — enter an absolute `http://` or `https://` link (no userinfo) and
+1. **Try an example** — the gallery below the form lists the bundled specs in
+   `public/examples/` (manifest: `src/domains/openapi/api/example-specs.ts`). A click
+   loads one through the same path as **Load URL**, and because the file is on the
+   same origin, CORS never gets in the way. Ctrl/⌘-click opens the share link in a
+   new tab. The gallery hides once a document has loaded and comes back after
+   **Reset**.
+2. **Paste** OpenAPI JSON or YAML into the text area and choose **Parse paste**.
+3. **URL** — enter an absolute `http://` or `https://` link (no userinfo) and
    choose **Load URL**, or open `/?url=<encoded-href>` to auto-load. Optional
    `op` selects an operation after load.
-3. Loading, validation, and network failures use Signal banner/empty patterns.
+4. Loading, validation, and network failures use Signal banner/empty patterns.
    Opaque network errors offer paste recovery and **never claim a definitive CORS
    diagnosis** (the browser does not expose that).
-4. HTTPS pages that load `http://` sources may be blocked as mixed content — use
+5. HTTPS pages that load `http://` sources may be blocked as mixed content — use
    HTTPS sources or paste.
-5. Limits (enforced while reading URL bytes and before parsing paste): 5 MiB
+6. Limits (enforced while reading URL bytes and before parsing paste): 5 MiB
    UTF-8 input, 15 s fetch timeout, schema expansion depth 25, YAML alias bound
    100. See `src/domains/openapi/api/openapi-limits.ts`.
-6. Latest load wins; Reset clears model, selection, filter, and source identity.
+7. Latest load wins; Reset clears model, selection, filter, and source identity.
    Failed replacement keeps the last successful document with a labeled error.
 
 ### Paste / link lifetime
@@ -130,6 +163,7 @@ use `baseUrl` → always `close()` in `finally`.
 | `GET /fixtures/petstore.txt` | Same bytes, `text/plain` |
 | `GET /fixtures/redirect` | 302 → petstore.json |
 | `GET /fixtures/missing` / `error` / `login.html` / `delayed` / `oversize` | Error and boundary scenarios |
+| `GET /examples/<file>` | Gallery example bytes from `public/examples/` (manifest files only; anything else 404) |
 
 Provenance: `src/domains/openapi/__tests__/fixtures/provenance.md`. The fixture
 server sends permissive CORS headers so the production bundle in Chromium can
@@ -171,13 +205,17 @@ presentation — parse, load, navigate, detail, Samples rail, share links.
 | `bun run test` / `test:watch` | Vitest (unit/component). |
 | `bun run test:preview-smoke` | Playwright T27 smoke against production `dist/`. |
 | `bun run build` / `preview` | Production build / local preview. |
+| `bun run build:pages` | GitHub Pages artifact: `vite build` + `404.html` + `.nojekyll` (set `REDOC_BASE_PATH`). |
 | `bun run deploy` | Build, then `wrangler deploy`. |
 
 ## CI and review
 
 - **`ci.yml`** — type-check, lint, format-check, structure check, test, **apps/redoc
-  production build**, Playwright Chromium install, **preview smoke**, and
-  apps/api wrangler dry-run, each as its own step, on every PR and push to `main`.
+  production build**, Playwright Chromium install, **preview smoke**, the **GitHub
+  Pages base-path build + smoke**, and apps/api wrangler dry-run, each as its own
+  step, on every PR and push to `main`.
+- **`pages.yml`** — deploys the base-path build to GitHub Pages after `ci.yml`
+  succeeds for a push to `main` (see [Live demo](#live-demo-github-pages)).
 - **`code-review.yml`** — AI review of every PR against this repo's own
   convention files (read from the base branch). Needs an `OPENROUTER_API_KEY`
   repository secret.

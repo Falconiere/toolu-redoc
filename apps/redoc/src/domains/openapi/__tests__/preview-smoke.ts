@@ -1,14 +1,20 @@
-/** Production-dist Playwright smoke: load Petstore by URL, filter, select, share, reload. */
+/**
+ * Production-dist Playwright smoke. Root build (`REDOC_BASE_PATH` unset): load
+ * Petstore by URL, filter, select, share, reload. Base-path build (e.g.
+ * `REDOC_BASE_PATH=/toolu-redoc/`, the GitHub Pages artifact): load the Museum
+ * example from the gallery, then share, deep-link reload, and `/docs`.
+ */
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-import { chromium, type Browser } from "playwright";
+import { chromium, type Browser, type Page } from "playwright";
 
 import { startFixtureHttpServer } from "@/domains/openapi/__tests__/fixture-http-server";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
 import { createHttpClient } from "@/utilities/http";
+import { resolveBasePath } from "@/utilities/resolve-base-path";
 
 /** Package root — `test:preview-smoke` always runs with cwd = apps/redoc. */
 const rootDir = process.cwd();
@@ -18,6 +24,11 @@ const FILTER_QUERY = "findByStatus";
 const OP_IDENTITY = encodeOperationIdentity("get", "/pet/findByStatus");
 const PREVIEW_PORT = 4173;
 const PREVIEW_ORIGIN = `http://127.0.0.1:${PREVIEW_PORT}`;
+/** Deploy base the dist was built with; `vite preview` reads the same env. */
+const BASE_PATH = resolveBasePath(process.env.REDOC_BASE_PATH);
+const APP_URL = `${PREVIEW_ORIGIN}${BASE_PATH}`;
+const MUSEUM_TITLE = "Redocly Museum API";
+const MUSEUM_OPERATION = "Get museum hours";
 
 /**
  * Probe client bound to the preview origin (not the app API base URL).
@@ -30,7 +41,10 @@ const previewHttp = createHttpClient({
   headers: () => ({ accept: "*/*" }),
 });
 
-/** Fail with a clear message and nonzero exit. */
+/**
+ * Fail with a clear message and nonzero exit. Only for top-level failures —
+ * journeys throw instead, so `main`'s `finally` still stops `vite preview`.
+ */
 function fail(message: string): never {
   console.error(`preview-smoke: ${message}`);
   process.exit(1);
@@ -39,7 +53,7 @@ function fail(message: string): never {
 /** One HTTP GET of the preview root via {@link previewHttp}; false on network/HttpError. */
 async function probePreview(): Promise<boolean> {
   try {
-    const { response, requestUrl } = await previewHttp.getResponse("/");
+    const { response, requestUrl } = await previewHttp.getResponse(BASE_PATH);
     if (!response.ok) {
       console.warn(`preview-smoke: probe non-OK ${response.status} for ${requestUrl}`);
       return false;
@@ -47,7 +61,7 @@ async function probePreview(): Promise<boolean> {
     return true;
   } catch (error: unknown) {
     const detail = error instanceof Error ? error.message : String(error);
-    console.warn(`preview-smoke: probe miss for ${PREVIEW_ORIGIN}/ — ${detail}`);
+    console.warn(`preview-smoke: probe miss for ${APP_URL} — ${detail}`);
     return false;
   }
 }
@@ -69,7 +83,7 @@ async function waitForPreview(timeoutMs: number): Promise<void> {
         }
         if (Date.now() >= deadline) {
           clearInterval(timer);
-          reject(new Error(`timed out waiting for ${PREVIEW_ORIGIN}/`));
+          reject(new Error(`timed out waiting for ${APP_URL}`));
           return undefined;
         }
         return undefined;
@@ -143,23 +157,12 @@ async function launchBrowser(): Promise<Browser> {
   }
 }
 
-async function main(): Promise<void> {
-  if (!existsSync(distIndex)) {
-    fail(`missing ${distIndex} — run bun run build first`);
-  }
-
+/** Root build: URL-load Petstore from the fixture server, filter, select, share, reload. */
+async function petstoreJourney(page: Page): Promise<void> {
   const fixture = await startFixtureHttpServer();
-  const preview = startPreview();
-  let browser: Browser | undefined;
-
   try {
-    await waitForPreview(30_000);
-
     const petstoreHref = `${fixture.baseUrl}/fixtures/petstore.json`;
     const loadUrl = `${PREVIEW_ORIGIN}/?url=${encodeURIComponent(petstoreHref)}`;
-
-    browser = await launchBrowser();
-    const page = await browser.newPage();
 
     await page.goto(loadUrl, { waitUntil: "networkidle" });
     await page.getByRole("heading", { name: EXPECTED_TITLE }).waitFor({ timeout: 30_000 });
@@ -180,26 +183,100 @@ async function main(): Promise<void> {
 
     const opParam = new URL(page.url()).searchParams.get("op");
     if (opParam === null) {
-      fail("expected op search param after selection");
+      throw new Error("expected op search param after selection");
     }
     if (!opParam.includes("get") || !opParam.includes("/pet/findByStatus")) {
-      fail(`expected op to contain get+/pet/findByStatus, got ${opParam}`);
+      throw new Error(`expected op to contain get+/pet/findByStatus, got ${opParam}`);
     }
     // Pin the identity codec to the known Petstore pair (not a tautological includes).
     if (OP_IDENTITY !== '["get","/pet/findByStatus"]') {
-      fail(`encodeOperationIdentity drift: ${OP_IDENTITY}`);
+      throw new Error(`encodeOperationIdentity drift: ${OP_IDENTITY}`);
     }
 
     await page.getByRole("button", { name: "Copy link" }).waitFor({ timeout: 5_000 });
 
     await page.reload({ waitUntil: "networkidle" });
     await page.getByRole("heading", { name: EXPECTED_TITLE }).waitFor({ timeout: 30_000 });
+  } finally {
+    await fixture.close();
+  }
+}
 
-    process.stdout.write("preview-smoke: ok\n");
+/**
+ * Base-path build (the GitHub Pages artifact): gallery click loads the
+ * same-origin Museum example in place, share keeps the base, a reload of the
+ * `?url=&op=` deep link restores the operation, and `<base>docs` renders.
+ */
+async function galleryJourney(page: Page): Promise<void> {
+  const museumHref = `${APP_URL}examples/museum-3.1.yaml`;
+
+  await page.goto(APP_URL, { waitUntil: "networkidle" });
+  await page.evaluate(() => {
+    document.documentElement.dataset.smokeMarker = "kept";
+  });
+  await page
+    .getByRole("list", { name: "Try an example" })
+    .getByRole("link", { name: new RegExp(MUSEUM_TITLE) })
+    .click();
+  await page.getByRole("heading", { name: MUSEUM_TITLE }).waitFor({ timeout: 30_000 });
+
+  const marker = await page.evaluate(() => document.documentElement.dataset.smokeMarker);
+  if (marker !== "kept") {
+    throw new Error("gallery click caused a full document navigation");
+  }
+  const urlParam = new URL(page.url()).searchParams.get("url");
+  if (urlParam !== museumHref) {
+    throw new Error(`expected url=${museumHref}, got ${String(urlParam)}`);
+  }
+
+  await page.getByLabel("Filter operations").fill("hours");
+  await page.getByRole("button", { name: new RegExp(MUSEUM_OPERATION, "i") }).click();
+  await page.waitForFunction(
+    (needle: string) =>
+      new URL(window.location.href).searchParams.get("op")?.includes(needle) === true,
+    "/museum-hours",
+    { timeout: 10_000 },
+  );
+
+  const shareHref = await page.getByTestId("share-href").textContent();
+  if (shareHref?.startsWith(`${APP_URL}?url=`) !== true) {
+    throw new Error(`expected share href to start with ${APP_URL}?url=, got ${String(shareHref)}`);
+  }
+
+  // Reload = a direct `<base>?url=…&op=…` deep-link load in a fresh document.
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: MUSEUM_TITLE }).waitFor({ timeout: 30_000 });
+  await page
+    .getByRole("heading", { level: 2, name: MUSEUM_OPERATION })
+    .waitFor({ timeout: 10_000 });
+
+  await page.goto(`${APP_URL}docs`, { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: EXPECTED_TITLE }).waitFor({ timeout: 30_000 });
+}
+
+async function main(): Promise<void> {
+  if (!existsSync(distIndex)) {
+    fail(`missing ${distIndex} — run bun run build first`);
+  }
+
+  const preview = startPreview();
+  let browser: Browser | undefined;
+
+  try {
+    await waitForPreview(30_000);
+    browser = await launchBrowser();
+    const page = await browser.newPage();
+
+    if (BASE_PATH === "/") {
+      await petstoreJourney(page);
+    } else {
+      await galleryJourney(page);
+    }
+
+    process.stdout.write(`preview-smoke: ok (base ${BASE_PATH})\n`);
   } finally {
     await browser?.close();
     await stopChild(preview);
-    await fixture.close();
   }
 }
 
