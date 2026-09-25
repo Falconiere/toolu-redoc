@@ -5,8 +5,6 @@ import type { NormalizedOpenApiDocument } from "@/domains/openapi/api/normalize-
 import { MAX_SCHEMA_DEPTH } from "@/domains/openapi/api/openapi-limits";
 import { resolveLocalRef, type UnresolvedRef } from "@/domains/openapi/api/resolve-local-ref";
 
-export { isSchemaRecord };
-
 /** True when value is an OAS Reference Object. */
 function isRefObject(value: unknown): value is { $ref: string } {
   return isSchemaRecord(value) && typeof value.$ref === "string";

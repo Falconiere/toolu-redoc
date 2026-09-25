@@ -167,16 +167,19 @@ describe("SchemaRail", () => {
         unsupportedKeywords: [],
         constraints: [],
       },
-      example: { kind: "value", value: FSAFE_CORPUS[2], source: "media", name: null },
+      example: {
+        kind: "value",
+        value: FSAFE_CORPUS.join("\n"),
+        source: "media",
+        name: null,
+      },
     };
     const { container } = render(<SchemaRail model={model} />);
     for (const sample of FSAFE_CORPUS) {
-      if (sample === FSAFE_CORPUS[1]) {
-        continue;
-      }
       expect(container).toHaveTextContent(sample);
     }
     expect(container.querySelector("script")).toBeNull();
+    expect(container.querySelector("img")).toBeNull();
     expect(fetchSpy).toHaveBeenCalledTimes(0);
     fetchSpy.mockRestore();
   });

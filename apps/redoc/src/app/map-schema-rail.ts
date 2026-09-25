@@ -1,5 +1,6 @@
 /** Map SchemaFocus + operation into a Samples SchemaRailModel. */
-import { isSchemaRecord, mapSchemaNode } from "@/app/map-schema-node";
+import { isSchemaRecord } from "@/app/map-schema-object-fields";
+import { mapSchemaNode } from "@/app/map-schema-node";
 import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
 import type {
   SchemaRailExample,
@@ -56,7 +57,7 @@ function headingFor(focus: SchemaFocus): string {
 /** Media-over-schema example panel rules (T19). */
 function exampleFor(focus: SchemaFocus, schema: unknown): SchemaRailExample {
   if (focus.kind === "request" || focus.kind === "response") {
-    if ("exampleValue" in focus) {
+    if (Object.hasOwn(focus, "exampleValue")) {
       return {
         kind: "value",
         value: focus.exampleValue,
