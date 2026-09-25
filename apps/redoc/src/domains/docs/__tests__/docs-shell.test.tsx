@@ -117,6 +117,41 @@ describe("DocsShellScreen", () => {
 
     expect(nav.parentElement).toBe(operation.parentElement);
     expect(samples.parentElement).toBe(operation.parentElement);
+    expect(nav.className).toMatch(/md:w-\(--spacing-docs-nav\)/);
+    expect(samples.className).toMatch(/md:w-\(--spacing-docs-rail\)/);
+    expect(operation.className).toMatch(/flex-1/);
+  });
+
+  it("collapses Samples column and opener when samplesVisible is false", () => {
+    stubViewport(860);
+    const wide = render(
+      <DocsShellScreen
+        title="Fixture Docs"
+        version="1.0.0"
+        samplesVisible={false}
+        nav={<span>Nav body</span>}
+        main={<span>Operation body</span>}
+        rail={<span>Samples body</span>}
+      />,
+    );
+    expect(screen.getByRole("navigation", { name: "Navigation" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Operation" })).toBeVisible();
+    expect(screen.queryByRole("region", { name: "Samples" })).toBeNull();
+    wide.unmount();
+
+    stubViewport(375);
+    render(
+      <DocsShellScreen
+        title="Narrow Docs"
+        version="1.0.0"
+        samplesVisible={false}
+        nav={<span>Nav body</span>}
+        main={<span>Operation body</span>}
+        rail={<span>Samples body</span>}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Navigation" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Samples" })).toBeNull();
   });
 
   it("AC-3: below md keeps Operation visible; drawers open/close with Escape restore", async () => {

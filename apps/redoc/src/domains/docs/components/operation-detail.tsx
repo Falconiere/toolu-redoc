@@ -1,16 +1,28 @@
 /** Main-column operation detail panel (null → empty selection state). */
 import { useEffect, useRef } from "react";
 
+import {
+  DocsOperationPager,
+  type OperationPagerNeighbor,
+} from "@/domains/docs/components/docs-operation-pager";
 import { OperationDetailHeader } from "@/domains/docs/components/operation-detail-header";
 import { OperationDetailParameters } from "@/domains/docs/components/operation-detail-parameters";
 import { OperationDetailRequest } from "@/domains/docs/components/operation-detail-request";
 import { OperationDetailResponses } from "@/domains/docs/components/operation-detail-responses";
 import { OperationDetailServers } from "@/domains/docs/components/operation-detail-servers";
-import type {
-  OperationDetailModel,
-  OperationDetailProps,
-  SchemaFocus,
-} from "@/domains/docs/api/operation-detail-model";
+import type { OperationDetailModel, SchemaFocus } from "@/domains/docs/api/operation-detail-model";
+
+/** Props for the main-column OperationDetail panel. */
+export type OperationDetailProps = {
+  operation: OperationDetailModel | null;
+  onFocusChange?: ((focus: SchemaFocus | null) => void) | undefined;
+  /** Previous operation in document order, when known. */
+  previous?: OperationPagerNeighbor;
+  /** Next operation in document order, when known. */
+  next?: OperationPagerNeighbor;
+  /** Select a pager neighbor identity. */
+  onSelectIdentity?: ((identity: string) => void) | undefined;
+};
 
 /** Default SchemaFocus after selecting an operation (first response, else request). */
 function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
@@ -63,7 +75,13 @@ function defaultFocus(operation: OperationDetailModel): SchemaFocus | null {
 }
 
 /** Operation detail root: empty copy or full regions with focus bridge. */
-export function OperationDetail({ operation, onFocusChange }: OperationDetailProps) {
+export function OperationDetail({
+  operation,
+  onFocusChange,
+  previous = null,
+  next = null,
+  onSelectIdentity,
+}: OperationDetailProps) {
   const onFocusChangeRef = useRef(onFocusChange);
   onFocusChangeRef.current = onFocusChange;
   const operationRef = useRef(operation);
@@ -77,14 +95,14 @@ export function OperationDetail({ operation, onFocusChange }: OperationDetailPro
 
   if (operation === null) {
     return (
-      <div className="min-w-0 border border-border bg-background p-4">
+      <div className="min-w-0 p-1">
         <p className="type-meta text-text-faint">Select an operation.</p>
       </div>
     );
   }
 
   return (
-    <article className="flex min-w-0 flex-col gap-6 border border-border bg-background p-4">
+    <article className="flex min-w-0 flex-col gap-9">
       <OperationDetailHeader operation={operation} />
       <OperationDetailServers servers={operation.servers} />
       <OperationDetailParameters
@@ -94,6 +112,9 @@ export function OperationDetail({ operation, onFocusChange }: OperationDetailPro
       />
       <OperationDetailRequest requestBody={operation.requestBody} onFocusChange={onFocusChange} />
       <OperationDetailResponses responses={operation.responses} onFocusChange={onFocusChange} />
+      {onSelectIdentity !== undefined ? (
+        <DocsOperationPager previous={previous} next={next} onSelectIdentity={onSelectIdentity} />
+      ) : null}
     </article>
   );
 }

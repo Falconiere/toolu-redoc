@@ -10,6 +10,7 @@ import type { SchemaFocus } from "@/domains/docs/api/operation-detail-model";
 import { DocsOperationNav } from "@/domains/docs/components/docs-operation-nav";
 import type { OperationNavItem } from "@/domains/docs/components/docs-operation-nav";
 import { OperationDetail } from "@/domains/docs/components/operation-detail";
+import { schemaRailHasContent } from "@/domains/docs/api/schema-rail-model";
 import { SchemaRail } from "@/domains/docs/components/schema-rail";
 import { DocsShellScreen } from "@/domains/docs/screens/docs-shell-screen";
 import {
@@ -93,6 +94,7 @@ export function DocsRoute() {
     <DocsShellScreen
       title={LOADED_PETSTORE.title}
       version={LOADED_PETSTORE.version}
+      samplesVisible={schemaRailHasContent(railModel)}
       nav={
         <DocsOperationNav
           model={filtered.model}

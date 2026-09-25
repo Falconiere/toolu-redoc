@@ -195,10 +195,10 @@ describe("docs route operation nav (AC-1 / AC-3 / AC-8)", () => {
 
     const main = screen.getByRole("region", { name: "Operation" });
     const article = within(main).getByRole("article");
-    const methodSpan = article.querySelector("span.uppercase");
-    const pathSpan = methodSpan?.nextElementSibling;
+    const methodSpan = article.querySelector("span.type-tag");
+    const pathCode = article.querySelector("code.type-code");
     expect(methodSpan?.textContent).toBe(first.method);
-    expect(pathSpan?.textContent).toBe(first.path);
+    expect(pathCode?.textContent).toBe(first.path);
     if (first.summary !== undefined && first.summary.trim().length > 0) {
       expect(within(article).getByRole("heading", { level: 2 })).toHaveTextContent(
         first.summary.trim(),
@@ -207,7 +207,7 @@ describe("docs route operation nav (AC-1 / AC-3 / AC-8)", () => {
     expect(screen.queryByText("Select an operation.")).not.toBeInTheDocument();
     expect(screen.queryByText(/Schema focus:/)).not.toBeInTheDocument();
     const samples = screen.getByRole("region", { name: "Samples" });
-    expect(within(samples).getByRole("heading", { level: 2 })).toBeInTheDocument();
+    expect(within(samples).getByRole("region", { name: "Example" })).toBeInTheDocument();
     expect(within(samples).getByRole("region", { name: "Schema" })).toBeInTheDocument();
   });
 });

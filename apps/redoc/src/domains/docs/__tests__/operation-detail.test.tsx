@@ -74,28 +74,23 @@ describe("OperationDetail acceptance", () => {
     for (const model of models) {
       const { unmount } = render(<OperationDetail operation={model} />);
       const article = screen.getByRole("article");
-      const methodSpan = article.querySelector("span.uppercase");
-      const pathSpan = methodSpan?.nextElementSibling;
+      const methodSpan = article.querySelector("span.type-tag");
+      const pathCode = article.querySelector("code.type-code");
       expect(methodSpan?.textContent).toBe(model.method);
-      expect(pathSpan?.textContent).toBe(model.path);
+      expect(pathCode?.textContent).toBe(model.path);
       unmount();
     }
   });
 
-  it("AC-2: param-merge table shows merge wins, dual limit, and missing path issue", () => {
+  it("AC-2: param-merge cards show merge wins, dual limit, and missing path issue", () => {
     const models = mapFixture("param-merge.json");
     const pets = byPath(models, "get", "/pets/{petId}");
     render(<OperationDetail operation={pets} />);
-    const table = screen.getByRole("table");
-    expect(within(table).getByText("operation limit wins")).toBeInTheDocument();
-    const limitRows = within(table)
-      .getAllByText("limit")
-      .map((cell) => cell.closest("tr"));
-    expect(limitRows.length).toBeGreaterThanOrEqual(2);
-    const inValues = limitRows.map((row) =>
-      row === null ? "" : (within(row).getAllByRole("cell")[1]?.textContent ?? ""),
-    );
-    expect(inValues).toEqual(expect.arrayContaining(["query", "header"]));
+    const params = screen.getByRole("group", { name: "Parameters" });
+    expect(within(params).getByText("operation limit wins")).toBeInTheDocument();
+    expect(within(params).getAllByText("limit").length).toBeGreaterThanOrEqual(2);
+    expect(within(params).getByText("Query")).toBeInTheDocument();
+    expect(within(params).getByText("Header")).toBeInTheDocument();
 
     const items = byPath(models, "get", "/items/{itemId}");
     const { unmount } = render(<OperationDetail operation={items} />);
@@ -166,7 +161,7 @@ describe("OperationDetail acceptance", () => {
     const bare = byPath(models, "get", "/bare");
     const { unmount } = render(<OperationDetail operation={bare} />);
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("/bare");
-    expect(screen.getByText(/operationId: —/)).toBeInTheDocument();
+    expect(screen.getByText(/operationId · —/)).toBeInTheDocument();
     expect(screen.queryByText("Still readable")).toBeNull();
     unmount();
 

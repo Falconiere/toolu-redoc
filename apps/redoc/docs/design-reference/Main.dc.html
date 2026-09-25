@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>comemory API reference</title>
+    <script src="./vendor/react.js"></script>
+    <script src="./vendor/react-dom.js"></script>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+        />
+        <style>
+          body {
+            margin: 0;
+            background: #0e0f0d;
+            font-family: Archivo, sans-serif;
+            color: #f2f2ef;
+          }
+          a {
+            color: #8a8d86;
+            text-decoration: none;
+          }
+          a:hover {
+            color: #d2ec7c;
+          }
+          button {
+            font: inherit;
+            cursor: pointer;
+          }
+          button,
+          a,
+          input {
+            transition:
+              color 140ms cubic-bezier(0.2, 0, 0, 1),
+              background-color 140ms cubic-bezier(0.2, 0, 0, 1),
+              border-color 140ms cubic-bezier(0.2, 0, 0, 1);
+          }
+          button:active {
+            transition-duration: 90ms;
+          }
+          button:focus-visible,
+          a:focus-visible,
+          input:focus-visible {
+            outline: none;
+            box-shadow:
+              0 0 0 1px #7e9a26,
+              0 0 0 4px #1e2310;
+          }
+          input::placeholder {
+            color: #52554e;
+          }
+          .nav-row:hover {
+            background: #1b1d18 !important;
+          }
+          .ghost:hover {
+            color: #f2f2ef !important;
+            border-color: #33362e !important;
+          }
+          .primary:hover {
+            color: #0e0f0d;
+            background: #ffffff !important;
+          }
+          .scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+          .scroll::-webkit-scrollbar-thumb {
+            background: #23251f;
+            border-radius: 4px;
+          }
+          .scroll::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            * {
+              transition-duration: 1ms !important;
+              animation-duration: 1ms !important;
+            }
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          width: 1440px;
+          height: 1024px;
+          position: relative;
+          overflow: hidden;
+          background: #0e0f0d;
+          display: flex;
+          flex-direction: column;
+          font-family: Archivo, sans-serif;
+          color: #f2f2ef;
+        "
+      >
+        <div
+          aria-hidden="true"
+          style="position: absolute; top: 0; bottom: 0; left: 25%; width: 1px; background: #191b17"
+        ></div>
+        <div
+          aria-hidden="true"
+          style="position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #191b17"
+        ></div>
+        <div
+          aria-hidden="true"
+          style="position: absolute; top: 0; bottom: 0; left: 75%; width: 1px; background: #191b17"
+        ></div>
+
+        <header
+          style="
+            position: relative;
+            z-index: 1;
+            height: 56px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            padding: 0 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #23251f;
+            background: #0e0f0d;
+          "
+        >
+          <div style="display: flex; align-items: baseline; gap: 12px">
+            <span style="font-size: 18px; font-weight: 600; letter-spacing: -0.03em; color: #f2f2ef"
+              >comemory</span
+            >
+            <span
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.22em;
+                color: #8a8d86;
+              "
+              >/ API REFERENCE</span
+            >
+          </div>
+          <div style="flex-grow: 1"></div>
+          <nav
+            aria-label="Docs"
+            style="display: flex; align-items: center; gap: 22px; font-size: 13.5px"
+          >
+            <a href="#">Guides</a>
+            <a href="#">Changelog</a>
+            <a href="#">OpenAPI spec</a>
+          </nav>
+          <span
+            style="
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 10.5px;
+              letter-spacing: 0.1em;
+              color: #8a8d86;
+              border: 1px solid #23251f;
+              border-radius: 3px;
+              padding: 4px 8px;
+            "
+            >v1 · stable</span
+          >
+          <a
+            href="#"
+            class="primary"
+            style="
+              height: 36px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 0 14px;
+              background: #f2f2ef;
+              color: #0e0f0d;
+              border-radius: 3px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 9.5px;
+              letter-spacing: 0.22em;
+            "
+            >OPEN CONSOLE<span style="opacity: 0.5">→</span></a
+          >
+        </header>
+
+        <div style="position: relative; z-index: 1; flex-grow: 1; min-height: 0; display: flex">
+          <aside
+            style="
+              width: 264px;
+              flex-shrink: 0;
+              box-sizing: border-box;
+              border-right: 1px solid #23251f;
+              display: flex;
+              flex-direction: column;
+              padding: 22px 16px 16px;
+              background: #0e0f0d;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.22em;
+                color: #52554e;
+                padding: 0 6px;
+              "
+            >
+              — REFERENCE · {{count}} ENDPOINTS
+            </div>
+            <label
+              for="ep-filter"
+              style="
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+                white-space: nowrap;
+              "
+              >Filter endpoints</label
+            >
+            <input
+              id="ep-filter"
+              type="search"
+              placeholder="Filter endpoints"
+              value="{{q}}"
+              onChange="{{onQuery}}"
+              style="
+                margin-top: 14px;
+                width: 100%;
+                height: 40px;
+                box-sizing: border-box;
+                padding: 0 12px;
+                background: #1b1d18;
+                border: 1px solid #23251f;
+                border-radius: 4px;
+                color: #f2f2ef;
+                font-family: Archivo, sans-serif;
+                font-size: 13.5px;
+              "
+            />
+            <nav
+              aria-label="Endpoints"
+              class="scroll"
+              style="
+                margin-top: 22px;
+                flex-grow: 1;
+                min-height: 0;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 22px;
+              "
+            >
+              <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      padding: 0 10px 6px;
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 9.5px;
+                      letter-spacing: 0.22em;
+                      color: #52554e;
+                    "
+                  >
+                    <span>{{g.label}}</span><span>{{g.n}}</span>
+                  </div>
+                  <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+                    <button
+                      type="button"
+                      class="nav-row"
+                      onClick="{{r.pick}}"
+                      aria-pressed="{{r.pressed}}"
+                      style="width: 100%; height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 10px; box-sizing: border-box; background: {{r.bg}}; border: 1px solid {{r.border}}; border-radius: 4px; text-align: left"
+                    >
+                      <span
+                        style="width: 48px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; color: {{r.mColor}}"
+                        >{{r.method}}</span
+                      >
+                      <span style="font-size: 13.5px; color: {{r.nColor}}">{{r.name}}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <sc-if value="{{noMatch}}" hint-placeholder-val="{{ false }}">
+                <p
+                  style="
+                    margin: 0;
+                    padding: 0 10px;
+                    font-size: 13.5px;
+                    line-height: 1.6;
+                    color: #8a8d86;
+                  "
+                >
+                  No endpoint matches that filter.
+                </p>
+              </sc-if>
+            </nav>
+            <div
+              style="
+                border-top: 1px solid #23251f;
+                padding: 14px 10px 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 9.5px;
+                  letter-spacing: 0.22em;
+                  color: #52554e;
+                "
+                >SPEC</span
+              >
+              <a
+                href="#"
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 10.5px;
+                  letter-spacing: 0.1em;
+                "
+                >openapi.json ↓</a
+              >
+            </div>
+          </aside>
+
+          <main
+            class="scroll"
+            style="
+              flex-grow: 1;
+              min-width: 0;
+              overflow-y: auto;
+              box-sizing: border-box;
+              padding: 40px 48px 48px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 9.5px;
+                letter-spacing: 0.22em;
+                color: #52554e;
+              "
+            >
+              — §{{ep.sec}} · {{ep.groupLabel}}
+            </div>
+            <h1
+              style="
+                margin: 14px 0 0;
+                font-size: 34px;
+                font-weight: 600;
+                letter-spacing: -0.035em;
+                line-height: 1.1;
+                color: #f2f2ef;
+              "
+            >
+              {{ep.name}}
+            </h1>
+            <p
+              style="
+                margin: 14px 0 0;
+                max-width: 52ch;
+                font-size: 15px;
+                line-height: 1.7;
+                color: #8a8d86;
+              "
+            >
+              {{ep.summary}}
+            </p>
+
+            <div
+              style="
+                margin-top: 24px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 6px 0 12px;
+                background: #1b1d18;
+                border: 1px solid #23251f;
+                border-radius: 6px;
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 10.5px;
+                  letter-spacing: 0.1em;
+                  color: #f2f2ef;
+                  border: 1px solid #33362e;
+                  border-radius: 3px;
+                  padding: 3px 7px;
+                "
+                >{{ep.method}}</span
+              >
+              <code
+                style="
+                  flex-grow: 1;
+                  min-width: 0;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 14px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                "
+                ><sc-for list="{{ep.pathSegs}}" as="s" hint-placeholder-count="2"
+                  ><span style="color: {{s.c}}">{{s.t}}</span></sc-for
+                ></code
+              >
+              <button
+                type="button"
+                class="ghost"
+                onClick="{{copyPath}}"
+                style="
+                  height: 36px;
+                  padding: 0 12px;
+                  background: transparent;
+                  border: 1px solid #23251f;
+                  border-radius: 3px;
+                  color: #8a8d86;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 9.5px;
+                  letter-spacing: 0.22em;
+                "
+              >
+                {{lbl.path}}
+              </button>
+            </div>
+
+            <sc-for list="{{ep.params}}" as="sec" hint-placeholder-count="1">
+              <section style="margin-top: 36px">
+                <div style="display: flex; align-items: baseline; justify-content: space-between">
+                  <h2
+                    style="
+                      margin: 0;
+                      font-size: 20px;
+                      font-weight: 500;
+                      letter-spacing: -0.022em;
+                      line-height: 1.3;
+                    "
+                  >
+                    {{sec.title}}
+                  </h2>
+                  <span
+                    style="
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 9.5px;
+                      letter-spacing: 0.22em;
+                      color: #52554e;
+                    "
+                    >{{sec.note}}</span
+                  >
+                </div>
+                <div
+                  style="
+                    margin-top: 12px;
+                    background: #1f1f1f;
+                    border: 1px solid #23251f;
+                    border-radius: 12px;
+                    overflow: hidden;
+                  "
+                >
+                  <sc-for list="{{sec.rows}}" as="row" hint-placeholder-count="3">
+                    <div style="padding: 14px 18px; border-top: {{row.sep}}">
+                      <div style="display: flex; align-items: baseline; gap: 10px">
+                        <code
+                          style="
+                            font-family: &quot;JetBrains Mono&quot;, monospace;
+                            font-size: 13px;
+                            font-weight: 500;
+                            color: #f2f2ef;
+                          "
+                          >{{row.name}}</code
+                        >
+                        <span
+                          style="
+                            font-family: &quot;JetBrains Mono&quot;, monospace;
+                            font-size: 10.5px;
+                            letter-spacing: 0.1em;
+                            color: #8a8d86;
+                          "
+                          >{{row.type}}</span
+                        >
+                        <sc-if value="{{row.req}}" hint-placeholder-val="{{ false }}">
+                          <span
+                            style="
+                              font-family: &quot;JetBrains Mono&quot;, monospace;
+                              font-size: 9.5px;
+                              letter-spacing: 0.22em;
+                              color: #8a8d86;
+                              border: 1px solid #33362e;
+                              border-radius: 3px;
+                              padding: 2px 6px;
+                            "
+                            >REQUIRED</span
+                          >
+                        </sc-if>
+                        <div style="flex-grow: 1"></div>
+                        <sc-if value="{{row.hasDef}}" hint-placeholder-val="{{ false }}">
+                          <span
+                            style="
+                              font-family: &quot;JetBrains Mono&quot;, monospace;
+                              font-size: 10.5px;
+                              letter-spacing: 0.1em;
+                              color: #8a8d86;
+                            "
+                            >default {{row.def}}</span
+                          >
+                        </sc-if>
+                      </div>
+                      <p
+                        style="margin: 6px 0 0; font-size: 13.5px; line-height: 1.6; color: #8a8d86"
+                      >
+                        {{row.desc}}
+                      </p>
+                    </div>
+                  </sc-for>
+                </div>
+              </section>
+            </sc-for>
+
+            <sc-if value="{{ep.noParams}}" hint-placeholder-val="{{ false }}">
+              <section style="margin-top: 36px">
+                <h2
+                  style="
+                    margin: 0;
+                    font-size: 20px;
+                    font-weight: 500;
+                    letter-spacing: -0.022em;
+                    line-height: 1.3;
+                  "
+                >
+                  Parameters
+                </h2>
+                <div
+                  style="
+                    margin-top: 12px;
+                    padding: 14px 18px;
+                    border: 1px dashed #33362e;
+                    border-radius: 12px;
+                    font-size: 13.5px;
+                    line-height: 1.6;
+                    color: #8a8d86;
+                  "
+                >
+                  This endpoint takes no parameters. Call it as is.
+                </div>
+              </section>
+            </sc-if>
+
+            <section style="margin-top: 36px">
+              <div style="display: flex; align-items: baseline; justify-content: space-between">
+                <h2
+                  style="
+                    margin: 0;
+                    font-size: 20px;
+                    font-weight: 500;
+                    letter-spacing: -0.022em;
+                    line-height: 1.3;
+                  "
+                >
+                  Errors
+                </h2>
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                    color: #52554e;
+                  "
+                  >BODY · ERROR.CODE + ERROR.MESSAGE</span
+                >
+              </div>
+              <div
+                style="
+                  margin-top: 12px;
+                  background: #1f1f1f;
+                  border: 1px solid #23251f;
+                  border-radius: 12px;
+                  overflow: hidden;
+                "
+              >
+                <sc-for list="{{ep.errors}}" as="e" hint-placeholder-count="2">
+                  <div
+                    style="display: flex; align-items: baseline; gap: 14px; padding: 14px 18px; border-top: {{e.sep}}"
+                  >
+                    <span
+                      style="
+                        width: 32px;
+                        flex-shrink: 0;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 13px;
+                        color: #f2f2ef;
+                      "
+                      >{{e.status}}</span
+                    >
+                    <span
+                      aria-hidden="true"
+                      style="
+                        width: 7px;
+                        height: 7px;
+                        flex-shrink: 0;
+                        border-radius: 50%;
+                        background: #c9553a;
+                        align-self: center;
+                      "
+                    ></span>
+                    <code
+                      style="
+                        width: 150px;
+                        flex-shrink: 0;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 13px;
+                        color: #f2f2ef;
+                      "
+                      >{{e.code}}</code
+                    >
+                    <span style="font-size: 13.5px; line-height: 1.6; color: #8a8d86"
+                      >{{e.desc}}</span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <nav
+              aria-label="Pager"
+              style="
+                margin-top: 48px;
+                padding-top: 22px;
+                border-top: 1px solid #23251f;
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+              "
+            >
+              <div>
+                <sc-if value="{{pager.hasPrev}}" hint-placeholder-val="{{ true }}">
+                  <button
+                    type="button"
+                    class="ghost"
+                    onClick="{{pager.prev}}"
+                    style="
+                      min-height: 56px;
+                      padding: 10px 16px;
+                      background: transparent;
+                      border: 1px solid #23251f;
+                      border-radius: 4px;
+                      color: #8a8d86;
+                      text-align: left;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 9.5px;
+                        letter-spacing: 0.22em;
+                        color: #52554e;
+                      "
+                      >← PREVIOUS</span
+                    >
+                    <span style="font-size: 13.5px">{{pager.prevName}}</span>
+                  </button>
+                </sc-if>
+              </div>
+              <div>
+                <sc-if value="{{pager.hasNext}}" hint-placeholder-val="{{ true }}">
+                  <button
+                    type="button"
+                    class="ghost"
+                    onClick="{{pager.next}}"
+                    style="
+                      min-height: 56px;
+                      padding: 10px 16px;
+                      background: transparent;
+                      border: 1px solid #23251f;
+                      border-radius: 4px;
+                      color: #8a8d86;
+                      text-align: right;
+                      display: flex;
+                      flex-direction: column;
+                      align-items: flex-end;
+                      gap: 4px;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 9.5px;
+                        letter-spacing: 0.22em;
+                        color: #52554e;
+                      "
+                      >NEXT →</span
+                    >
+                    <span style="font-size: 13.5px">{{pager.nextName}}</span>
+                  </button>
+                </sc-if>
+              </div>
+            </nav>
+          </main>
+
+          <aside
+            aria-label="Examples"
+            class="scroll"
+            style="
+              width: 600px;
+              flex-shrink: 0;
+              box-sizing: border-box;
+              border-left: 1px solid #23251f;
+              overflow-y: auto;
+              padding: 22px;
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
+              <span
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 9.5px;
+                  letter-spacing: 0.22em;
+                  color: #52554e;
+                "
+                >BASE URL</span
+              >
+              <code
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 10.5px;
+                  letter-spacing: 0.1em;
+                  color: #8a8d86;
+                "
+                >{{base}}</code
+              >
+            </div>
+
+            <div
+              style="
+                background: #1f1f1f;
+                border: 1px solid #23251f;
+                border-radius: 12px;
+                overflow: hidden;
+                flex-shrink: 0;
+              "
+            >
+              <div
+                style="
+                  height: 52px;
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  padding: 0 8px 0 18px;
+                  border-bottom: 1px solid #1e201c;
+                "
+              >
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                    color: #52554e;
+                  "
+                  >REQUEST</span
+                >
+                <div role="group" aria-label="Language" style="display: flex; gap: 4px">
+                  <sc-for list="{{langs}}" as="l" hint-placeholder-count="3">
+                    <button
+                      type="button"
+                      onClick="{{l.pick}}"
+                      aria-pressed="{{l.pressed}}"
+                      style="height: 32px; padding: 0 10px; background: {{l.bg}}; border: 1px solid {{l.border}}; border-radius: 3px; color: {{l.color}}; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em"
+                    >
+                      {{l.label}}
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="flex-grow: 1"></div>
+                <button
+                  type="button"
+                  class="ghost"
+                  onClick="{{copyReq}}"
+                  style="
+                    height: 36px;
+                    padding: 0 12px;
+                    background: transparent;
+                    border: 1px solid #23251f;
+                    border-radius: 3px;
+                    color: #8a8d86;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                  "
+                >
+                  {{lbl.req}}
+                </button>
+              </div>
+              <div class="scroll" style="background: #1b1d18; padding: 14px 0; overflow-x: auto">
+                <sc-for list="{{req}}" as="ln" hint-placeholder-count="8">
+                  <div
+                    style="
+                      display: flex;
+                      min-width: max-content;
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 13px;
+                      line-height: 1.7;
+                      white-space: pre;
+                    "
+                  >
+                    <span
+                      aria-hidden="true"
+                      style="
+                        width: 40px;
+                        flex-shrink: 0;
+                        padding-right: 16px;
+                        box-sizing: border-box;
+                        text-align: right;
+                        color: #3e4139;
+                        user-select: none;
+                      "
+                      >{{ln.n}}</span
+                    >
+                    <span style="padding-right: 18px"
+                      ><sc-for list="{{ln.segs}}" as="s" hint-placeholder-count="3"
+                        ><span style="color: {{s.c}}">{{s.t}}</span></sc-for
+                      ></span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: #1f1f1f;
+                border: 1px solid #23251f;
+                border-radius: 12px;
+                overflow: hidden;
+                flex-shrink: 0;
+              "
+            >
+              <div
+                style="
+                  height: 52px;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 0 8px 0 18px;
+                  border-bottom: 1px solid #1e201c;
+                "
+              >
+                <span
+                  aria-hidden="true"
+                  style="width: 7px; height: 7px; border-radius: 50%; background: #b8d94a"
+                ></span>
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: #b8d94a;
+                  "
+                  >{{ep.ok.status}}</span
+                >
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                    color: #52554e;
+                  "
+                  >SUCCESS</span
+                >
+                <div style="flex-grow: 1"></div>
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 10.5px;
+                    letter-spacing: 0.1em;
+                    color: #8a8d86;
+                  "
+                  >{{ep.ok.ms}}</span
+                >
+                <button
+                  type="button"
+                  class="ghost"
+                  onClick="{{copyOk}}"
+                  style="
+                    height: 36px;
+                    padding: 0 12px;
+                    background: transparent;
+                    border: 1px solid #23251f;
+                    border-radius: 3px;
+                    color: #8a8d86;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                  "
+                >
+                  {{lbl.ok}}
+                </button>
+              </div>
+              <div class="scroll" style="background: #1b1d18; padding: 14px 0; overflow-x: auto">
+                <sc-for list="{{okLines}}" as="ln" hint-placeholder-count="8">
+                  <div
+                    style="
+                      display: flex;
+                      min-width: max-content;
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 13px;
+                      line-height: 1.7;
+                      white-space: pre;
+                    "
+                  >
+                    <span
+                      aria-hidden="true"
+                      style="
+                        width: 40px;
+                        flex-shrink: 0;
+                        padding-right: 16px;
+                        box-sizing: border-box;
+                        text-align: right;
+                        color: #3e4139;
+                        user-select: none;
+                      "
+                      >{{ln.n}}</span
+                    >
+                    <span style="padding-right: 18px"
+                      ><sc-for list="{{ln.segs}}" as="s" hint-placeholder-count="3"
+                        ><span style="color: {{s.c}}">{{s.t}}</span></sc-for
+                      ></span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div
+              style="
+                background: #1f1f1f;
+                border: 1px solid #23251f;
+                border-radius: 12px;
+                overflow: hidden;
+                flex-shrink: 0;
+              "
+            >
+              <div
+                style="
+                  height: 52px;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 0 8px 0 18px;
+                  border-bottom: 1px solid #1e201c;
+                "
+              >
+                <span
+                  aria-hidden="true"
+                  style="width: 7px; height: 7px; border-radius: 50%; background: #c9553a"
+                ></span>
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: #c9553a;
+                  "
+                  >{{ep.er.status}}</span
+                >
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                    color: #52554e;
+                  "
+                  >FAILURE</span
+                >
+                <div style="flex-grow: 1"></div>
+                <button
+                  type="button"
+                  class="ghost"
+                  onClick="{{copyErr}}"
+                  style="
+                    height: 36px;
+                    padding: 0 12px;
+                    background: transparent;
+                    border: 1px solid #23251f;
+                    border-radius: 3px;
+                    color: #8a8d86;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 9.5px;
+                    letter-spacing: 0.22em;
+                  "
+                >
+                  {{lbl.err}}
+                </button>
+              </div>
+              <div class="scroll" style="background: #1b1d18; padding: 14px 0; overflow-x: auto">
+                <sc-for list="{{errLines}}" as="ln" hint-placeholder-count="5">
+                  <div
+                    style="
+                      display: flex;
+                      min-width: max-content;
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 13px;
+                      line-height: 1.7;
+                      white-space: pre;
+                    "
+                  >
+                    <span
+                      aria-hidden="true"
+                      style="
+                        width: 40px;
+                        flex-shrink: 0;
+                        padding-right: 16px;
+                        box-sizing: border-box;
+                        text-align: right;
+                        color: #3e4139;
+                        user-select: none;
+                      "
+                      >{{ln.n}}</span
+                    >
+                    <span style="padding-right: 18px"
+                      ><sc-for list="{{ln.segs}}" as="s" hint-placeholder-count="3"
+                        ><span style="color: {{s.c}}">{{s.t}}</span></sc-for
+                      ></span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"baseUrl":{"editor":"text","default":"http://localhost:[PORT]","section":"API"},"$preview":{"width":1440,"height":1024}}'
+    >
+      class Component extends DCLogic {
+        data() {
+          if (this._data) return this._data;
+          var MEM = {
+            id: 'mem_01j9x4k2', path: 'decisions/auth-tokens.md', source: 'claude-code',
+            tags: ['auth', 'decision'], bytes: 1284, etag: 'e_41c0',
+            created_at: '2026-09-25T14:02:11Z', updated_at: '2026-09-25T14:02:11Z'
+          };
+          var BODY = '---\ntype: decision\n---\nRotate refresh tokens on every use.';
+          var err = function (code, message, extra) { return { error: Object.assign({ code: code, message: message }, extra || {}) }; };
+          var ID = { name: 'id', type: 'string', req: true, desc: 'The memory id, as returned when it was written.' };
+          var NF = { status: '404', code: 'not_found', desc: 'No memory has that id. It may have been forgotten.' };
+          var groups = [
+            { key: 'memories', label: 'MEMORIES', sec: '01' },
+            { key: 'search', label: 'SEARCH', sec: '02' },
+            { key: 'index', label: 'INDEX', sec: '03' },
+            { key: 'system', label: 'SYSTEM', sec: '04' }
+          ];
+          var eps = [
+            {
+              id: 'mem-create', g: 'memories', method: 'POST', path: '/v1/memories', name: 'Write a memory', v: 'memory',
+              summary: 'Store a Markdown memory, frontmatter included. The file lands in the store as written, and the next index run makes it searchable.',
+              params: [{ title: 'Body', note: 'APPLICATION/JSON', rows: [
+                { name: 'path', type: 'string', req: true, desc: 'Where the memory lives, relative to the store root. Must end in .md.' },
+                { name: 'body', type: 'string', req: true, desc: 'The Markdown content. YAML frontmatter at the top is kept as metadata.' },
+                { name: 'source', type: 'string', desc: 'Who wrote it: a tool, an agent or a person. Shown beside the record in the console.' },
+                { name: 'tags', type: 'string[]', desc: 'Free-form labels. Search can filter on them.' }
+              ] }],
+              errors: [
+                { status: '400', code: 'invalid_body', desc: 'A required field is missing, or path does not end in .md.' },
+                { status: '409', code: 'path_exists', desc: 'A memory already lives at that path. Update it instead.' },
+                { status: '413', code: 'too_large', desc: 'The body is over the store’s size limit.' }
+              ],
+              sample: { path: '/v1/memories', body: { path: 'decisions/auth-tokens.md', body: BODY, source: 'claude-code', tags: ['auth', 'decision'] } },
+              ok: { status: '201 Created', ms: '18 ms', body: MEM },
+              er: { status: '409 Conflict', body: err('path_exists', 'A memory already exists at decisions/auth-tokens.md.', { id: 'mem_01j9x4k2' }) }
+            },
+            {
+              id: 'mem-list', g: 'memories', method: 'GET', path: '/v1/memories', name: 'List memories', v: 'page',
+              summary: 'Page through stored memories, most recently changed first. Filter by folder or tag, and follow next_cursor until it comes back null.',
+              params: [{ title: 'Query', note: 'URL PARAMETERS', rows: [
+                { name: 'prefix', type: 'string', desc: 'Only memories under this folder, such as decisions/.' },
+                { name: 'tag', type: 'string', desc: 'Only memories carrying this tag.' },
+                { name: 'limit', type: 'integer', def: '50', desc: 'Page size, from 1 to 200.' },
+                { name: 'cursor', type: 'string', desc: 'The next_cursor from the previous page.' }
+              ] }],
+              errors: [
+                { status: '400', code: 'invalid_cursor', desc: 'The cursor has expired or was not issued by this store.' },
+                { status: '400', code: 'invalid_limit', desc: 'limit is outside 1 to 200.' }
+              ],
+              sample: { path: '/v1/memories', params: { prefix: 'decisions/', limit: 2 } },
+              ok: { status: '200 OK', ms: '9 ms', body: { data: [
+                { id: 'mem_01j9x4k2', path: 'decisions/auth-tokens.md', bytes: 1284, updated_at: '2026-09-25T14:02:11Z' },
+                { id: 'mem_01j9w7c5', path: 'decisions/queue-retries.md', bytes: 862, updated_at: '2026-09-24T19:40:03Z' }
+              ], next_cursor: 'c_8f2a' } },
+              er: { status: '400 Bad Request', body: err('invalid_cursor', 'Cursor c_77e1 has expired. Start again without one.') }
+            },
+            {
+              id: 'mem-read', g: 'memories', method: 'GET', path: '/v1/memories/{id}', name: 'Read a memory', v: 'memory',
+              summary: 'Fetch one memory by id. Ask for the body only when you need it; the record alone is lighter to send.',
+              params: [
+                { title: 'Path', note: 'URL SEGMENTS', rows: [ID] },
+                { title: 'Query', note: 'URL PARAMETERS', rows: [{ name: 'include', type: 'string', desc: 'Set to body to return the Markdown content with the record.' }] }
+              ],
+              errors: [NF],
+              sample: { path: '/v1/memories/mem_01j9x4k2', params: { include: 'body' } },
+              ok: { status: '200 OK', ms: '4 ms', body: Object.assign({}, MEM, { body: BODY }) },
+              er: { status: '404 Not Found', body: err('not_found', 'No memory with id mem_01j9x4k3.') }
+            },
+            {
+              id: 'mem-update', g: 'memories', method: 'PATCH', path: '/v1/memories/{id}', name: 'Update a memory', v: 'memory',
+              summary: 'Replace the body or tags of an existing memory. Send the etag you read as if_match, and the write is refused if the file changed on disk in between.',
+              params: [
+                { title: 'Path', note: 'URL SEGMENTS', rows: [ID] },
+                { title: 'Body', note: 'APPLICATION/JSON', rows: [
+                  { name: 'body', type: 'string', desc: 'New Markdown content. Replaces the old body whole.' },
+                  { name: 'tags', type: 'string[]', desc: 'Replaces the tag list. Send [] to clear it.' },
+                  { name: 'if_match', type: 'string', desc: 'The etag from your last read. Recommended for every write.' }
+                ] }
+              ],
+              errors: [NF, { status: '412', code: 'etag_mismatch', desc: 'The file changed since your etag. Read it again, then retry.' }],
+              sample: { path: '/v1/memories/mem_01j9x4k2', body: { tags: ['auth', 'decision', 'security'], if_match: 'e_41c0' } },
+              ok: { status: '200 OK', ms: '11 ms', body: Object.assign({}, MEM, { tags: ['auth', 'decision', 'security'], etag: 'e_52d9', updated_at: '2026-09-25T15:20:48Z' }) },
+              er: { status: '412 Precondition Failed', body: err('etag_mismatch', 'decisions/auth-tokens.md changed since e_41c0.', { current_etag: 'e_4a17' }) }
+            },
+            {
+              id: 'mem-delete', g: 'memories', method: 'DELETE', path: '/v1/memories/{id}', name: 'Forget a memory', v: 'res',
+              summary: 'Remove a memory from the store and from the index. The file is deleted from disk; this cannot be undone over the API.',
+              params: [{ title: 'Path', note: 'URL SEGMENTS', rows: [ID] }],
+              errors: [NF, { status: '423', code: 'locked', desc: 'An index run is reading this file. Retry once it finishes.' }],
+              sample: { path: '/v1/memories/mem_01j9x4k2' },
+              ok: { status: '204 No Content', ms: '6 ms', body: null },
+              er: { status: '404 Not Found', body: err('not_found', 'No memory with id mem_01j9x4k2.') }
+            },
+            {
+              id: 'search', g: 'search', method: 'POST', path: '/v1/search', name: 'Search the store', v: 'results',
+              summary: 'Ranked retrieval over everything indexed. Each hit carries its score; pass explain to see how text match, link rank and recency added up.',
+              params: [{ title: 'Body', note: 'APPLICATION/JSON', rows: [
+                { name: 'query', type: 'string', req: true, desc: 'What to look for, in plain language.' },
+                { name: 'limit', type: 'integer', def: '10', desc: 'Hits to return, from 1 to 50.' },
+                { name: 'tags', type: 'string[]', desc: 'Only memories carrying every one of these tags.' },
+                { name: 'explain', type: 'boolean', def: 'false', desc: 'Return the score parts for each hit.' }
+              ] }],
+              errors: [
+                { status: '422', code: 'empty_query', desc: 'query has no searchable terms.' },
+                { status: '503', code: 'index_unavailable', desc: 'The index is being rebuilt. Retry shortly.' }
+              ],
+              sample: { path: '/v1/search', body: { query: 'how do we rotate tokens', limit: 2, explain: true } },
+              ok: { status: '200 OK', ms: '34 ms', body: { hits: [
+                { id: 'mem_01j9x4k2', path: 'decisions/auth-tokens.md', score: 0.0412, parts: { text: 0.0301, pagerank: 0.0068, recency: 0.0043 } },
+                { id: 'mem_01j8q2m0', path: 'runbooks/key-rotation.md', score: 0.0287, parts: { text: 0.0219, pagerank: 0.0051, recency: 0.0017 } }
+              ], took_ms: 34 } },
+              er: { status: '422 Unprocessable', body: err('empty_query', 'query must contain at least one searchable term.') }
+            },
+            {
+              id: 'index-run', g: 'index', method: 'POST', path: '/v1/index/runs', name: 'Start an index run', v: 'run',
+              summary: 'Read changed files into the index. Returns at once with a run id; poll index status to follow it.',
+              params: [{ title: 'Body', note: 'APPLICATION/JSON', rows: [
+                { name: 'scope', type: 'string', def: 'changed', desc: 'changed reads only files touched since the last run; all rebuilds from scratch.' }
+              ] }],
+              errors: [{ status: '409', code: 'run_in_progress', desc: 'Another run is still going. Its id is in the response.' }],
+              sample: { path: '/v1/index/runs', body: { scope: 'changed' } },
+              ok: { status: '202 Accepted', ms: '3 ms', body: { run_id: 'run_7c1e', scope: 'changed', queued_files: 17, state: 'queued' } },
+              er: { status: '409 Conflict', body: err('run_in_progress', 'Run run_7b90 is still indexing.', { run_id: 'run_7b90' }) }
+            },
+            {
+              id: 'index-status', g: 'index', method: 'GET', path: '/v1/index/status', name: 'Index status', v: 'status',
+              summary: 'What the index is doing right now, and when the last run finished.',
+              params: [],
+              errors: [{ status: '503', code: 'index_unavailable', desc: 'The index files could not be opened.' }],
+              sample: { path: '/v1/index/status' },
+              ok: { status: '200 OK', ms: '2 ms', body: { state: 'indexing', run_id: 'run_7c1e', done_files: 9, queued_files: 17, last_finished_at: '2026-09-25T13:58:40Z' } },
+              er: { status: '503 Service Unavailable', body: err('index_unavailable', 'Could not open the index files.') }
+            },
+            {
+              id: 'health', g: 'system', method: 'GET', path: '/v1/health', name: 'Health', v: 'health',
+              summary: 'A cheap liveness check. It reports whether the store accepts writes, so a client can back off before a write fails.',
+              params: [],
+              errors: [{ status: '503', code: 'write_failed', desc: 'The server is up but the store cannot write. reason says why.' }],
+              sample: { path: '/v1/health' },
+              ok: { status: '200 OK', ms: '1 ms', body: { status: 'ok', write: 'ok', version: '[VERSION]' } },
+              er: { status: '503 Service Unavailable', body: { status: 'degraded', write: 'failed', reason: 'The store directory is read-only.' } }
+            }
+          ];
+          this._data = { groups: groups, eps: eps };
+          return this._data;
+        }
+
+        hl(line) {
+          var INK = '#F2F2EF', MUTED = '#8A8D86', FAINT = '#52554E';
+          if (line === '') return [{ t: ' ', c: INK }];
+          var segs = [];
+          var re = /(^\$)|("(?:[^"\\]|\\.)*")(\s*:)?|(\/\/.*$)|(\s-[A-Za-z]\b)|\b(const|await|import|method|headers|body|params|json)\b|([{}\[\](),:=\\'])/g;
+          var last = 0, m;
+          while ((m = re.exec(line)) !== null) {
+            if (m.index > last) segs.push({ t: line.slice(last, m.index), c: INK });
+            if (m[1]) segs.push({ t: m[1], c: FAINT });
+            else if (m[2]) {
+              if (m[3]) { segs.push({ t: m[2], c: MUTED }); segs.push({ t: m[3], c: FAINT }); }
+              else segs.push({ t: m[2], c: INK });
+            }
+            else if (m[4]) segs.push({ t: m[4], c: FAINT });
+            else if (m[5]) segs.push({ t: m[5], c: MUTED });
+            else if (m[6]) segs.push({ t: m[6], c: MUTED });
+            else if (m[7]) segs.push({ t: m[7], c: FAINT });
+            last = re.lastIndex;
+          }
+          if (last < line.length) segs.push({ t: line.slice(last), c: INK });
+          return segs;
+        }
+
+        lines(arr) {
+          var self = this;
+          return arr.map(function (t, i) { return { n: String(i + 1), segs: self.hl(t) }; });
+        }
+
+        code(ep, lang, base) {
+          var s = ep.sample;
+          var qs = s.params ? '?' + Object.keys(s.params).map(function (k) { return k + '=' + s.params[k]; }).join('&') : '';
+          var url = base + s.path + qs;
+          var body = s.body ? JSON.stringify(s.body, null, 2).split('\n') : null;
+          var L = [];
+          var tail = function (arr, pre, end) { arr.slice(1).forEach(function (b, i, a) { L.push(pre + b + (i === a.length - 1 ? end : '')); }); };
+          if (lang === 'curl') {
+            var first = '$ curl' + (ep.method === 'GET' ? '' : ' -X ' + ep.method) + ' "' + url + '"';
+            if (!body) return [first];
+            L.push(first + ' \\');
+            L.push('    -H "content-type: application/json" \\');
+            L.push("    -d '" + body[0]);
+            tail(body, '    ', "'");
+            return L;
+          }
+          if (lang === 'ts') {
+            if (!body && ep.method === 'GET') L.push('const res = await fetch("' + url + '");');
+            else {
+              L.push('const res = await fetch("' + url + '", {');
+              L.push('  method: "' + ep.method + '",');
+              if (body) {
+                L.push('  headers: { "content-type": "application/json" },');
+                L.push('  body: JSON.stringify(' + body[0]);
+                tail(body, '  ', '),');
+              }
+              L.push('});');
+            }
+            L.push(ep.method === 'DELETE' ? '// 204 No Content: nothing to parse' : 'const ' + ep.v + ' = await res.json();');
+            return L;
+          }
+          var py = function (x) { return x.replace(/: true/g, ': True').replace(/: false/g, ': False').replace(/: null/g, ': None'); };
+          L.push('import requests');
+          L.push('');
+          L.push('res = requests.' + ep.method.toLowerCase() + '(');
+          L.push('    "' + base + s.path + '",');
+          if (s.params) L.push('    params={' + Object.keys(s.params).map(function (k) { return JSON.stringify(k) + ': ' + JSON.stringify(s.params[k]); }).join(', ') + '},');
+          if (body) {
+            L.push('    json=' + py(body[0]));
+            body.slice(1).forEach(function (b, i, a) { L.push('    ' + py(b) + (i === a.length - 1 ? ',' : '')); });
+          }
+          L.push(')');
+          L.push(ep.method === 'DELETE' ? 'res.raise_for_status()' : ep.v + ' = res.json()');
+          return L;
+        }
+
+        copy(key, text) {
+          try {
+            if (navigator.clipboard) navigator.clipboard.writeText(text).catch(function () {});
+          } catch (e) {}
+          this.setState({ copied: key });
+          clearTimeout(this._t);
+          var self = this;
+          this._t = setTimeout(function () { self.setState({ copied: '' }); }, 1400);
+        }
+
+        componentWillUnmount() { clearTimeout(this._t); }
+
+        renderVals() {
+          var self = this;
+          var st = this.state || {};
+          var sel = st.sel || 'mem-create';
+          var lang = st.lang || 'curl';
+          var q = st.q || '';
+          var copied = st.copied || '';
+          var base = (this.props.baseUrl ?? 'http://localhost:[PORT]').replace(/\/+$/, '');
+          var d = this.data();
+          var eps = d.eps;
+          var idx = Math.max(0, eps.findIndex(function (e) { return e.id === sel; }));
+          var raw = eps[idx];
+          var g = d.groups.find(function (x) { return x.key === raw.g; });
+          var needle = q.trim().toLowerCase();
+
+          var groups = d.groups.map(function (grp) {
+            var rows = eps.filter(function (e) {
+              return e.g === grp.key && (!needle || (e.name + ' ' + e.method + ' ' + e.path).toLowerCase().indexOf(needle) !== -1);
+            }).map(function (e) {
+              var on = e.id === raw.id;
+              return {
+                name: e.name, method: e.method, pressed: on ? 'true' : 'false',
+                bg: on ? '#1F1F1F' : 'transparent', border: on ? '#23251F' : 'transparent',
+                mColor: on ? '#B8D94A' : '#8A8D86', nColor: on ? '#F2F2EF' : '#8A8D86',
+                pick: function () { self.setState({ sel: e.id, copied: '' }); }
+              };
+            });
+            return { label: grp.label, n: String(rows.length).padStart(2, '0'), rows: rows };
+          }).filter(function (grp) { return grp.rows.length > 0; });
+
+          var sep = function (arr) { return arr.map(function (r, i) { return Object.assign({}, r, { sep: i ? '1px solid #1E201C' : 'none', req: !!r.req, hasDef: !!r.def }); }); };
+          var ep = {
+            name: raw.name, method: raw.method, summary: raw.summary, sec: g.sec, groupLabel: g.label,
+            pathSegs: raw.path.split(/(\{[^}]+\})/).filter(Boolean).map(function (t) { return { t: t, c: t.charAt(0) === '{' ? '#8A8D86' : '#F2F2EF' }; }),
+            params: raw.params.map(function (p) { return { title: p.title, note: p.note, rows: sep(p.rows) }; }),
+            noParams: raw.params.length === 0,
+            errors: sep(raw.errors),
+            ok: raw.ok, er: raw.er
+          };
+
+          var reqText = this.code(raw, lang, base);
+          var okText = raw.ok.body ? JSON.stringify(raw.ok.body, null, 2).split('\n') : null;
+          var errText = JSON.stringify(raw.er.body, null, 2).split('\n');
+          var okLines = okText ? this.lines(okText) : [{ n: '1', segs: [{ t: '(empty body)', c: '#52554E' }] }];
+
+          var langs = [['curl', 'cURL'], ['ts', 'TypeScript'], ['py', 'Python']].map(function (l) {
+            var on = l[0] === lang;
+            return {
+              label: l[1], pressed: on ? 'true' : 'false',
+              bg: on ? '#1B1D18' : 'transparent', border: on ? '#33362E' : 'transparent', color: on ? '#F2F2EF' : '#8A8D86',
+              pick: function () { self.setState({ lang: l[0], copied: '' }); }
+            };
+          });
+
+          var lbl = function (k) { return copied === k ? 'COPIED' : 'COPY'; };
+          var prev = eps[idx - 1], next = eps[idx + 1];
+
+          return {
+            base: base,
+            q: q,
+            count: String(eps.length).padStart(2, '0'),
+            onQuery: function (e) { self.setState({ q: e.target.value }); },
+            groups: groups,
+            noMatch: groups.length === 0,
+            ep: ep,
+            langs: langs,
+            req: this.lines(reqText),
+            okLines: okLines,
+            errLines: this.lines(errText),
+            lbl: { path: lbl('path'), req: lbl('req'), ok: lbl('ok'), err: lbl('err') },
+            copyPath: function () { self.copy('path', raw.method + ' ' + base + raw.path); },
+            copyReq: function () { self.copy('req', reqText.join('\n')); },
+            copyOk: function () { self.copy('ok', okText ? okText.join('\n') : ''); },
+            copyErr: function () { self.copy('err', errText.join('\n')); },
+            pager: {
+              hasPrev: !!prev, hasNext: !!next,
+              prevName: prev ? prev.name : '', nextName: next ? next.name : '',
+              prev: function () { if (prev) self.setState({ sel: prev.id, copied: '' }); },
+              next: function () { if (next) self.setState({ sel: next.id, copied: '' }); }
+            }
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

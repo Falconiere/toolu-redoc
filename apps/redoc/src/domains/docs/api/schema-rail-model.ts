@@ -76,3 +76,17 @@ export type SchemaRailModel = {
 export type SchemaRailProps = {
   model: SchemaRailModel | null;
 };
+
+/**
+ * True when the Samples column has schema, example, or notices worth showing.
+ * Empty focus / empty body collapses the desktop rail (blueprint-dense layout).
+ */
+export function schemaRailHasContent(model: SchemaRailModel | null): boolean {
+  if (model === null) {
+    return false;
+  }
+  if (model.notices.length > 0 || model.root !== null) {
+    return true;
+  }
+  return model.example.kind !== "empty";
+}

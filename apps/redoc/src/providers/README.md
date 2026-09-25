@@ -1,3 +1,6 @@
 # src/providers
 
-Owns the providers surface. Keep this inventory current as files are added.
+| Path | Holds |
+| --- | --- |
+| `app-providers.tsx` | Root `QueryClientProvider` + `BandThemeProvider` |
+| `band-theme-provider.tsx` | Signal band (dark / `.band-light`) + localStorage |

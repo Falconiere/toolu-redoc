@@ -49,6 +49,10 @@
      row is legal only while its hit area still reaches `touch`. */
   --spacing-touch: 44px;
   --spacing-row: 36px;
+  /* Docs shell columns — API Reference mock (docs/design-reference). */
+  --spacing-docs-nav: 264px;
+  --spacing-docs-rail: 600px;
+  --spacing-docs-header: 56px;
 
   /* Content caps. Bands are full-bleed; what is INSIDE them is not. `copy` is
      DESIGN.md §4's "body never wider than 52 characters" as a class, so the rule

@@ -4,12 +4,13 @@ import { useMemo, useState, type ReactNode } from "react";
 import { mapOperationDetail } from "@/app/map-operation-detail";
 import { mapSchemaRail } from "@/app/map-schema-rail";
 import { DocsOperationNav } from "@/domains/docs/components/docs-operation-nav";
+import type { OperationPagerNeighbor } from "@/domains/docs/components/docs-operation-pager";
 import { DocsShell } from "@/domains/docs/components/docs-shell";
 import { UnknownOperationEmpty } from "@/domains/docs/components/unknown-operation-empty";
 import { OperationDetail } from "@/domains/docs/components/operation-detail";
 import { SchemaRail } from "@/domains/docs/components/schema-rail";
 import type { OperationDetailModel, SchemaFocus } from "@/domains/docs/api/operation-detail-model";
-import type { SchemaRailModel } from "@/domains/docs/api/schema-rail-model";
+import { schemaRailHasContent, type SchemaRailModel } from "@/domains/docs/api/schema-rail-model";
 import {
   buildOperationNavModel,
   type OperationNavModel,
@@ -51,6 +52,36 @@ function buildShareProps(
   return { search, sourceKind: source.kind, sourceHref: source.href, ...originProps };
 }
 
+/** Pager label: trimmed summary, else path. */
+function pagerLabel(operation: NormalizedOpenApiOperation): string {
+  const summary = operation.summary?.trim();
+  if (summary !== undefined && summary.length > 0) {
+    return summary;
+  }
+  return operation.path;
+}
+
+/** Document-order prev/next neighbors for the selected identity. */
+function resolvePagerNeighbors(
+  operations: NormalizedOpenApiOperation[],
+  selectedIdentity: string | null,
+): { previous: OperationPagerNeighbor; next: OperationPagerNeighbor } {
+  if (selectedIdentity === null) {
+    return { previous: null, next: null };
+  }
+  const index = operations.findIndex((operation) => operation.identity === selectedIdentity);
+  if (index < 0) {
+    return { previous: null, next: null };
+  }
+  const prevOp = operations[index - 1];
+  const nextOp = operations[index + 1];
+  return {
+    previous:
+      prevOp === undefined ? null : { identity: prevOp.identity, label: pagerLabel(prevOp) },
+    next: nextOp === undefined ? null : { identity: nextOp.identity, label: pagerLabel(nextOp) },
+  };
+}
+
 /**
  * Post-load `/` viewer: toolbar + DocsShell with op-driven selection and local filter.
  */
@@ -73,9 +104,10 @@ export function ComposeLoadedDocs({
   const detailModel =
     selectedOperation === null ? null : mapOperationDetail(selectedOperation, document.servers);
   const railModel = mapSchemaRail(document, selectedOperation, focus);
+  const pager = resolvePagerNeighbors(document.operations, selectedIdentity);
 
   return (
-    <div className="band min-h-screen" data-testid="loaded-docs-viewer">
+    <div className="band flex min-h-screen flex-col" data-testid="loaded-docs-viewer">
       <LoadedDocsToolbar
         title={document.info.title}
         version={document.info.version}
@@ -92,6 +124,8 @@ export function ComposeLoadedDocs({
         selection={selection}
         detailModel={detailModel}
         railModel={railModel}
+        previous={pager.previous}
+        next={pager.next}
         onFocusChange={setFocus}
         onSelectIdentity={(identity) => {
           setFocus(null);
@@ -134,6 +168,8 @@ function LoadedDocsShell({
   selection,
   detailModel,
   railModel,
+  previous,
+  next,
   onFocusChange,
   onSelectIdentity,
 }: {
@@ -145,11 +181,14 @@ function LoadedDocsShell({
   selection: OperationSelection;
   detailModel: OperationDetailModel | null;
   railModel: SchemaRailModel | null;
+  previous: OperationPagerNeighbor;
+  next: OperationPagerNeighbor;
   onFocusChange: (focus: SchemaFocus | null) => void;
   onSelectIdentity: (identity: string) => void;
 }) {
   return (
     <DocsShell
+      samplesVisible={schemaRailHasContent(railModel)}
       nav={
         <DocsOperationNav
           model={filtered}
@@ -164,7 +203,13 @@ function LoadedDocsShell({
         selection.kind === "unknown" ? (
           <UnknownOperationEmpty />
         ) : (
-          <OperationDetail operation={detailModel} onFocusChange={onFocusChange} />
+          <OperationDetail
+            operation={detailModel}
+            onFocusChange={onFocusChange}
+            previous={previous}
+            next={next}
+            onSelectIdentity={onSelectIdentity}
+          />
         )
       }
       rail={<SchemaRail model={railModel} />}

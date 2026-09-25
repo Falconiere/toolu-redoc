@@ -174,13 +174,15 @@ bullet. Leaving it unedited would misstate the tokens to every future agent. -->
 
 The app follows the house **CodaSignal "Signal"** design language: full-bleed
 bands that alternate dark (`#0e0f0d`) and light (`#f2f2ee`) with a quarter-width
-ruled backdrop behind each, one chromatic signal in four temperatures (Jade is
-the default) that only ever marks the second line of a heading, live data, or a
-list number, fixed status colours that never theme (degraded `#c99a3a`, incident
-`#c9553a`, idle = faint ink), Archivo at 600/500 with tight negative tracking for
-everything readable, and JetBrains Mono for every label/tag/data/glyph/code line.
-Depth is a hairline; a panel adds one soft shadow on a light band and none on a
-dark one. No serif, no italic, no second hue, no gradients, no icon library.
+ruled backdrop behind each, one chromatic signal in four temperatures (**jade**
+is this product's temperature) that only ever marks the second line of a heading,
+live data, or a list number, fixed status colours that never theme (degraded
+`#c99a3a`, incident `#c9553a`, idle = faint ink), Archivo at 600/500 with tight
+negative tracking for everything readable, and JetBrains Mono for every
+label/tag/data/glyph/code line. Depth is a hairline; a panel adds one soft shadow on a
+light band and none on a dark one. No serif, no italic, no second hue, no gradients,
+no icon library. Viewer chrome follows
+[`docs/design-reference/`](./docs/design-reference/) (API Reference mock).
 
 **Hard rules:** no hardcoded hex or magic numbers in components — utilities only
 (`bg-*`/`text-*`/`border-*` · `rounded-*` · `type-*` · `ease-signal` +
@@ -199,7 +201,7 @@ in, as long as it never hardcodes a value.
 
 - **Deviations from the house language:** <none | what-and-why>
 
-Theme preset: chalk.
+Theme preset: jade (default Signal temperature — live accents for selected nav).
 
 ## Tool usage (for agents)
 

@@ -15,17 +15,26 @@ export type DocsShellScreenProps = {
   main: ReactNode;
   /** Right / samples slot content. */
   rail: ReactNode;
+  /** When false, collapse the Samples column / opener. Defaults to true. */
+  samplesVisible?: boolean;
 };
 
 /** Band + title/version chrome wrapping the DocsShell regions. */
-export function DocsShellScreen({ title, version, nav, main, rail }: DocsShellScreenProps) {
+export function DocsShellScreen({
+  title,
+  version,
+  nav,
+  main,
+  rail,
+  samplesVisible = true,
+}: DocsShellScreenProps) {
   return (
     <main className="band min-h-screen" tabIndex={-1}>
       <header className="border-b border-border px-4 py-4">
         <h1 className="type-subhead text-text">{title}</h1>
         <p className="type-data text-text-muted">{version}</p>
       </header>
-      <DocsShell nav={nav} main={main} rail={rail} />
+      <DocsShell nav={nav} main={main} rail={rail} samplesVisible={samplesVisible} />
     </main>
   );
 }

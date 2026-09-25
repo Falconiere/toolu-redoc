@@ -3,12 +3,19 @@ import type { RefObject } from "react";
 
 import { CONTROL_FOCUS } from "@/domains/docs/components/docs-shell-focus";
 
+/** Shared opener button classes for the mobile docs toolbar. */
+const TOOLBAR_BUTTON_CLASS =
+  `type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text ` +
+  `transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`;
+
 /** Props for the docs shell mobile toolbar. */
 export type DocsShellToolbarProps = {
   /** Whether the Navigation drawer is open. */
   navOpen: boolean;
   /** Whether the Samples drawer is open. */
   samplesOpen: boolean;
+  /** When false, hide the Samples opener (empty rail). */
+  samplesVisible: boolean;
   /** Toggles the Navigation drawer (closes Samples if opening). */
   onToggleNav: () => void;
   /** Toggles the Samples drawer (closes Navigation if opening). */
@@ -23,6 +30,7 @@ export type DocsShellToolbarProps = {
 export function DocsShellToolbar({
   navOpen,
   samplesOpen,
+  samplesVisible,
   onToggleNav,
   onToggleSamples,
   navButtonRef,
@@ -34,20 +42,22 @@ export function DocsShellToolbar({
         ref={navButtonRef}
         type="button"
         aria-expanded={navOpen}
-        className={`type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
+        className={TOOLBAR_BUTTON_CLASS}
         onClick={onToggleNav}
       >
         Navigation
       </button>
-      <button
-        ref={samplesButtonRef}
-        type="button"
-        aria-expanded={samplesOpen}
-        className={`type-button min-h-(--spacing-touch) rounded-xs border border-border bg-background px-3 text-text transition duration-(--duration-hover) ease-signal hover:border-accent active:translate-y-px ${CONTROL_FOCUS}`}
-        onClick={onToggleSamples}
-      >
-        Samples
-      </button>
+      {samplesVisible ? (
+        <button
+          ref={samplesButtonRef}
+          type="button"
+          aria-expanded={samplesOpen}
+          className={TOOLBAR_BUTTON_CLASS}
+          onClick={onToggleSamples}
+        >
+          Samples
+        </button>
+      ) : null}
     </div>
   );
 }

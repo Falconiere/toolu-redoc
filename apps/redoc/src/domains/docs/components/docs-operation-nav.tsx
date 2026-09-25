@@ -51,6 +51,11 @@ function isEmptyDocument(model: OperationNavModel): boolean {
   return model.operationCount === 0;
 }
 
+/** Pad a count like the mock (`02`). */
+function padCount(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
 /** Filtered-out selection notice plus Clear filter control. */
 function SelectionHiddenNotice({ onClearFilter }: { onClearFilter: () => void }) {
   return (
@@ -78,8 +83,11 @@ function DocsOperationNavSection({
   onSelectIdentity: (identity: string) => void;
 }) {
   return (
-    <section data-section-key={section.key} className="min-w-0 space-y-1">
-      <h3 className="type-label text-text">{section.label}</h3>
+    <section data-section-key={section.key} className="flex min-w-0 flex-col gap-0.5">
+      <div className="type-marker flex justify-between px-2.5 pb-1.5 text-text-faint">
+        <span>{section.label}</span>
+        <span>{padCount(section.items.length)}</span>
+      </div>
       <ul className="min-w-0 space-y-0.5">
         {section.items.map((item) => (
           <li key={`${section.key}:${item.identity}`} className="min-w-0">
@@ -113,12 +121,16 @@ export function DocsOperationNav({
     !showEmptyDocument && filterQuery.trim() !== "" && model.sections.length === 0;
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
+      <p className="type-marker px-1.5 text-text-faint">
+        — Reference · {padCount(model.operationCount)} endpoints
+      </p>
       <input
         type="search"
         aria-label="Filter operations"
+        placeholder="Filter endpoints"
         value={filterQuery}
-        className={`type-body-sm w-full min-w-0 rounded-xs border border-border bg-background px-2 py-1.5 text-text ${CONTROL_FOCUS}`}
+        className={`type-body-sm h-10 w-full min-w-0 rounded-sm border border-border bg-disabled-fill px-3 text-text placeholder:text-text-faint ${CONTROL_FOCUS}`}
         onChange={(event) => {
           onFilterQueryChange(event.target.value);
         }}
@@ -131,17 +143,21 @@ export function DocsOperationNav({
         />
       ) : null}
       {showEmptyDocument ? (
-        <p className="type-meta text-text-faint">No operations in this document.</p>
+        <p className="type-body-sm px-2.5 text-text-muted">No operations in this document.</p>
       ) : null}
-      {showNoMatch ? <p className="type-meta text-text-faint">No matching operations.</p> : null}
-      {model.sections.map((section) => (
-        <DocsOperationNavSection
-          key={section.key}
-          section={section}
-          selectedIdentity={selectedIdentity}
-          onSelectIdentity={onSelectIdentity}
-        />
-      ))}
+      {showNoMatch ? (
+        <p className="type-body-sm px-2.5 text-text-muted">No endpoint matches that filter.</p>
+      ) : null}
+      <nav aria-label="Endpoints" className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto">
+        {model.sections.map((section) => (
+          <DocsOperationNavSection
+            key={section.key}
+            section={section}
+            selectedIdentity={selectedIdentity}
+            onSelectIdentity={onSelectIdentity}
+          />
+        ))}
+      </nav>
     </div>
   );
 }

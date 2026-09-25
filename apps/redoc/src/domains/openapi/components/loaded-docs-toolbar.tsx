@@ -1,14 +1,22 @@
-/** Viewer toolbar above DocsShell: title, version, share, reset. */
+/** Viewer toolbar above DocsShell: title, version, share, reset, band toggle. */
 import type { ReactNode } from "react";
 
 import {
   ShareOperationLink,
+  ShareOperationMeta,
   type ShareOperationLinkProps,
 } from "@/domains/openapi/components/share-operation-link";
+import { BandThemeToggle } from "@/ui/band-theme-toggle";
 
 /** Focus ring utilities matching SpecLoad form controls. */
 const CONTROL_FOCUS =
   "focus:border-accent focus:outline-none focus:ring-(--spacing-focus-ring) focus:ring-focus-ring";
+
+/** Primary inverted control — reset / primary actions. */
+const PRIMARY_BUTTON =
+  `type-button flex h-9 shrink-0 items-center gap-2 rounded-xs bg-primary px-3.5 text-on-primary ` +
+  `transition duration-(--duration-hover) ease-signal hover:bg-primary-hover ` +
+  `active:translate-y-px ${CONTROL_FOCUS}`;
 
 /** Props for {@link LoadedDocsToolbar}. */
 export type LoadedDocsToolbarProps = {
@@ -20,7 +28,10 @@ export type LoadedDocsToolbarProps = {
   sourceSummary?: ReactNode;
 };
 
-/** Slim chrome for the post-load docs viewer on `/`. */
+/**
+ * API Reference mock chrome: one aligned action row, then a meta strip for
+ * source + share href (same baseline, no wrap scramble).
+ */
 export function LoadedDocsToolbar({
   title,
   version,
@@ -29,24 +40,31 @@ export function LoadedDocsToolbar({
   sourceSummary,
 }: LoadedDocsToolbarProps) {
   return (
-    <header className="border-b border-border px-4 py-4">
-      <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 space-y-1">
-          <h1 className="type-subhead text-text">{title}</h1>
-          <p className="type-data text-text-muted">{version}</p>
-          {sourceSummary}
-        </div>
-        <div className="flex min-w-0 flex-col gap-3 sm:items-end">
-          <ShareOperationLink {...share} />
-          <button
-            type="button"
-            className={`${CONTROL_FOCUS} type-label border border-border px-3 py-2 text-text`}
-            onClick={onReset}
-          >
-            Reset
-          </button>
+    <div className="shrink-0 border-b border-border bg-background">
+      <header className="flex h-(--spacing-docs-header) items-center gap-3 px-6">
+        <h1 className="type-subhead min-w-0 truncate text-text">{title}</h1>
+        <span className="type-marker hidden shrink-0 text-text-muted sm:inline">
+          / API reference
+        </span>
+        <div className="min-w-0 flex-1" />
+        <span className="type-data shrink-0 rounded-xs border border-border px-2 py-1 text-text-muted">
+          v{version}
+        </span>
+        <BandThemeToggle />
+        <ShareOperationLink {...share} />
+        <button type="button" className={PRIMARY_BUTTON} onClick={onReset}>
+          Reset
+          <span className="opacity-50" aria-hidden="true">
+            →
+          </span>
+        </button>
+      </header>
+      <div className="flex items-start gap-4 px-6 py-2">
+        <div className="min-w-0 flex-1">{sourceSummary}</div>
+        <div className="min-w-0 flex-1 text-right sm:max-w-md">
+          <ShareOperationMeta {...share} />
         </div>
       </div>
-    </header>
+    </div>
   );
 }

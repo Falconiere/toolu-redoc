@@ -107,9 +107,3 @@ export type OperationDetailModel = {
   responses: OperationResponseRow[];
   servers: OperationServerModel[];
 };
-
-/** Props for the main-column OperationDetail panel. */
-export type OperationDetailProps = {
-  operation: OperationDetailModel | null;
-  onFocusChange?: ((focus: SchemaFocus | null) => void) | undefined;
-};
