@@ -28,7 +28,8 @@ function fail(message: string): never {
 /** One poll attempt against the preview origin via the configured HTTP client. */
 async function probeHttp(url: string): Promise<boolean> {
   try {
-    const { response } = await http.getResponse(url);
+    // Vite preview 404s when Accept is application/json (http client's default).
+    const { response } = await http.getResponse(url, { headers: { accept: "*/*" } });
     return response.ok;
   } catch {
     return false;
