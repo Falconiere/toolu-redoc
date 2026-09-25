@@ -23,10 +23,12 @@ const fixturesDir = join(
   "../../domains/openapi/__tests__/fixtures",
 );
 
+/** Load committed Petstore fixture bytes. */
 function petstoreText(): string {
   return readFileSync(join(fixturesDir, "petstore-3.0.json"), "utf8");
 }
 
+/** Load committed empty-paths fixture bytes. */
 function emptyPathsText(): string {
   return readFileSync(join(fixturesDir, "empty-paths.json"), "utf8");
 }

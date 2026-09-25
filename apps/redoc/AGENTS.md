@@ -75,8 +75,10 @@ before adding files, and add a line when you add something notable.
 - **Default exports** → named exports everywhere, routes included (route files
   export `const Route`). `vite.config.ts` is the only exception.
 - **Parent-relative imports** (`../…`) → use the `@/` alias or same-directory `./`.
-- **Cross-domain imports** — importing `@/domains/*` from anywhere but a
-  `src/app/**` route file → domains are isolated; only routes pull in a screen.
+- **Cross-domain imports** — importing `@/domains/*` from outside `src/app/**`
+  (or from one domain into another) → domains are isolated; only the `src/app/`
+  composition layer (routes + `load-*`/`map-*`/`compose-*` helpers) pulls in
+  domain screens/APIs.
 - **A second styling system** — a `*.module.css`, a `style={{…}}` object,
   `styled-components`/`emotion`, or a TS file exporting style values → Tailwind
   utilities. (A TS token file is the *Expo* pattern; React Native has no cascade.
@@ -100,7 +102,10 @@ before adding files, and add a line when you add something notable.
   dotted segments in route filenames.
 - **Routes are thin**: a file under `src/app/` exports a `Route` that names a
   domain screen and configures the route (loader, guard, error component) — no
-  business logic, no markup beyond composition.
+  business logic, no markup beyond composition. Non-route helpers in `src/app/`
+  use `load-*` / `map-*` / `compose-*` prefixes (ignored by the router plugin)
+  and **may** import one or more domains — that is the allowed composition
+  layer. Cross-domain imports remain forbidden **inside** `src/domains/**`.
 - **It is all client code**: this is a static SPA. There is no server/client
   component split, and every `VITE_*` var ships to the browser. Secrets live in
   the API service, never here.
