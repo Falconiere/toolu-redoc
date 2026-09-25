@@ -2,15 +2,16 @@
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
 import { chromium, type Browser } from "playwright";
 
+import { http } from "@/api/http-client";
 import { startFixtureHttpServer } from "@/domains/openapi/__tests__/fixture-http-server";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
 
-const rootDir = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
+/** Package root — `test:preview-smoke` always runs with cwd = apps/redoc. */
+const rootDir = process.cwd();
 const distIndex = join(rootDir, "dist", "index.html");
 const EXPECTED_TITLE = "Swagger Petstore - OpenAPI 3.0";
 const FILTER_QUERY = "findByStatus";
@@ -24,11 +25,11 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-/** One poll attempt against the preview origin. */
+/** One poll attempt against the preview origin via the configured HTTP client. */
 async function probeHttp(url: string): Promise<boolean> {
   try {
-    const response = await fetch(url, { method: "GET" });
-    return response.ok || response.status === 404;
+    const { response } = await http.getResponse(url);
+    return response.ok;
   } catch {
     return false;
   }
@@ -94,14 +95,16 @@ async function stopChild(child: ChildProcess): Promise<void> {
       settled = true;
       resolve();
     };
+    const onExit = (): void => {
+      clearTimeout(timer);
+      finish();
+    };
+    child.once("exit", onExit);
     const timer = setTimeout(() => {
+      child.off("exit", onExit);
       child.kill("SIGKILL");
       finish();
     }, 3000);
-    child.once("exit", () => {
-      clearTimeout(timer);
-      finish();
-    });
     child.kill("SIGTERM");
   });
 }
@@ -175,7 +178,7 @@ async function main(): Promise<void> {
     await page.reload({ waitUntil: "networkidle" });
     await page.getByRole("heading", { name: EXPECTED_TITLE }).waitFor({ timeout: 30_000 });
 
-    console.warn("preview-smoke: ok");
+    process.stdout.write("preview-smoke: ok\n");
   } finally {
     await browser?.close();
     await stopChild(preview);

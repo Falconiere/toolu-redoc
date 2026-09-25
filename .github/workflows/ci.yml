@@ -67,10 +67,15 @@ jobs:
 
       - name: Install Chromium (Playwright)
         working-directory: apps/redoc
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/apps/redoc/node_modules/playwright-browsers
         run: bunx playwright install --with-deps chromium
 
       - name: Preview smoke (apps/redoc T27)
-        run: bun run --filter @toolu-redoc/redoc test:preview-smoke
+        working-directory: apps/redoc
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/apps/redoc/node_modules/playwright-browsers
+        run: bun run test:preview-smoke
 
       - name: Build (dry-run deploy, apps/api)
         working-directory: apps/api
