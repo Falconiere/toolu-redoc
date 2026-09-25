@@ -1,0 +1,296 @@
+openapi: 3.1.0
+info:
+  title: Toolu Redoc Feature Tour
+  version: 1.0.0
+  summary: One small API that exercises every part of the viewer.
+  description: |
+    A hand-authored OpenAPI 3.1 document for the Toolu Redoc demo gallery.
+    Each operation shows off a different part of the viewer: tag navigation,
+    path + operation parameters, multi-media request bodies, `oneOf` with a
+    discriminator, `allOf`, a self-referencing `$ref`, 3.1 null unions,
+    falsy example values, response headers, operation-level servers, a
+    deprecated operation, and a webhook.
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+tags:
+  - name: Orders
+    description: Create, read, and export orders.
+  - name: Catalog
+    description: Browse the category tree.
+paths:
+  /orders:
+    post:
+      tags: [Orders]
+      operationId: createOrder
+      summary: Create an order
+      description: |
+        Accepts JSON or a classic HTML form post. The `payment` field is a
+        `oneOf` resolved by the `method` discriminator.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+            examples:
+              card:
+                summary: Card payment
+                value:
+                  items:
+                    - sku: TOUR-001
+                      quantity: 2
+                  payment:
+                    method: card
+                    last4: "4242"
+                  note: null
+              freeSample:
+                summary: Free sample (falsy values)
+                value:
+                  items:
+                    - sku: TOUR-000
+                      quantity: 0
+                  payment:
+                    method: bank
+                    iban: ""
+                  giftWrap: false
+                  note: ""
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [sku, quantity]
+              properties:
+                sku:
+                  type: string
+                quantity:
+                  type: integer
+                  minimum: 0
+      responses:
+        "201":
+          description: Order created.
+          headers:
+            Location:
+              description: URL of the new order.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "4XX":
+          $ref: "#/components/responses/Problem"
+  /orders/{orderId}:
+    parameters:
+      - $ref: "#/components/parameters/OrderId"
+    get:
+      tags: [Orders]
+      operationId: getOrder
+      summary: Fetch one order
+      description: Path parameter comes from the Path Item; `expand` is operation-level.
+      servers:
+        - url: https://read-replica.example.com/v1
+          description: Read replica for GET traffic
+      parameters:
+        - name: expand
+          in: query
+          description: Related records to inline.
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [items, payment]
+      responses:
+        "200":
+          description: The order.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+              example:
+                id: ord_123
+                status: paid
+                items:
+                  - sku: TOUR-001
+                    quantity: 2
+                payment:
+                  method: card
+                  last4: "4242"
+                giftWrap: false
+                note: null
+        "404":
+          $ref: "#/components/responses/Problem"
+        default:
+          $ref: "#/components/responses/Problem"
+  /orders/export:
+    get:
+      tags: [Orders]
+      operationId: exportOrdersLegacy
+      summary: Export orders as CSV (legacy)
+      deprecated: true
+      description: Deprecated — page through `GET /orders/{orderId}` instead.
+      parameters:
+        - name: since
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: CSV export.
+          content:
+            text/csv:
+              schema:
+                type: string
+              example: "id,status\nord_123,paid\n"
+        "204":
+          description: Nothing to export.
+  /categories/{categoryId}:
+    get:
+      tags: [Catalog]
+      operationId: getCategory
+      summary: Fetch a category and its ancestors
+      description: "`Category.parent` points back at `Category` — a local `$ref` cycle."
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: The category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+              example:
+                id: 7
+                name: Guidebooks
+                parent:
+                  id: 1
+                  name: Books
+                  parent: null
+webhooks:
+  orderShipped:
+    post:
+      summary: Order shipped
+      description: Sent to your endpoint when an order leaves the warehouse.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        "200":
+          description: Acknowledge receipt.
+components:
+  parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      description: Order identifier.
+      schema:
+        type: string
+        pattern: "^ord_[a-z0-9]+$"
+  responses:
+    Problem:
+      description: RFC 9457 problem details.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+  schemas:
+    LineItem:
+      type: object
+      required: [sku, quantity]
+      properties:
+        sku:
+          type: string
+        quantity:
+          type: integer
+          minimum: 0
+          default: 1
+    CardPayment:
+      type: object
+      required: [method, last4]
+      properties:
+        method:
+          const: card
+        last4:
+          type: string
+          pattern: "^[0-9]{4}$"
+    BankPayment:
+      type: object
+      required: [method, iban]
+      properties:
+        method:
+          const: bank
+        iban:
+          type: string
+    Payment:
+      oneOf:
+        - $ref: "#/components/schemas/CardPayment"
+        - $ref: "#/components/schemas/BankPayment"
+      discriminator:
+        propertyName: method
+        mapping:
+          card: "#/components/schemas/CardPayment"
+          bank: "#/components/schemas/BankPayment"
+    OrderInput:
+      type: object
+      required: [items, payment]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/LineItem"
+        payment:
+          $ref: "#/components/schemas/Payment"
+        giftWrap:
+          type: boolean
+          default: false
+        note:
+          type: [string, "null"]
+          description: Free-text note; `null` when absent (3.1 null union).
+    Order:
+      allOf:
+        - $ref: "#/components/schemas/OrderInput"
+        - type: object
+          required: [id, status]
+          properties:
+            id:
+              type: string
+              readOnly: true
+            status:
+              type: string
+              enum: [pending, paid, shipped]
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        parent:
+          description: Parent category, or `null` at the root.
+          oneOf:
+            - $ref: "#/components/schemas/Category"
+            - type: "null"
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: [string, "null"]

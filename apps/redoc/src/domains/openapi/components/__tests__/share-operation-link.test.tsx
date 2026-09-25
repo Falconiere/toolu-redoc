@@ -36,4 +36,21 @@ describe("ShareOperationLink", () => {
     );
     expect(screen.getByTestId("share-paste-disclosure")).toHaveTextContent(SHARE_PASTE_DISCLOSURE);
   });
+
+  it("keeps the deploy base path in the copied href", () => {
+    const source = "https://falconiere.github.io/toolu-redoc/examples/museum-3.1.yaml";
+    const op = encodeOperationIdentity("get", "/museum-hours");
+    render(
+      <ShareOperationLink
+        search={{ url: source, op }}
+        sourceKind="url"
+        sourceHref={source}
+        origin="https://falconiere.github.io"
+        basePath="/toolu-redoc/"
+      />,
+    );
+    expect(screen.getByTestId("share-href")).toHaveTextContent(
+      `https://falconiere.github.io/toolu-redoc/?${new URLSearchParams({ url: source, op }).toString()}`,
+    );
+  });
 });

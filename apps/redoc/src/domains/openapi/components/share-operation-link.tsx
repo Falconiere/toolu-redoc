@@ -18,6 +18,8 @@ export type ShareOperationLinkProps = {
   sourceHref?: string;
   /** Origin for the share href (defaults to window.location.origin). */
   origin?: string;
+  /** Deploy base path for the share href (defaults to import.meta.env.BASE_URL). */
+  basePath?: string;
 };
 
 /** Disclosure when the source URL embeds its own query string. */
@@ -34,10 +36,11 @@ export function ShareOperationLink({
   sourceKind,
   sourceHref,
   origin,
+  basePath = import.meta.env.BASE_URL,
 }: ShareOperationLinkProps) {
   const [copied, setCopied] = useState(false);
   const resolvedOrigin = origin ?? window.location.origin;
-  const href = buildShareHref(resolvedOrigin, search);
+  const href = buildShareHref(resolvedOrigin, search, basePath);
   const showUrlQueryDisclosure = sourceKind === "url" && Boolean(sourceHref?.includes("?"));
 
   return (

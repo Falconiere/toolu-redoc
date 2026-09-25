@@ -77,6 +77,21 @@ jobs:
           PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/apps/redoc/node_modules/playwright-browsers
         run: bun run test:preview-smoke
 
+      # The exact GitHub Pages artifact (pages.yml deploys it only after this
+      # workflow succeeds on main): base-path build + gallery-journey smoke.
+      - name: Build (apps/redoc, Pages base path)
+        working-directory: apps/redoc
+        env:
+          REDOC_BASE_PATH: /${{ github.event.repository.name }}/
+        run: bun run build:pages
+
+      - name: Preview smoke (apps/redoc, Pages base path)
+        working-directory: apps/redoc
+        env:
+          REDOC_BASE_PATH: /${{ github.event.repository.name }}/
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/apps/redoc/node_modules/playwright-browsers
+        run: bun run test:preview-smoke
+
       - name: Build (dry-run deploy, apps/api)
         working-directory: apps/api
         run: bunx wrangler deploy --dry-run --outdir dist

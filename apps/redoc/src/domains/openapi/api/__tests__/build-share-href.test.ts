@@ -27,4 +27,35 @@ describe("buildShareHref", () => {
   it("returns bare origin slash when search is empty", () => {
     expect(buildShareHref("http://localhost:5173", {})).toBe("http://localhost:5173/");
   });
+
+  it("keeps the GitHub Pages subpath in front of the query (base path)", () => {
+    const op = encodeOperationIdentity("get", "/pet/findByStatus");
+    const source = "https://falconiere.github.io/toolu-redoc/examples/petstore-3.0.json";
+    const expected =
+      "https://falconiere.github.io/toolu-redoc/?" +
+      new URLSearchParams({ url: source, op }).toString();
+    expect(
+      buildShareHref("https://falconiere.github.io", { url: source, op }, "/toolu-redoc/"),
+    ).toBe(expected);
+    expect(
+      buildShareHref("https://falconiere.github.io/", { url: source, op }, "toolu-redoc"),
+    ).toBe(expected);
+  });
+
+  it("collapses repeated leading and trailing slashes in the base path", () => {
+    const source = "https://falconiere.github.io/toolu-redoc/examples/petstore-3.0.json";
+    expect(buildShareHref("https://falconiere.github.io", { url: source }, "//toolu-redoc//")).toBe(
+      `https://falconiere.github.io/toolu-redoc/?${new URLSearchParams({ url: source }).toString()}`,
+    );
+    expect(buildShareHref("https://falconiere.github.io", {}, "///")).toBe(
+      "https://falconiere.github.io/",
+    );
+  });
+
+  it("returns the base path itself when search is empty", () => {
+    expect(buildShareHref("https://falconiere.github.io", {}, "/toolu-redoc")).toBe(
+      "https://falconiere.github.io/toolu-redoc/",
+    );
+    expect(buildShareHref("http://localhost:5173", {}, "/")).toBe("http://localhost:5173/");
+  });
 });

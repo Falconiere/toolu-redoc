@@ -1,6 +1,7 @@
 # Toolu Redoc
 
 [![CI](https://github.com/Falconiere/toolu-redoc/actions/workflows/ci.yml/badge.svg)](https://github.com/Falconiere/toolu-redoc/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/live%20demo-GitHub%20Pages-2ea44f)](https://falconiere.github.io/toolu-redoc/)
 
 **OpenAPI docs that stay in the browser.**
 
@@ -10,12 +11,18 @@ shipping your document to a hosted platform.
 
 Built with React, Vite, Zod, and Bun. Deployed as a Cloudflare Workers SPA.
 
+**Live demo:** <https://falconiere.github.io/toolu-redoc/>. Pick an example spec from
+the gallery (Petstore 3.0, the Redocly Museum 3.1 API, or the feature tour), or paste
+your own. Nothing leaves your browser.
+
 Deep run / load / CI guide: [`apps/redoc/README.md`](./apps/redoc/README.md).
 
 ## Features
 
 - **Paste or URL** — load OpenAPI JSON or YAML from a text area, or from an absolute
   `http://` / `https://` link (`/?url=…` auto-loads on open).
+- **Example gallery** — one click loads a bundled, same-origin example spec, so the
+  first run never depends on a third party's CORS policy.
 - **OpenAPI 3.0 / 3.1** — documents are parsed into Zod-validated domain models.
 - **Three-column Signal shell** — navigation, operation detail, and a Samples rail
   for schemas and examples.
@@ -25,6 +32,8 @@ Deep run / load / CI guide: [`apps/redoc/README.md`](./apps/redoc/README.md).
   written to the URL or Web Storage.
 
 ## Quick start
+
+Try it without installing anything: <https://falconiere.github.io/toolu-redoc/>.
 
 ```bash
 bun install
@@ -63,7 +72,9 @@ generated SDKs. Full Out of scope list:
 | `bun run --filter <package> dev` | Run one app |
 
 Deploy the viewer with `bun run --filter @toolu-redoc/redoc deploy`. The API worker
-pair lives in `operations.config.json`.
+pair lives in `operations.config.json`. The GitHub Pages demo deploys itself from
+`.github/workflows/pages.yml` after CI passes on `main`
+([details](./apps/redoc/README.md#live-demo-github-pages)).
 
 ## Architecture
 
@@ -85,7 +96,7 @@ No backend proxy for third-party specs — the browser fetches or you paste.
 `bun run check` fans out type-check, lint, format, structure, unused-export, and
 test gates across the workspace. Lefthook runs oxlint + oxfmt on staged files. CI
 builds the redoc production bundle and runs a Playwright preview smoke against
-`dist/`.
+`dist/`, then repeats both for the GitHub Pages base-path build.
 
 ## Docs and contributing
 
