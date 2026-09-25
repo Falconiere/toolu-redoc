@@ -2,11 +2,11 @@
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
+import { createConnection } from "node:net";
 import { join } from "node:path";
 
 import { chromium, type Browser } from "playwright";
 
-import { http } from "@/api/http-client";
 import { startFixtureHttpServer } from "@/domains/openapi/__tests__/fixture-http-server";
 import { encodeOperationIdentity } from "@/domains/openapi/api/operation-identity";
 
@@ -25,27 +25,29 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-/** One poll attempt against the preview origin via the configured HTTP client. */
-async function probeHttp(url: string): Promise<boolean> {
-  try {
-    // Vite preview 404s when Accept is application/json (http client's default).
-    const { response } = await http.getResponse(url, { headers: { accept: "*/*" } });
-    return response.ok;
-  } catch {
-    return false;
-  }
+/** One TCP poll against the preview listen port (no fetch / no API http client). */
+function probePort(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = createConnection({ host: "127.0.0.1", port }, () => {
+      socket.end();
+      resolve(true);
+    });
+    socket.on("error", () => {
+      resolve(false);
+    });
+  });
 }
 
 /** Wait until the preview server accepts connections. */
-async function waitForHttp(url: string, timeoutMs: number): Promise<void> {
+async function waitForPreview(timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs;
-  const ready = await probeHttp(url);
+  const ready = await probePort(PREVIEW_PORT);
   if (ready) {
     return;
   }
   await new Promise<void>((resolve, reject) => {
     const timer = setInterval(() => {
-      void probeHttp(url).then((ok) => {
+      void probePort(PREVIEW_PORT).then((ok) => {
         if (ok) {
           clearInterval(timer);
           resolve();
@@ -53,7 +55,7 @@ async function waitForHttp(url: string, timeoutMs: number): Promise<void> {
         }
         if (Date.now() >= deadline) {
           clearInterval(timer);
-          reject(new Error(`timed out waiting for ${url}`));
+          reject(new Error(`timed out waiting for ${PREVIEW_ORIGIN}`));
           return undefined;
         }
         return undefined;
@@ -137,7 +139,7 @@ async function main(): Promise<void> {
   let browser: Browser | undefined;
 
   try {
-    await waitForHttp(PREVIEW_ORIGIN, 30_000);
+    await waitForPreview(30_000);
 
     const petstoreHref = `${fixture.baseUrl}/fixtures/petstore.json`;
     const loadUrl = `${PREVIEW_ORIGIN}/?url=${encodeURIComponent(petstoreHref)}`;
